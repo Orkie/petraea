@@ -21,7 +21,7 @@ typedef enum {
   COND_GT = 0b1100,
   COND_LE = 0b1101,
   COND_AL = 0b1110
-} __arm9_condition;
+} __arm_condition;
 
 typedef enum {
   OPERAND_AND = 0b0000,
@@ -39,52 +39,67 @@ typedef enum {
   OPERAND_MOV = 0b1101,
   OPERAND_BIC = 0b1110,
   OPERAND_MVN = 0b1111
-} __arm9_opcode;
+} __arm_opcode;
 
 typedef enum {
   INSTR_DATA_PROCESSING,
   INSTR_MULTIPLY,
   INSTR_MULTIPLY_LONG,
+  INSTR_SINGLE_DATA_TRANSFER,
   INSTR_UNDEFINED
   // TODO - the rest
-} __arm9_instruction_type;
+} __arm_instruction_type;
 
 typedef struct {
   uint32_t value;
-} __arm9_immediate_operand;
+} __arm_immediate_operand;
 
 typedef struct {
-  __arm9_register reg;
+  __arm_register reg;
   uint8_t shift;
-} __arm9_register_operand;
+} __arm_register_operand;
 
 typedef struct {
   bool is_immediate;
   union Operand2 {
-    __arm9_immediate_operand imm;
-    __arm9_register_operand reg;
+    __arm_immediate_operand imm;
+    __arm_register_operand reg;
   } op;
-} __arm9_operand2;
+} __arm_operand2;
+
+///////////////////////////////////////////
+// Data processing
+///////////////////////////////////////////
 
 typedef struct {
-  __arm9_opcode opcode;
+  __arm_opcode opcode;
   bool set_condition_codes;
-  __arm9_register operand1;
-  __arm9_operand2 operand2;
-  __arm9_register dest;
-} __arm9_instr_data_processing;
+  __arm_register operand1;
+  __arm_operand2 operand2;
+  __arm_register dest;
+} __arm_instr_data_processing;
+
+///////////////////////////////////////////
+// Single data transfer
+///////////////////////////////////////////
+
+typedef struct {
+} __arm_instr_single_data_transfer;
+
+///////////////////////////////////////////
 
 typedef union {
-  __arm9_instr_data_processing data_processing;
-} __arm9_instructions;
+  __arm_instr_data_processing data_processing;
+  __arm_instr_single_data_transfer single_data_transfer;
+} __arm_instructions;
 
 typedef struct {
-  __arm9_condition cond;
-  __arm9_instruction_type type;
-  __arm9_instructions instr;
-} __arm9_instruction;
+  __arm_condition cond;
+  __arm_instruction_type type;
+  __arm_instructions instr;
+} __arm_instruction;
 
-extern void arm9_decode_instruction(__arm9_instruction* dest, uint32_t i);
+extern void arm_decode_instruction(__arm_instruction* dest, uint32_t i);
 
 #endif
 

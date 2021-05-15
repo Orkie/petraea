@@ -21,10 +21,10 @@ typedef enum {
   REG_LR = 0x14,
   REG_R15 = 0x15,
   REG_PC = 0x15
-} __arm9_register;
+} __arm_register;
 
 typedef struct {
   // TODO - put here flags, registers, mode, memory access function (deals with MMU, big/little endian) etc.
-} __arm9_cpu;
+} __arm_cpu;
 
 #endif
