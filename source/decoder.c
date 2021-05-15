@@ -1,9 +1,10 @@
-#include <instr.h>
+#include "instr.h"
+#include "util.h"
 
 static void arm9_decode_operand2_imm(__arm9_operand2* dest, uint16_t op) {
   dest->is_immediate = true;
-  dest->op.imm.imm = op & 0xFF;
-  dest->op.imm.rotate = op >> 8;
+  unsigned int rotateBy = ((op&0xF00) >> 8) * 2;
+  dest->op.imm.value = rrot32(op & 0xFF, rotateBy);
 }
 
 static void arm9_decode_operand2_reg(__arm9_operand2* dest, uint16_t op) {
@@ -29,11 +30,11 @@ static void arm9_decode_data_processing(__arm9_instr_data_processing* dest, uint
 }
 
 void arm9_decode_instruction(__arm9_instruction* dest, uint32_t i) {
-  const unsigned int cond = (i&0x3C0000000) >> 24;
+  const unsigned int cond = (i&0xF0000000) >> 28;
 
   if(instr_is_data_processing(i)) {
     dest->type = INSTR_DATA_PROCESSING;
-    arm9_decode_data_processing(&dest->instr.instr_data_processing, i);
+    arm9_decode_data_processing(&dest->instr.data_processing, i);
   } else {
     dest->type = INSTR_UNDEFINED;
   }

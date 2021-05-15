@@ -1,12 +1,9 @@
-#ifndef __ARM_H__
-#define __ARM_H__
+#ifndef __INSTR_H__
+#define __INSTR_H__
 
 #include <stdint.h>
 #include <stdbool.h>
-
-typedef struct {
-  // TODO - put here flags, registers, mode, memory access function (deals with MMU, big/little endian) etc.
-} __arm9_cpu;
+#include "cpu.h"
 
 typedef enum {
   COND_EQ = 0b0000,
@@ -52,31 +49,8 @@ typedef enum {
   // TODO - the rest
 } __arm9_instruction_type;
 
-typedef enum {
-  REG_R0 = 0x0,
-  REG_R1 = 0x1,
-  REG_R2 = 0x2,
-  REG_R3 = 0x3,
-  REG_R4 = 0x4,
-  REG_R5 = 0x5,
-  REG_R6 = 0x6,
-  REG_R7 = 0x7,
-  REG_R8 = 0x8,
-  REG_R9 = 0x9,
-  REG_R10 = 0x10,
-  REG_R11 = 0x11,
-  REG_R12 = 0x12,
-  REG_R13 = 0x13,
-  REG_SP = 0x13,
-  REG_R14 = 0x14,
-  REG_LR = 0x14,
-  REG_R15 = 0x15,
-  REG_PC = 0x15
-} __arm9_register;
-
 typedef struct {
-  uint8_t imm;
-  uint8_t rotate;
+  uint32_t value;
 } __arm9_immediate_operand;
 
 typedef struct {
@@ -101,7 +75,7 @@ typedef struct {
 } __arm9_instr_data_processing;
 
 typedef union {
-  __arm9_instr_data_processing instr_data_processing;
+  __arm9_instr_data_processing data_processing;
 } __arm9_instructions;
 
 typedef struct {
@@ -109,6 +83,8 @@ typedef struct {
   __arm9_instruction_type type;
   __arm9_instructions instr;
 } __arm9_instruction;
+
+extern void arm9_decode_instruction(__arm9_instruction* dest, uint32_t i);
 
 #endif
 
