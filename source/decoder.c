@@ -30,7 +30,7 @@ static void decode_data_processing(__arm_instr_data_processing* dest, uint32_t i
 }
 
 static bool instr_is_single_data_transfer(uint32_t i) {
-  return (i&0xE000010) == 0x6000000;
+  return ((i&0xC000000) == 0x4000000) && ((i&0x10) == 0x0);
 }
 
 static void decode_single_data_transfer(__arm_instr_single_data_transfer* dest, uint32_t i) {
@@ -38,7 +38,7 @@ static void decode_single_data_transfer(__arm_instr_single_data_transfer* dest, 
 }
 
 static bool instr_is_undefined(uint32_t i) {
-  return (i&0xE000010) == 0x6000010;
+  return (i&0x0E000010) == 0x6000010;
 }
 
 void arm_decode_instruction(__arm_instruction* dest, uint32_t i) {

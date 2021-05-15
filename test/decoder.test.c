@@ -53,3 +53,9 @@ Test(decoder, can_decode_an_undefined_instruction) {
   cr_assert_eq(result.type, INSTR_UNDEFINED);
 }
 
+Test(decoder, can_decode_a_simple_ldr) {
+  __arm_instruction result;
+  arm_decode_instruction(&result, 0xE51F0004);
+  cr_assert_eq(result.type, INSTR_SINGLE_DATA_TRANSFER);
+}
+
