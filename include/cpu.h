@@ -2,25 +2,25 @@
 #define __CPU_H__
 
 typedef enum {
-  REG_R0 = 0x0,
-  REG_R1 = 0x1,
-  REG_R2 = 0x2,
-  REG_R3 = 0x3,
-  REG_R4 = 0x4,
-  REG_R5 = 0x5,
-  REG_R6 = 0x6,
-  REG_R7 = 0x7,
-  REG_R8 = 0x8,
-  REG_R9 = 0x9,
-  REG_R10 = 0x10,
-  REG_R11 = 0x11,
-  REG_R12 = 0x12,
-  REG_R13 = 0x13,
-  REG_SP = 0x13,
-  REG_R14 = 0x14,
-  REG_LR = 0x14,
-  REG_R15 = 0x15,
-  REG_PC = 0x15
+  REG_R0 = 0,
+  REG_R1 = 1,
+  REG_R2 = 2,
+  REG_R3 = 3,
+  REG_R4 = 4,
+  REG_R5 = 5,
+  REG_R6 = 6,
+  REG_R7 = 7,
+  REG_R8 = 8,
+  REG_R9 = 9,
+  REG_R10 = 10,
+  REG_R11 = 11,
+  REG_R12 = 12,
+  REG_R13 = 13,
+  REG_SP = 13,
+  REG_R14 = 14,
+  REG_LR = 14,
+  REG_R15 = 15,
+  REG_PC = 15
 } __arm_register;
 
 typedef struct {

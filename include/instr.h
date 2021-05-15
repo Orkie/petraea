@@ -46,7 +46,8 @@ typedef enum {
   INSTR_MULTIPLY,
   INSTR_MULTIPLY_LONG,
   INSTR_SINGLE_DATA_TRANSFER,
-  INSTR_UNDEFINED
+  INSTR_UNDEFINED,
+  INSTR_NOT_YET_SUPPORTED
   // TODO - the rest
 } __arm_instruction_type;
 
@@ -84,6 +85,14 @@ typedef struct {
 ///////////////////////////////////////////
 
 typedef struct {
+  bool add_offset_before_transfer; // false = after
+  bool add_offset_to_base; // false = subtract
+  bool transfer_byte; // false = word
+  bool write_back_address;
+  bool load; // false == store
+  __arm_register base;
+  __arm_register source_dest;
+  __arm_operand2 offset;
 } __arm_instr_single_data_transfer;
 
 ///////////////////////////////////////////
