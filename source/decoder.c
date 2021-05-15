@@ -35,7 +35,8 @@ static void decode_data_processing(__arm_instr_data_processing* dest, uint32_t i
 }
 
 static bool instr_is_single_data_transfer(uint32_t i) {
-  return ((i&0xC000000) == 0x4000000) && ((i&0x10) == 0x0);
+  return ((i&0x0E000000) == 0x04000000) // immediate offset
+    || (((i&0x0E000000) == 0x06000000) && ((i&0x10) == 0x0));
 }
 
 static void decode_single_data_transfer(__arm_instr_single_data_transfer* dest, uint32_t i) {
@@ -54,7 +55,7 @@ static void decode_single_data_transfer(__arm_instr_single_data_transfer* dest, 
 }
 
 static bool instr_is_undefined(uint32_t i) {
-  return (i&0x0E000010) == 0x6000010;
+  return ((i&0x0E000000) == 0x06000000) && ((i&0x10) == 0x10);
 }
 
 void arm_decode_instruction(__arm_instruction* dest, uint32_t i) {
@@ -63,12 +64,11 @@ void arm_decode_instruction(__arm_instruction* dest, uint32_t i) {
   if(instr_is_data_processing(i)) {
     dest->type = INSTR_DATA_PROCESSING;
     decode_data_processing(&dest->instr.data_processing, i);
-  } else if(instr_is_undefined(i)) {
-    // NOTE - this needs to appear in the list before single data transfer as they superficially overlap
-    dest->type = INSTR_UNDEFINED;
   } else if(instr_is_single_data_transfer(i)) {
     dest->type = INSTR_SINGLE_DATA_TRANSFER;
     decode_single_data_transfer(&dest->instr.single_data_transfer, i);
+  } else if(instr_is_undefined(i)) {
+    dest->type = INSTR_UNDEFINED;
   } else {
     dest->type = INSTR_NOT_YET_SUPPORTED;
   }

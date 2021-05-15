@@ -97,3 +97,22 @@ Test(decoder, can_decode_a_simple_ldr) {
   cr_assert_eq(result.instr.single_data_transfer.offset.op.imm.value, 4);
 }
 
+Test(decoder, can_decode_a_simple_str) {
+  __arm_instruction result;
+  arm_decode_instruction(&result, 0xE4810038); // STR R0,[R1],#0x38
+  printf("%x\n", result.type);
+  cr_assert_eq(result.type, INSTR_SINGLE_DATA_TRANSFER);
+  cr_assert_eq(result.instr.single_data_transfer.add_offset_before_transfer, true);
+  cr_assert_eq(result.instr.single_data_transfer.add_offset_before_transfer, true);
+  cr_assert_eq(result.instr.single_data_transfer.transfer_byte, false);
+  cr_assert_eq(result.instr.single_data_transfer.write_back_address, false);
+  cr_assert_eq(result.instr.single_data_transfer.load, false);
+
+  // The above instruction is assembled as the instr word followed by the value, so it loads
+  // the value at offset 4 from PC (i.e. the word after the instruction we are decoding)
+  cr_assert_eq(result.instr.single_data_transfer.base, REG_R1);
+  cr_assert_eq(result.instr.single_data_transfer.source_dest, REG_R0);
+  cr_assert_eq(result.instr.single_data_transfer.offset.is_immediate, true);
+  cr_assert_eq(result.instr.single_data_transfer.offset.op.imm.value, 0x38);
+}
+
