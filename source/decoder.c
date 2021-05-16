@@ -40,10 +40,27 @@ static bool instr_is_single_data_transfer(uint32_t i) {
 }
 
 static void decode_single_data_transfer(__arm_instr_single_data_transfer* dest, uint32_t i) {
-  dest->add_offset_before_transfer = (i >> 24) & 0x1;
-  dest->add_offset_to_base = (i >> 23) & 0x1;
+  const bool p = (i >> 24) & 0x1;
+  const bool w = (i >> 21) & 0x1;
+
+  if(p == false) {
+    dest->add_offset_before_transfer = false;
+    dest->write_back_address = true;
+  } else {
+    dest->add_offset_before_transfer = true;
+    dest->write_back_address = false;    
+  }
+
+  if(w == true) {
+    if(p == false) {
+      dest->unprivileged = false;
+    } else {
+      dest->write_back_address = true;
+    }
+  }
+  
+  dest->add_offset = (i >> 23) & 0x1;
   dest->transfer_byte = (i >> 22) & 0x1;
-  dest->write_back_address = (i >> 21) & 0x1;
   dest->load = (i >> 20) & 0x1;
   dest->base = (i >> 16) & 0xF;
   dest->source_dest = (i >> 12) & 0xF;

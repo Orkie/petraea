@@ -86,8 +86,9 @@ typedef struct {
 
 typedef struct {
   bool add_offset_before_transfer; // false = after
-  bool add_offset_to_base; // false = subtract
+  bool add_offset; // false = subtract
   bool transfer_byte; // false = word
+  bool unprivileged;
   bool write_back_address;
   bool load; // false == store
   __arm_register base;

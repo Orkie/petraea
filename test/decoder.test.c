@@ -81,10 +81,10 @@ Test(decoder, can_decode_an_undefined_instruction) {
 
 Test(decoder, can_decode_a_simple_ldr) {
   __arm_instruction result;
-  arm_decode_instruction(&result, 0xE51F0004); // LDR R0,=0x12345678
+  arm_decode_instruction(&result, 0xE59F0004); // LDR R0,[PC,#4]
   cr_assert_eq(result.type, INSTR_SINGLE_DATA_TRANSFER);
   cr_assert_eq(result.instr.single_data_transfer.add_offset_before_transfer, true);
-  cr_assert_eq(result.instr.single_data_transfer.add_offset_before_transfer, true);
+  cr_assert_eq(result.instr.single_data_transfer.add_offset, true);
   cr_assert_eq(result.instr.single_data_transfer.transfer_byte, false);
   cr_assert_eq(result.instr.single_data_transfer.write_back_address, false);
   cr_assert_eq(result.instr.single_data_transfer.load, true);
@@ -97,54 +97,96 @@ Test(decoder, can_decode_a_simple_ldr) {
   cr_assert_eq(result.instr.single_data_transfer.offset.op.imm.value, 4);
 }
 
+Test(decoder, can_decode_a_simple_ldr_with_register_offset_post) {
+  __arm_instruction result;
+  arm_decode_instruction(&result, 0xE6B10002); // LDR R0, [R1], R2
+  cr_assert_eq(result.type, INSTR_SINGLE_DATA_TRANSFER);
+  cr_assert_eq(result.instr.single_data_transfer.add_offset_before_transfer, false);
+  cr_assert_eq(result.instr.single_data_transfer.add_offset, true);
+  cr_assert_eq(result.instr.single_data_transfer.transfer_byte, false);
+  cr_assert_eq(result.instr.single_data_transfer.write_back_address, true);
+  cr_assert_eq(result.instr.single_data_transfer.load, true);
+
+  cr_assert_eq(result.instr.single_data_transfer.base, REG_R1);
+  cr_assert_eq(result.instr.single_data_transfer.source_dest, REG_R0);
+  cr_assert_eq(result.instr.single_data_transfer.offset.op.reg.reg, REG_R2);
+  cr_assert_eq(result.instr.single_data_transfer.offset.op.reg.shift, 0);
+}
+
 Test(decoder, can_decode_an_str_with_no_offet) {
   __arm_instruction result;
   arm_decode_instruction(&result, 0xE5810000); // STR R0,[R1]
   cr_assert_eq(result.type, INSTR_SINGLE_DATA_TRANSFER);
   cr_assert_eq(result.instr.single_data_transfer.add_offset_before_transfer, true);
-  cr_assert_eq(result.instr.single_data_transfer.add_offset_to_base, true);
+  cr_assert_eq(result.instr.single_data_transfer.add_offset, true);
   cr_assert_eq(result.instr.single_data_transfer.transfer_byte, false);
   cr_assert_eq(result.instr.single_data_transfer.write_back_address, false);
   cr_assert_eq(result.instr.single_data_transfer.load, false);
 
-  // The above instruction is assembled as the instr word followed by the value, so it loads
-  // the value at offset 4 from PC (i.e. the word after the instruction we are decoding)
   cr_assert_eq(result.instr.single_data_transfer.base, REG_R1);
   cr_assert_eq(result.instr.single_data_transfer.source_dest, REG_R0);
   cr_assert_eq(result.instr.single_data_transfer.offset.is_immediate, true);
   cr_assert_eq(result.instr.single_data_transfer.offset.op.imm.value, 0x0);
 }
 
-Test(decoder, can_decode_an_str_with_immediate_offet) {
+Test(decoder, can_decode_an_str_with_immediate_offet_post) {
   __arm_instruction result;
   arm_decode_instruction(&result, 0xE4810038); // STR R0,[R1],#0x38
   cr_assert_eq(result.type, INSTR_SINGLE_DATA_TRANSFER);
   cr_assert_eq(result.instr.single_data_transfer.add_offset_before_transfer, false);
-  cr_assert_eq(result.instr.single_data_transfer.add_offset_to_base, true);
+  cr_assert_eq(result.instr.single_data_transfer.add_offset, true);
   cr_assert_eq(result.instr.single_data_transfer.transfer_byte, false);
-  cr_assert_eq(result.instr.single_data_transfer.write_back_address, false);
+  cr_assert_eq(result.instr.single_data_transfer.write_back_address, true);
   cr_assert_eq(result.instr.single_data_transfer.load, false);
 
-  // The above instruction is assembled as the instr word followed by the value, so it loads
-  // the value at offset 4 from PC (i.e. the word after the instruction we are decoding)
   cr_assert_eq(result.instr.single_data_transfer.base, REG_R1);
   cr_assert_eq(result.instr.single_data_transfer.source_dest, REG_R0);
   cr_assert_eq(result.instr.single_data_transfer.offset.is_immediate, true);
   cr_assert_eq(result.instr.single_data_transfer.offset.op.imm.value, 0x38);
 }
 
-Test(decoder, can_decode_an_str_with_register_offet) {
+Test(decoder, can_decode_an_str_with_immediate_offet_pre_no_writeback) {
   __arm_instruction result;
-  arm_decode_instruction(&result, 0xE6810003); // STR R0,[R1],R3
+  arm_decode_instruction(&result, 0xE5810038); // STR R0,[R1,#0x38]
   cr_assert_eq(result.type, INSTR_SINGLE_DATA_TRANSFER);
   cr_assert_eq(result.instr.single_data_transfer.add_offset_before_transfer, true);
-  cr_assert_eq(result.instr.single_data_transfer.add_offset_to_base, true);
+  cr_assert_eq(result.instr.single_data_transfer.add_offset, true);
   cr_assert_eq(result.instr.single_data_transfer.transfer_byte, false);
   cr_assert_eq(result.instr.single_data_transfer.write_back_address, false);
   cr_assert_eq(result.instr.single_data_transfer.load, false);
 
-  // The above instruction is assembled as the instr word followed by the value, so it loads
-  // the value at offset 4 from PC (i.e. the word after the instruction we are decoding)
+  cr_assert_eq(result.instr.single_data_transfer.base, REG_R1);
+  cr_assert_eq(result.instr.single_data_transfer.source_dest, REG_R0);
+  cr_assert_eq(result.instr.single_data_transfer.offset.is_immediate, true);
+  cr_assert_eq(result.instr.single_data_transfer.offset.op.imm.value, 0x38);
+}
+
+Test(decoder, can_decode_an_str_with_immediate_offet_pre_with_writeback) {
+  __arm_instruction result;
+  arm_decode_instruction(&result, 0xE5A10038); // STR R0,[R1,#0x38]!
+  cr_assert_eq(result.type, INSTR_SINGLE_DATA_TRANSFER);
+  cr_assert_eq(result.instr.single_data_transfer.add_offset_before_transfer, true);
+  cr_assert_eq(result.instr.single_data_transfer.add_offset, true);
+  cr_assert_eq(result.instr.single_data_transfer.transfer_byte, false);
+  cr_assert_eq(result.instr.single_data_transfer.write_back_address, true);
+  cr_assert_eq(result.instr.single_data_transfer.load, false);
+
+  cr_assert_eq(result.instr.single_data_transfer.base, REG_R1);
+  cr_assert_eq(result.instr.single_data_transfer.source_dest, REG_R0);
+  cr_assert_eq(result.instr.single_data_transfer.offset.is_immediate, true);
+  cr_assert_eq(result.instr.single_data_transfer.offset.op.imm.value, 0x38);
+}
+
+Test(decoder, can_decode_an_str_with_register_offet_post) {
+  __arm_instruction result;
+  arm_decode_instruction(&result, 0xE6810003); // STR R0,[R1],R3
+  cr_assert_eq(result.type, INSTR_SINGLE_DATA_TRANSFER);
+  cr_assert_eq(result.instr.single_data_transfer.add_offset_before_transfer, false);
+  cr_assert_eq(result.instr.single_data_transfer.add_offset, true);
+  cr_assert_eq(result.instr.single_data_transfer.transfer_byte, false);
+  cr_assert_eq(result.instr.single_data_transfer.write_back_address, true);
+  cr_assert_eq(result.instr.single_data_transfer.load, false);
+
   cr_assert_eq(result.instr.single_data_transfer.base, REG_R1);
   cr_assert_eq(result.instr.single_data_transfer.source_dest, REG_R0);
   cr_assert_eq(result.instr.single_data_transfer.offset.is_immediate, false);
