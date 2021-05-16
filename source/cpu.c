@@ -63,7 +63,6 @@ int arm_clock(__arm_cpu* cpu) {
   // fetch
   uint32_t pc = *cpu->regs[mode].regs[REG_PC];
   uint32_t instruction = _fetch_word(cpu, pc);
-  *cpu->regs[mode].regs[REG_PC] += 4;
   
   // decode
   // TODO - thumb
@@ -76,6 +75,8 @@ int arm_clock(__arm_cpu* cpu) {
   if(arm_execute_instruction(cpu, &decoded) < 0) {
     return -2;
   }
+
+  *cpu->regs[mode].regs[REG_PC] += 4;
 
   return 0;
 }

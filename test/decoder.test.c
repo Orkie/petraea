@@ -21,7 +21,8 @@ Test(decoder, can_decode_a_data_processing_instr) {
   __arm_instruction result;
   arm_decode_instruction(&result, 0xE0430001); // SUB R0,R3,R1
   cr_assert_eq(result.type, INSTR_DATA_PROCESSING);
-  cr_assert_eq(result.instr.data_processing.opcode, OPERAND_SUB);
+  cr_assert_eq(result.instr.data_processing.opcode, OPCODE_SUB);
+  cr_assert_eq(result.instr.data_processing.dest, REG_R0);
   cr_assert_eq(result.instr.data_processing.set_condition_codes, false);
   cr_assert_eq(result.instr.data_processing.operand1, REG_R3);
 }
@@ -30,7 +31,8 @@ Test(decoder, can_decode_a_data_processing_instr_updating_condition_flags) {
   __arm_instruction result;
   arm_decode_instruction(&result, 0xE0530001); // SUBS R0,R3,R1
   cr_assert_eq(result.type, INSTR_DATA_PROCESSING);
-  cr_assert_eq(result.instr.data_processing.opcode, OPERAND_SUB);
+  cr_assert_eq(result.instr.data_processing.opcode, OPCODE_SUB);
+  cr_assert_eq(result.instr.data_processing.dest, REG_R0);
   cr_assert_eq(result.instr.data_processing.set_condition_codes, true);
   cr_assert_eq(result.instr.data_processing.operand1, REG_R3);
 }
@@ -39,7 +41,8 @@ Test(decoder, can_decode_a_data_processing_instr_with_operand2_immediate) {
   __arm_instruction result;
   arm_decode_instruction(&result, 0xE243002D); // SUB R0,R3,#45
   cr_assert_eq(result.type, INSTR_DATA_PROCESSING);
-  cr_assert_eq(result.instr.data_processing.opcode, OPERAND_SUB);
+  cr_assert_eq(result.instr.data_processing.opcode, OPCODE_SUB);
+  cr_assert_eq(result.instr.data_processing.dest, REG_R0);
   cr_assert_eq(result.instr.data_processing.operand1, REG_R3);
   cr_assert_eq(result.instr.data_processing.operand2.is_immediate, true);
   cr_assert_eq(result.instr.data_processing.operand2.op.imm.value, 45);
@@ -49,7 +52,8 @@ Test(decoder, can_decode_a_data_processing_instr_with_operand2_immediate_rotated
   __arm_instruction result;
   arm_decode_instruction(&result, 0xE24304FF); // SUB R0,R3,#0xFF000000
   cr_assert_eq(result.type, INSTR_DATA_PROCESSING);
-  cr_assert_eq(result.instr.data_processing.opcode, OPERAND_SUB);
+  cr_assert_eq(result.instr.data_processing.opcode, OPCODE_SUB);
+    cr_assert_eq(result.instr.data_processing.dest, REG_R0);
   cr_assert_eq(result.instr.data_processing.operand1, REG_R3);
   cr_assert_eq(result.instr.data_processing.operand2.is_immediate, true);
   cr_assert_eq(result.instr.data_processing.operand2.op.imm.value, 0xFF000000);
@@ -59,10 +63,42 @@ Test(decoder, can_decode_a_data_processing_instr_with_operand2_register) {
   __arm_instruction result;
   arm_decode_instruction(&result, 0xE0430004); // SUB R0,R3,R4
   cr_assert_eq(result.type, INSTR_DATA_PROCESSING);
-  cr_assert_eq(result.instr.data_processing.opcode, OPERAND_SUB);
+  cr_assert_eq(result.instr.data_processing.opcode, OPCODE_SUB);
+  cr_assert_eq(result.instr.data_processing.dest, REG_R0);
   cr_assert_eq(result.instr.data_processing.operand1, REG_R3);
   cr_assert_eq(result.instr.data_processing.operand2.is_immediate, false);
   cr_assert_eq(result.instr.data_processing.operand2.op.reg.reg, REG_R4);
+  cr_assert_eq(result.instr.data_processing.operand2.op.reg.is_register_shift, false);
+  cr_assert_eq(result.instr.data_processing.operand2.op.reg.shift_type, SHIFT_LOGICAL_LEFT);
+  cr_assert_eq(result.instr.data_processing.operand2.op.reg.shift_imm, 0);
+}
+
+Test(decoder, can_decode_a_data_processing_instr_with_operand2_reg_shifted_by_immediate) {
+  __arm_instruction result;
+  arm_decode_instruction(&result, 0xE04101A2); // SUB R0,R1,R2,LSR #3
+  cr_assert_eq(result.type, INSTR_DATA_PROCESSING);
+  cr_assert_eq(result.instr.data_processing.opcode, OPCODE_SUB);
+  cr_assert_eq(result.instr.data_processing.dest, REG_R0);
+  cr_assert_eq(result.instr.data_processing.operand1, REG_R1);
+  cr_assert_eq(result.instr.data_processing.operand2.is_immediate, false);
+  cr_assert_eq(result.instr.data_processing.operand2.op.reg.reg, REG_R2);
+  cr_assert_eq(result.instr.data_processing.operand2.op.reg.is_register_shift, false);
+  cr_assert_eq(result.instr.data_processing.operand2.op.reg.shift_type, SHIFT_LOGICAL_RIGHT);
+  cr_assert_eq(result.instr.data_processing.operand2.op.reg.shift_imm, 3);
+}
+
+Test(decoder, can_decode_a_data_processing_instr_with_operand2_reg_shifted_by_reg) {
+  __arm_instruction result;
+  arm_decode_instruction(&result, 0xE0410452); // SUB R0,R1,R2,ASR R4
+  cr_assert_eq(result.type, INSTR_DATA_PROCESSING);
+  cr_assert_eq(result.instr.data_processing.opcode, OPCODE_SUB);
+  cr_assert_eq(result.instr.data_processing.dest, REG_R0);
+  cr_assert_eq(result.instr.data_processing.operand1, REG_R1);
+  cr_assert_eq(result.instr.data_processing.operand2.is_immediate, false);
+  cr_assert_eq(result.instr.data_processing.operand2.op.reg.reg, REG_R2);
+  cr_assert_eq(result.instr.data_processing.operand2.op.reg.is_register_shift, true);
+  cr_assert_eq(result.instr.data_processing.operand2.op.reg.shift_type, SHIFT_ARITHMETIC_RIGHT);
+  cr_assert_eq(result.instr.data_processing.operand2.op.reg.shift_reg, REG_R4);
 }
 
 ///////////////////////////////////////////
@@ -161,7 +197,6 @@ Test(decoder, can_decode_an_ldr_with_register_offset_post) {
   cr_assert_eq(result.instr.single_data_transfer.base, REG_R1);
   cr_assert_eq(result.instr.single_data_transfer.source_dest, REG_R0);
   cr_assert_eq(result.instr.single_data_transfer.offset.op.reg.reg, REG_R2);
-  cr_assert_eq(result.instr.single_data_transfer.offset.op.reg.shift, 0);
 }
 
 Test(decoder, can_decode_an_str_with_no_offet) {
@@ -247,7 +282,6 @@ Test(decoder, can_decode_an_str_with_register_offet_post) {
   cr_assert_eq(result.instr.single_data_transfer.source_dest, REG_R0);
   cr_assert_eq(result.instr.single_data_transfer.offset.is_immediate, false);
   cr_assert_eq(result.instr.single_data_transfer.offset.op.reg.reg, REG_R3);
-  cr_assert_eq(result.instr.single_data_transfer.offset.op.reg.shift, 0);
 }
 
 ///////////////////////////////////////////

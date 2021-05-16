@@ -24,21 +24,21 @@ typedef enum {
 } __arm_condition;
 
 typedef enum {
-  OPERAND_AND = 0b0000,
-  OPERAND_SUB = 0b0010,
-  OPERAND_RSB = 0b0011,
-  OPERAND_ADD = 0b0100,
-  OPERAND_ADC = 0b0101,
-  OPERAND_SBC = 0b0110,
-  OPERAND_RSC = 0b0111,
-  OPERAND_TST = 0b1000,
-  OPERAND_TEQ = 0b1001,
-  OPERAND_CMP = 0b1010,
-  OPERAND_CMN = 0b1011,
-  OPERAND_ORR = 0b1100,
-  OPERAND_MOV = 0b1101,
-  OPERAND_BIC = 0b1110,
-  OPERAND_MVN = 0b1111
+  OPCODE_AND = 0b0000,
+  OPCODE_SUB = 0b0010,
+  OPCODE_RSB = 0b0011,
+  OPCODE_ADD = 0b0100,
+  OPCODE_ADC = 0b0101,
+  OPCODE_SBC = 0b0110,
+  OPCODE_RSC = 0b0111,
+  OPCODE_TST = 0b1000,
+  OPCODE_TEQ = 0b1001,
+  OPCODE_CMP = 0b1010,
+  OPCODE_CMN = 0b1011,
+  OPCODE_ORR = 0b1100,
+  OPCODE_MOV = 0b1101,
+  OPCODE_BIC = 0b1110,
+  OPCODE_MVN = 0b1111
 } __arm_opcode;
 
 typedef enum {
@@ -59,9 +59,19 @@ typedef struct {
   uint32_t value;
 } __arm_immediate_operand;
 
+typedef enum {
+  SHIFT_LOGICAL_LEFT = 0b00,
+  SHIFT_LOGICAL_RIGHT = 0b01,
+  SHIFT_ARITHMETIC_RIGHT = 0b10,
+  SHIFT_ROTATE_RIGHT = 0b11
+} __arm_shift_type;
+
 typedef struct {
   __arm_register reg;
-  uint8_t shift;
+  bool is_register_shift;
+  __arm_shift_type shift_type;
+  uint8_t shift_imm;
+  __arm_register shift_reg;
 } __arm_register_operand;
 
 typedef struct {
@@ -134,6 +144,7 @@ typedef struct {
 
 extern int arm_decode_instruction(__arm_instruction* dest, uint32_t i);
 extern int arm_execute_instruction(__arm_cpu* cpu, __arm_instruction* instr);
+extern uint32_t eval_operand2(__arm_cpu* cpu, __arm_operand2* operand2);
 
 #endif
 

@@ -15,7 +15,16 @@ static void arm_decode_operand2_immVal(__arm_operand2* dest, uint16_t op) {
 static void arm_decode_operand2_reg(__arm_operand2* dest, uint16_t op) {
   dest->is_immediate = false;
   dest->op.reg.reg = op & 0b1111;
-  dest->op.reg.shift = op >> 4;
+  uint8_t shift = (op >> 4)&0xFF;
+  dest->op.reg.is_register_shift = shift&0x1;
+  dest->op.reg.shift_type = (shift >> 1) & 0b11;
+  if(shift&0x1) {
+    // register shift
+    dest->op.reg.shift_reg = (shift >> 4) & 0b1111;
+  } else {
+    //immediate shift
+    dest->op.reg.shift_imm = (shift >> 3) & 0b11111;
+  }
 }
 
 static bool instr_is_data_processing(uint32_t i) {
