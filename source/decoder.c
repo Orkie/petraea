@@ -53,7 +53,7 @@ static void decode_single_data_transfer(__arm_instr_single_data_transfer* dest, 
 
   if(w == true) {
     if(p == false) {
-      dest->unprivileged = false;
+      dest->unprivileged = true;
     } else {
       dest->write_back_address = true;
     }
