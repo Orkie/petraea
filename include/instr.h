@@ -45,6 +45,10 @@ typedef enum {
   INSTR_DATA_PROCESSING,
   INSTR_MULTIPLY,
   INSTR_MULTIPLY_LONG,
+  INSTR_SINGLE_DATA_SWAP,
+  INSTR_BRANCH_EXCHANGE,
+  INSTR_HALFWORD_DATA_TRANSFER_REG_OFFSET,
+  INSTR_HALFWORD_DATA_TRANSFER_IMM_OFFSET,
   INSTR_SINGLE_DATA_TRANSFER,
   INSTR_UNDEFINED,
   INSTR_NOT_YET_SUPPORTED
@@ -97,10 +101,19 @@ typedef struct {
 } __arm_instr_single_data_transfer;
 
 ///////////////////////////////////////////
+// Branch exchange
+///////////////////////////////////////////
+
+typedef struct {
+  __arm_register operand;
+} __arm_instr_branch_exchange;
+
+///////////////////////////////////////////
 
 typedef union {
   __arm_instr_data_processing data_processing;
   __arm_instr_single_data_transfer single_data_transfer;
+  __arm_instr_branch_exchange branch_exchange;
 } __arm_instructions;
 
 typedef struct {

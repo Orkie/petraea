@@ -75,10 +75,17 @@ static bool instr_is_undefined(uint32_t i) {
   return ((i&0x0E000000) == 0x06000000) && ((i&0x10) == 0x10);
 }
 
+static bool instr_is_branch_exchange(uint32_t i) {
+  return (i&0x0FFFFFF0) == 0x12FFF10;
+}
+
 void arm_decode_instruction(__arm_instruction* dest, uint32_t i) {
   const unsigned int cond = (i&0xF0000000) >> 28;
 
-  if(instr_is_data_processing(i)) {
+  if(instr_is_branch_exchange(i)) {
+    dest->type = INSTR_BRANCH_EXCHANGE;
+    dest->instr.branch_exchange.operand = i&0xF;
+  } else if(instr_is_data_processing(i)) {
     dest->type = INSTR_DATA_PROCESSING;
     decode_data_processing(&dest->instr.data_processing, i);
   } else if(instr_is_single_data_transfer(i)) {

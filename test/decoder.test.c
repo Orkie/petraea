@@ -250,3 +250,14 @@ Test(decoder, can_decode_an_str_with_register_offet_post) {
   cr_assert_eq(result.instr.single_data_transfer.offset.op.reg.shift, 0);
 }
 
+///////////////////////////////////////////
+// Branch and exchange
+///////////////////////////////////////////
+
+Test(decoder, can_decode_bx) {
+  __arm_instruction result;
+  arm_decode_instruction(&result, 0xE12FFF14); // BX R4
+  cr_assert_eq(result.type, INSTR_BRANCH_EXCHANGE);
+  cr_assert_eq(result.instr.branch_exchange.operand, REG_R4);
+}
+
