@@ -51,6 +51,7 @@ typedef enum {
   INSTR_HALFWORD_DATA_TRANSFER_IMM_OFFSET,
   INSTR_SINGLE_DATA_TRANSFER,
   INSTR_UNDEFINED,
+  INSTR_BRANCH,
   INSTR_NOT_YET_SUPPORTED
   // TODO - the rest
 } __arm_instruction_type;
@@ -109,11 +110,21 @@ typedef struct {
 } __arm_instr_branch_exchange;
 
 ///////////////////////////////////////////
+// Branch exchange
+///////////////////////////////////////////
+
+typedef struct {
+  bool link;
+  int32_t offset;
+} __arm_instr_branch;
+
+///////////////////////////////////////////
 
 typedef union {
   __arm_instr_data_processing data_processing;
   __arm_instr_single_data_transfer single_data_transfer;
   __arm_instr_branch_exchange branch_exchange;
+  __arm_instr_branch branch;
 } __arm_instructions;
 
 typedef struct {

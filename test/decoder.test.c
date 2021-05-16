@@ -261,3 +261,31 @@ Test(decoder, can_decode_bx) {
   cr_assert_eq(result.instr.branch_exchange.operand, REG_R4);
 }
 
+///////////////////////////////////////////
+// Branch
+///////////////////////////////////////////
+
+Test(decoder, can_decode_b) {
+  __arm_instruction result;
+  arm_decode_instruction(&result, 0xEA048D14); // B #0x123458
+  cr_assert_eq(result.type, INSTR_BRANCH);
+  cr_assert_eq(result.instr.branch.link, false);
+  cr_assert_eq(result.instr.branch.offset, 0x123458);
+}
+
+Test(decoder, can_decode_b_with_negative_offset) {
+  __arm_instruction result;
+  arm_decode_instruction(&result, 0xEAFFFFFD); // B #-4
+  cr_assert_eq(result.type, INSTR_BRANCH);
+  cr_assert_eq(result.instr.branch.link, false);
+  cr_assert_eq(result.instr.branch.offset, -4);
+}
+
+Test(decoder, can_decode_bl) {
+  __arm_instruction result;
+  arm_decode_instruction(&result, 0xEB00047E); // BL #0x1200
+  cr_assert_eq(result.type, INSTR_BRANCH);
+  cr_assert_eq(result.instr.branch.link, true);
+  cr_assert_eq(result.instr.branch.offset, 0x1200);
+}
+

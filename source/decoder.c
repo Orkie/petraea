@@ -79,12 +79,31 @@ static bool instr_is_branch_exchange(uint32_t i) {
   return (i&0x0FFFFFF0) == 0x12FFF10;
 }
 
+static bool instr_is_branch(uint32_t i) {
+  return (i&0x0E000000) == 0x0A000000;
+}
+
+static void decode_branch(__arm_instr_branch* dest, uint32_t i) {
+  dest->link = (i&0x01000000) == 0x01000000;
+  uint32_t offsetRaw = (i&0x00FFFFFF);
+  if(offsetRaw&0x00800000) {
+    // negative
+    dest->offset = (((i&0x00FFFFFF) << 2) | 0xFC000000)+8;
+  } else {
+    // positive
+    dest->offset = ((i&0x00FFFFFF) << 2)+8;
+  }
+}
+
 void arm_decode_instruction(__arm_instruction* dest, uint32_t i) {
   const unsigned int cond = (i&0xF0000000) >> 28;
 
   if(instr_is_branch_exchange(i)) {
     dest->type = INSTR_BRANCH_EXCHANGE;
     dest->instr.branch_exchange.operand = i&0xF;
+  } else if(instr_is_branch(i)) {
+    dest->type = INSTR_BRANCH;
+    decode_branch(&dest->instr.branch, i);
   } else if(instr_is_data_processing(i)) {
     dest->type = INSTR_DATA_PROCESSING;
     decode_data_processing(&dest->instr.data_processing, i);
