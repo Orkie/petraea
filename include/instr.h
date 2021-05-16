@@ -52,7 +52,6 @@ typedef enum {
   INSTR_SINGLE_DATA_TRANSFER,
   INSTR_UNDEFINED,
   INSTR_BRANCH,
-  INSTR_NOT_YET_SUPPORTED
   // TODO - the rest
 } __arm_instruction_type;
 
@@ -133,7 +132,8 @@ typedef struct {
   __arm_instructions instr;
 } __arm_instruction;
 
-extern void arm_decode_instruction(__arm_instruction* dest, uint32_t i);
+extern int arm_decode_instruction(__arm_instruction* dest, uint32_t i);
+extern int arm_execute_instruction(__arm_cpu* cpu, __arm_instruction* instr);
 
 #endif
 

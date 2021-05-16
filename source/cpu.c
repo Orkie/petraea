@@ -1,9 +1,22 @@
 #include "cpu.h"
+#include "instr.h"
 
 static void _init_regs(__arm_cpu* cpu);
+static uint8_t _fetch_byte(__arm_cpu* cpu, uint32_t address);
+static uint16_t _fetch_halfword(__arm_cpu* cpu, uint32_t address);
+static uint32_t _fetch_word(__arm_cpu* cpu, uint32_t address);
 
-int arm_init_cpu(__arm_cpu* cpu) {
+int arm_init_cpu(__arm_cpu* cpu,
+		 uint32_t (*bus_fetch_word)(uint32_t),
+		 uint16_t (*bus_fetch_halfword)(uint32_t),
+		 uint8_t (*bus_fetch_byte)(uint32_t)) {
   _init_regs(cpu);
+  cpu->bus_fetch_word = bus_fetch_word;
+  cpu->bus_fetch_halfword = bus_fetch_halfword;
+  cpu->bus_fetch_byte = bus_fetch_byte;
+  cpu->fetch_word = _fetch_word;
+  cpu->fetch_halfword = _fetch_halfword;
+  cpu->fetch_byte = _fetch_byte;
   return 0;
 }
 
@@ -20,7 +33,92 @@ __arm_mode arm_current_mode(__arm_cpu* cpu) {
   return 7; // unknown mode - maybe we should log this somehow rather than just causing a segfault?
 }
 
+bool arm_is_little_endian(__arm_cpu* cpu) {
+  return ((cpu->cpsr >> 9)&0x1) == 0x0;
+}
+
+// TODO - implement MMU/PU here
+static uint8_t _fetch_byte(__arm_cpu* cpu, uint32_t address) {
+  return 0;
+}
+
+static uint16_t _fetch_halfword(__arm_cpu* cpu, uint32_t address) {
+  return 0;
+}
+
+static uint32_t _fetch_word(__arm_cpu* cpu, uint32_t address) {
+  const uint32_t value = (*cpu->bus_fetch_word)(address);
+  // TODO - handle endianess, and MMU, PU
+  return value;
+}
+
+__arm_registers* arm_get_regs(__arm_cpu* cpu) {
+  __arm_mode mode = arm_current_mode(cpu);
+  return &cpu->regs[mode];
+}
+
+int arm_clock(__arm_cpu* cpu) {
+  __arm_mode mode = arm_current_mode(cpu);
+  
+  // fetch
+  uint32_t pc = *cpu->regs[mode].regs[REG_PC];
+  uint32_t instruction = _fetch_word(cpu, pc);
+  *cpu->regs[mode].regs[REG_PC] += 4;
+  
+  // decode
+  // TODO - thumb
+  __arm_instruction decoded;
+  if(arm_decode_instruction(&decoded, instruction) < 0) {
+    return -1;
+  }
+  
+  // execute
+  if(arm_execute_instruction(cpu, &decoded) < 0) {
+    return -2;
+  }
+
+  return 0;
+}
+
 static void _init_regs(__arm_cpu* cpu) {
+  cpu->r0 = 0;
+  cpu->r1 = 0;
+  cpu->r2 = 0;
+  cpu->r3 = 0;
+  cpu->r4 = 0;
+  cpu->r5 = 0;
+  cpu->r6 = 0;
+  cpu->r7 = 0;
+  cpu->r8 = 0;
+  cpu->r9 = 0;
+  cpu->r10 = 0;
+  cpu->r11 = 0;
+  cpu->r12 = 0;
+  cpu->r13 = 0;
+  cpu->r14 = 0;
+  cpu->r15 = 0;
+  cpu->r8_fiq = 0;
+  cpu->r9_fiq = 0;
+  cpu->r10_fiq = 0;
+  cpu->r11_fiq = 0;
+  cpu->r12_fiq = 0;
+  cpu->r13_svc = 0;
+  cpu->r13_abt = 0;
+  cpu->r13_und = 0;
+  cpu->r13_irq = 0;
+  cpu->r13_fiq = 0;
+  cpu->r14_svc = 0;
+  cpu->r14_abt = 0;
+  cpu->r14_und = 0;
+  cpu->r14_irq = 0;
+  cpu->r14_fiq = 0;
+  cpu->cpsr = 0;
+  cpu->spsr_svc = 0;
+  cpu->spsr_abt = 0;
+  cpu->spsr_und = 0;
+  cpu->spsr_irq = 0;
+  cpu->spsr_fiq = 0;
+  
   cpu->regs[MODE_USER].regs[0] = &cpu->r0;
   cpu->regs[MODE_USER].regs[1] = &cpu->r1;
   cpu->regs[MODE_USER].regs[2] = &cpu->r2;

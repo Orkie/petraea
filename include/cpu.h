@@ -2,6 +2,7 @@
 #define __CPU_H__
 
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef enum {
   REG_R0 = 0,
@@ -26,7 +27,7 @@ typedef enum {
 } __arm_register;
 
 typedef struct {
-  uint32_t** regs;
+  uint32_t* regs[16];
   uint32_t* spsr;
   uint32_t* cpsr;
 } __arm_registers;
@@ -41,7 +42,9 @@ typedef enum {
   MODE_FIQ
 } __arm_mode;
 
-typedef struct {
+struct __arm_cpu_struct;
+typedef struct __arm_cpu_struct __arm_cpu;
+struct __arm_cpu_struct {
   uint32_t r0;
   uint32_t r1;
   uint32_t r2;
@@ -57,7 +60,7 @@ typedef struct {
   uint32_t r12;
   uint32_t r13;
   uint32_t r14;
-  uint32_t r15;
+  uint32_t r15; 
 
   uint32_t r8_fiq;
   uint32_t r9_fiq;
@@ -85,7 +88,22 @@ typedef struct {
   uint32_t spsr_fiq;
 
   __arm_registers regs[7];
-  // TODO - put here flags, registers, mode, memory access function (deals with MMU, big/little endian) etc.
-} __arm_cpu;
+
+  uint32_t (*bus_fetch_word)(uint32_t);
+  uint16_t (*bus_fetch_halfword)(uint32_t);
+  uint8_t (*bus_fetch_byte)(uint32_t);
+
+  uint32_t (*fetch_word)(__arm_cpu*, uint32_t);
+  uint16_t (*fetch_halfword)(__arm_cpu*, uint32_t);
+  uint8_t (*fetch_byte)(__arm_cpu*, uint32_t);
+};
+
+extern int arm_init_cpu(__arm_cpu* cpu,
+			uint32_t (*bus_fetch_word)(uint32_t),
+			uint16_t (*bus_fetch_halfword)(uint32_t),
+			uint8_t (*bus_fetch_byte)(uint32_t));
+extern __arm_mode arm_current_mode(__arm_cpu* cpu);
+extern int arm_clock(__arm_cpu* cpu);
+extern __arm_registers* arm_get_regs(__arm_cpu* cpu);
 
 #endif

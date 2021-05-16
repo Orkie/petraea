@@ -95,7 +95,7 @@ static void decode_branch(__arm_instr_branch* dest, uint32_t i) {
   }
 }
 
-void arm_decode_instruction(__arm_instruction* dest, uint32_t i) {
+int arm_decode_instruction(__arm_instruction* dest, uint32_t i) {
   const unsigned int cond = (i&0xF0000000) >> 28;
 
   if(instr_is_branch_exchange(i)) {
@@ -113,9 +113,10 @@ void arm_decode_instruction(__arm_instruction* dest, uint32_t i) {
   } else if(instr_is_undefined(i)) {
     dest->type = INSTR_UNDEFINED;
   } else {
-    dest->type = INSTR_NOT_YET_SUPPORTED;
+    return -1;
   }
 
   dest->cond = cond;
+  return 0;
 }
 
