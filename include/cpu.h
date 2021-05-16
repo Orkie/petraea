@@ -1,6 +1,8 @@
 #ifndef __CPU_H__
 #define __CPU_H__
 
+#include <stdint.h>
+
 typedef enum {
   REG_R0 = 0,
   REG_R1 = 1,
@@ -24,6 +26,65 @@ typedef enum {
 } __arm_register;
 
 typedef struct {
+  uint32_t** regs;
+  uint32_t* spsr;
+  uint32_t* cpsr;
+} __arm_registers;
+
+typedef enum {
+  MODE_USER,
+  MODE_SYSTEM,
+  MODE_SVC,
+  MODE_ABT,
+  MODE_UND,
+  MODE_IRQ,
+  MODE_FIQ
+} __arm_mode;
+
+typedef struct {
+  uint32_t r0;
+  uint32_t r1;
+  uint32_t r2;
+  uint32_t r3;
+  uint32_t r4;
+  uint32_t r5;
+  uint32_t r6;
+  uint32_t r7;
+  uint32_t r8;
+  uint32_t r9;
+  uint32_t r10;
+  uint32_t r11;
+  uint32_t r12;
+  uint32_t r13;
+  uint32_t r14;
+  uint32_t r15;
+
+  uint32_t r8_fiq;
+  uint32_t r9_fiq;
+  uint32_t r10_fiq;
+  uint32_t r11_fiq;
+  uint32_t r12_fiq;
+
+  uint32_t r13_svc;
+  uint32_t r13_abt;
+  uint32_t r13_und;
+  uint32_t r13_irq;
+  uint32_t r13_fiq;
+
+  uint32_t r14_svc;
+  uint32_t r14_abt;
+  uint32_t r14_und;
+  uint32_t r14_irq;
+  uint32_t r14_fiq;
+  
+  uint32_t cpsr;
+  uint32_t spsr_svc;
+  uint32_t spsr_abt;
+  uint32_t spsr_und;
+  uint32_t spsr_irq;
+  uint32_t spsr_fiq;
+
+  __arm_registers regs[7];
   // TODO - put here flags, registers, mode, memory access function (deals with MMU, big/little endian) etc.
 } __arm_cpu;
 
