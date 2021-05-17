@@ -83,8 +83,23 @@ uint32_t eval_operand2(__arm_cpu* cpu, __arm_operand2* operand2, bool* carryVali
 	*carryValid = true;
 	*carry = (lower>>31)&0x1;
 	shiftedValue = upper;
-
       }
+      break;
+    case SHIFT_ARITHMETIC_RIGHT:
+      if(shiftBy == 0  && !operand2->op.reg.is_register_shift) {
+	*carryValid = true;
+	*carry = (shiftedValue>>31)&0x1;
+	shiftedValue = (*carry) ? 0xFFFFFFFF : 0x0;
+      } else {
+	bool top = (shiftedValue>>31)&0x1;
+	uint32_t extraBits = top ? (0xFFFFFFFF << (32 - shiftBy)) : 0x0;
+	uint64_t s = (((uint64_t)shiftedValue)<<32) >> shiftBy;
+	uint32_t lower = s&0xFFFFFFFF;
+	uint32_t upper = s>>32;
+	*carryValid = true;
+	*carry = (lower>>31)&0x1;
+	shiftedValue = (upper | extraBits);
+      }      
       break;
     }
     
