@@ -46,6 +46,7 @@ uint32_t eval_operand2(__arm_cpu* cpu, __arm_operand2* operand2, bool* carryVali
   if(operand2->is_immediate) {
     *carry = false;
     *carryValid = true;
+    // rotation is handled in the decoder
     return operand2->op.imm.value;
   } else {
     __arm_registers* regs = arm_get_regs(cpu);
@@ -69,6 +70,22 @@ uint32_t eval_operand2(__arm_cpu* cpu, __arm_operand2* operand2, bool* carryVali
 	*carry = upper&0x1;
 	shiftedValue = lower;
       }
+      break;
+    case SHIFT_LOGICAL_RIGHT:
+      if(shiftBy == 0  && !operand2->op.reg.is_register_shift) {
+	*carryValid = true;
+	*carry = (shiftedValue>>31)&0x1;
+	shiftedValue = 0;
+      } else {
+	uint64_t s = (((uint64_t)shiftedValue)<<32) >> shiftBy;
+	uint32_t lower = s&0xFFFFFFFF;
+	uint32_t upper = s>>32;
+	*carryValid = true;
+	*carry = (lower>>31)&0x1;
+	shiftedValue = upper;
+
+      }
+      break;
     }
     
     return shiftedValue;
