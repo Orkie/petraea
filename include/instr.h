@@ -144,7 +144,7 @@ typedef struct {
 
 extern int arm_decode_instruction(__arm_instruction* dest, uint32_t i);
 extern int arm_execute_instruction(__arm_cpu* cpu, __arm_instruction* instr);
-extern uint32_t eval_operand2(__arm_cpu* cpu, __arm_operand2* operand2);
+extern uint32_t eval_operand2(__arm_cpu* cpu, __arm_operand2* operand2, bool* carryValid, bool* carry);
 
 #endif
 
