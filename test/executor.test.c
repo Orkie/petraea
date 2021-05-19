@@ -536,4 +536,173 @@ Test(executor_branch, can_execute_bl_with_positive_offset) {
   cr_assert_eq(cpu.r15, 0x24+8);
 }
 
+///////////////////////////////////////////
+// AND
+///////////////////////////////////////////
+
+Test(executor_branch, can_execute_and_nc_nz_nn) {
+  __arm_cpu cpu;
+  arm_init_cpu(&cpu, NULL, NULL, NULL);
+  cpu.r1 = 0x3;
+  cpu.r2 = 0x1;
+  __arm_instruction instr;
+  instr.type = INSTR_DATA_PROCESSING;
+  instr.cond = COND_AL;
+  instr.instr.data_processing.opcode = OPCODE_AND;
+  instr.instr.data_processing.set_condition_codes = true;
+  instr.instr.data_processing.operand1 = REG_R1;
+  instr.instr.data_processing.operand2.is_immediate = false;
+  instr.instr.data_processing.operand2.op.reg.reg = REG_R2;
+  instr.instr.data_processing.operand2.op.reg.is_register_shift = false;
+  instr.instr.data_processing.operand2.op.reg.shift_type = SHIFT_LOGICAL_LEFT;
+  instr.instr.data_processing.operand2.op.reg.shift_imm = 0;
+  instr.instr.data_processing.dest = REG_R0;
+  
+  arm_execute_instruction(&cpu, &instr);
+
+  __arm_cpu* cpuptr = &cpu;
+  cr_assert_eq(cpu.r0, 1);
+  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
+  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
+  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+}
+
+Test(executor_branch, can_execute_and_nc_z_nn) {
+  __arm_cpu cpu;
+  arm_init_cpu(&cpu, NULL, NULL, NULL);
+  cpu.r1 = 0x30;
+  cpu.r2 = 0x1;
+  __arm_instruction instr;
+  instr.type = INSTR_DATA_PROCESSING;
+  instr.cond = COND_AL;
+  instr.instr.data_processing.opcode = OPCODE_AND;
+  instr.instr.data_processing.set_condition_codes = true;
+  instr.instr.data_processing.operand1 = REG_R1;
+  instr.instr.data_processing.operand2.is_immediate = false;
+  instr.instr.data_processing.operand2.op.reg.reg = REG_R2;
+  instr.instr.data_processing.operand2.op.reg.is_register_shift = false;
+  instr.instr.data_processing.operand2.op.reg.shift_type = SHIFT_LOGICAL_LEFT;
+  instr.instr.data_processing.operand2.op.reg.shift_imm = 0;
+  instr.instr.data_processing.dest = REG_R0;
+  
+  arm_execute_instruction(&cpu, &instr);
+
+  __arm_cpu* cpuptr = &cpu;
+  cr_assert_eq(cpu.r0, 0);
+  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
+  cr_assert_eq(GET_ZERO_FLAG(cpuptr), true);
+  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+}
+
+Test(executor_branch, can_execute_and_nc_nz_n) {
+  __arm_cpu cpu;
+  arm_init_cpu(&cpu, NULL, NULL, NULL);
+  cpu.r1 = 0xFFFFFFFF;
+  cpu.r2 = 0x80000000;
+  __arm_instruction instr;
+  instr.type = INSTR_DATA_PROCESSING;
+  instr.cond = COND_AL;
+  instr.instr.data_processing.opcode = OPCODE_AND;
+  instr.instr.data_processing.set_condition_codes = true;
+  instr.instr.data_processing.operand1 = REG_R1;
+  instr.instr.data_processing.operand2.is_immediate = false;
+  instr.instr.data_processing.operand2.op.reg.reg = REG_R2;
+  instr.instr.data_processing.operand2.op.reg.is_register_shift = false;
+  instr.instr.data_processing.operand2.op.reg.shift_type = SHIFT_LOGICAL_LEFT;
+  instr.instr.data_processing.operand2.op.reg.shift_imm = 0;
+  instr.instr.data_processing.dest = REG_R0;
+  
+  arm_execute_instruction(&cpu, &instr);
+
+  __arm_cpu* cpuptr = &cpu;
+  cr_assert_eq(cpu.r0, 0x80000000);
+  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), true);
+  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
+  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+}
+
+Test(executor_branch, can_execute_and_c_nz_nn) {
+  __arm_cpu cpu;
+  arm_init_cpu(&cpu, NULL, NULL, NULL);
+  cpu.r1 = 0x7FFFFFFF;
+  cpu.r2 = 0xFFFFFFFF;
+  __arm_instruction instr;
+  instr.type = INSTR_DATA_PROCESSING;
+  instr.cond = COND_AL;
+  instr.instr.data_processing.opcode = OPCODE_AND;
+  instr.instr.data_processing.set_condition_codes = true;
+  instr.instr.data_processing.operand1 = REG_R1;
+  instr.instr.data_processing.operand2.is_immediate = false;
+  instr.instr.data_processing.operand2.op.reg.reg = REG_R2;
+  instr.instr.data_processing.operand2.op.reg.is_register_shift = false;
+  instr.instr.data_processing.operand2.op.reg.shift_type = SHIFT_LOGICAL_LEFT;
+  instr.instr.data_processing.operand2.op.reg.shift_imm = 1;
+  instr.instr.data_processing.dest = REG_R0;
+  
+  arm_execute_instruction(&cpu, &instr);
+
+  __arm_cpu* cpuptr = &cpu;
+  cr_assert_eq(cpu.r0, 0x7FFFFFFE);
+  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
+  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
+  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
+}
+
+Test(executor_branch, can_execute_and_ns) {
+  __arm_cpu cpu;
+  arm_init_cpu(&cpu, NULL, NULL, NULL);
+  cpu.r1 = 0x30;
+  cpu.r2 = 0x1;
+  __arm_instruction instr;
+  instr.type = INSTR_DATA_PROCESSING;
+  instr.cond = COND_AL;
+  instr.instr.data_processing.opcode = OPCODE_AND;
+  instr.instr.data_processing.set_condition_codes = false;
+  instr.instr.data_processing.operand1 = REG_R1;
+  instr.instr.data_processing.operand2.is_immediate = false;
+  instr.instr.data_processing.operand2.op.reg.reg = REG_R2;
+  instr.instr.data_processing.operand2.op.reg.is_register_shift = false;
+  instr.instr.data_processing.operand2.op.reg.shift_type = SHIFT_LOGICAL_LEFT;
+  instr.instr.data_processing.operand2.op.reg.shift_imm = 0;
+  instr.instr.data_processing.dest = REG_R0;
+  
+  arm_execute_instruction(&cpu, &instr);
+
+  __arm_cpu* cpuptr = &cpu;
+  cr_assert_eq(cpu.r0, 0);
+  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
+  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
+  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+}
+
+Test(executor_branch, can_execute_and_r15_dest) {
+  __arm_cpu cpu;
+  __arm_cpu* cpuptr = &cpu;
+  arm_init_cpu(&cpu, NULL, NULL, NULL);
+  arm_set_mode(&cpu, MODE_FIQ);
+  cpu.r1 = 0x30;
+  cpu.r2 = 0x1;
+  cpu.cpsr |= 0x02345670;
+  cpu.spsr_fiq = 0x06543210 | MODE_FIQ;
+  __arm_instruction instr;
+  instr.type = INSTR_DATA_PROCESSING;
+  instr.cond = COND_AL;
+  instr.instr.data_processing.opcode = OPCODE_AND;
+  instr.instr.data_processing.set_condition_codes = true;
+  instr.instr.data_processing.operand1 = REG_R1;
+  instr.instr.data_processing.operand2.is_immediate = false;
+  instr.instr.data_processing.operand2.op.reg.reg = REG_R2;
+  instr.instr.data_processing.operand2.op.reg.is_register_shift = false;
+  instr.instr.data_processing.operand2.op.reg.shift_type = SHIFT_LOGICAL_LEFT;
+  instr.instr.data_processing.operand2.op.reg.shift_imm = 0;
+  instr.instr.data_processing.dest = REG_R15;
+
+  arm_execute_instruction(&cpu, &instr);
+  
+  cr_assert_eq(cpu.r0, 0);
+  cr_assert_eq(cpu.cpsr, cpu.spsr_fiq);
+  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
+  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
+  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+}
 

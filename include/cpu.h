@@ -33,13 +33,13 @@ typedef struct {
 } __arm_registers;
 
 typedef enum {
-  MODE_USER,
-  MODE_SYSTEM,
-  MODE_SVC,
-  MODE_ABT,
-  MODE_UND,
-  MODE_IRQ,
-  MODE_FIQ
+  MODE_USER = 0,
+  MODE_SYSTEM = 1,
+  MODE_SVC = 2,
+  MODE_ABT = 3,
+  MODE_UND = 4,
+  MODE_IRQ = 5,
+  MODE_FIQ = 6
 } __arm_mode;
 
 struct __arm_cpu_struct;
@@ -98,14 +98,24 @@ struct __arm_cpu_struct {
   uint8_t (*fetch_byte)(__arm_cpu*, uint32_t);
 };
 
+#define GET_NEGATIVE_FLAG(cpu) ((cpu->cpsr >> 31)&0x1)
+#define SET_NEGATIVE_FLAG(cpu, value) (cpu->cpsr |= (((value)&0x1)<<31))
+
+#define GET_ZERO_FLAG(cpu) ((cpu->cpsr >> 30)&0x1)
+#define SET_ZERO_FLAG(cpu, value) (cpu->cpsr |= (((value)&0x1)<<30))
+
 #define GET_CARRY_FLAG(cpu) ((cpu->cpsr >> 29)&0x1)
-#define SET_CARRY_FLAG(cpu, value) (cpu->cpsr |= ((value&0x1)<<29))
+#define SET_CARRY_FLAG(cpu, value) (cpu->cpsr |= (((value)&0x1)<<29))
+
+#define GET_OVERFLOW_FLAG(cpu) ((cpu->cpsr >> 28)&0x1)
+#define SET_OVERFLOW_FLAG(cpu, value) (cpu->cpsr |= (((value)&0x1)<<28))
 
 extern int arm_init_cpu(__arm_cpu* cpu,
 			uint32_t (*bus_fetch_word)(uint32_t),
 			uint16_t (*bus_fetch_halfword)(uint32_t),
 			uint8_t (*bus_fetch_byte)(uint32_t));
 extern __arm_mode arm_current_mode(__arm_cpu* cpu);
+extern void arm_set_mode(__arm_cpu* cpu, __arm_mode mode);
 extern int arm_clock(__arm_cpu* cpu);
 extern __arm_registers* arm_get_regs(__arm_cpu* cpu);
 

@@ -33,6 +33,18 @@ __arm_mode arm_current_mode(__arm_cpu* cpu) {
   return 7; // unknown mode - maybe we should log this somehow rather than just causing a segfault?
 }
 
+void arm_set_mode(__arm_cpu* cpu, __arm_mode mode) {
+  switch(mode) {
+  case MODE_USER: cpu->cpsr = (cpu->cpsr&0xF) | 0b0000; break;
+  case MODE_FIQ: cpu->cpsr = (cpu->cpsr&0xF) | 0b0001; break;
+  case MODE_IRQ: cpu->cpsr = (cpu->cpsr&0xF) | 0b0010; break;
+  case MODE_SVC: cpu->cpsr = (cpu->cpsr&0xF) | 0b0011; break;
+  case MODE_ABT: cpu->cpsr = (cpu->cpsr&0xF) | 0b0111; break;
+  case MODE_UND: cpu->cpsr = (cpu->cpsr&0xF) | 0b1011; break;
+  case MODE_SYSTEM: cpu->cpsr = (cpu->cpsr&0xF) | 0b1111; break;
+  }
+}
+
 bool arm_is_little_endian(__arm_cpu* cpu) {
   return ((cpu->cpsr >> 9)&0x1) == 0x0;
 }

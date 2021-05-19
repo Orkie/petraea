@@ -13,14 +13,21 @@ static int execute_branch(__arm_cpu* cpu, __arm_instr_branch* i) {
 
 static int execute_data_processing(__arm_cpu* cpu, __arm_instr_data_processing* i) {
   __arm_registers* regs = arm_get_regs(cpu);
-  uint32_t operand1 = (*regs->regs)[i->operand1];
   bool carry = false;
   bool carryValid = false;
+  uint32_t operand1 = (*regs->regs)[i->operand1];
   uint32_t operand2 = eval_operand2(cpu, &i->operand2, &carryValid, &carry);
-  
+  uint32_t* dest = regs->regs[i->dest];
   switch(i->opcode) {
   case OPCODE_AND:
-    
+    *dest = operand1 & operand2;
+    if(i->set_condition_codes && i->dest == REG_R15) {
+      *regs->cpsr = *regs->spsr;
+    } else if(i->set_condition_codes) {
+      SET_NEGATIVE_FLAG(cpu, ((*dest)>>31)&0x1);
+      SET_ZERO_FLAG(cpu, (*dest) == 0);
+      SET_CARRY_FLAG(cpu, carry);
+    }
     break;
   default: return -1;
   }
@@ -33,6 +40,7 @@ static int execute_data_processing(__arm_cpu* cpu, __arm_instr_data_processing* 
 // NOTE - we assume PC here is the same as that of the instruction we are trying to execute
 int arm_execute_instruction(__arm_cpu* cpu, __arm_instruction* instr) {
   // TODO - cond
+  // TODO - Using R15 as an operand
   
   switch(instr->type) {
   case INSTR_BRANCH:
@@ -86,11 +94,11 @@ uint32_t eval_operand2(__arm_cpu* cpu, __arm_operand2* operand2, bool* carryVali
 	*carry = (shiftedValue>>31)&0x1;
 	shiftedValue = (*carry) ? 0xFFFFFFFF : 0x0;
       } else {
+	*carryValid = true;
+	*carry = (shiftedValue >> (shiftBy-1))&0x1;
 	bool top = (shiftedValue>>31)&0x1;
 	uint32_t extraBits = top ? (0xFFFFFFFF << (32 - shiftBy)) : 0x0;
 	shiftedValue = (shiftedValue >> shiftBy) | extraBits;
-	*carry = (shiftedValue >> (shiftBy-1))&0x1;
-	*carryValid = true;
       }      
       break;
     case SHIFT_ROTATE_RIGHT:
