@@ -207,8 +207,6 @@ Test(eval_operand2, can_evaluate_register_rsr_r3_where_r3_is_0) {
   cr_assert_eq(carry, false);
 }
 
-/////
-
 Test(eval_operand2, can_evaluate_register_asr0_positive) {
   __arm_cpu cpu;
   arm_init_cpu(&cpu, NULL, NULL, NULL);
@@ -356,6 +354,121 @@ Test(eval_operand2, can_evaluate_register_asr_r3_where_r3_is_0) {
   op.op.reg.reg = REG_R4;
   op.op.reg.is_register_shift = true;
   op.op.reg.shift_type = SHIFT_ARITHMETIC_RIGHT;
+  op.op.reg.shift_reg = REG_R3;
+
+  cpu.r3 = 0;
+  cpu.r4 = 0x123456;
+  
+  uint32_t result = eval_operand2(&cpu, &op, &carryValid, &carry);
+
+  cr_assert_eq(result, 0x123456);
+  cr_assert_eq(carryValid, true);
+  cr_assert_eq(carry, false);
+}
+
+Test(eval_operand2, can_evaluate_register_ror0_rrx_1_carry) {
+  __arm_cpu cpu;
+  arm_init_cpu(&cpu, NULL, NULL, NULL);
+  bool carryValid;
+  bool carry;
+  SET_CARRY_FLAG(((__arm_cpu*)&cpu), 1);
+
+  __arm_operand2 op;
+  op.is_immediate = false;
+  op.op.reg.reg = REG_R4;
+  op.op.reg.is_register_shift = false;
+  op.op.reg.shift_type = SHIFT_ROTATE_RIGHT;
+  op.op.reg.shift_imm = 0;
+
+  cpu.r4 = 0x7FFFFFFF;
+  
+  uint32_t result = eval_operand2(&cpu, &op, &carryValid, &carry);
+
+  cr_assert_eq(result, 0xBFFFFFFF);
+  cr_assert_eq(carryValid, true);
+  cr_assert_eq(carry, true);
+}
+
+Test(eval_operand2, can_evaluate_register_ror0_rrx_0_carry) {
+  __arm_cpu cpu;
+  arm_init_cpu(&cpu, NULL, NULL, NULL);
+  bool carryValid;
+  bool carry;
+  SET_CARRY_FLAG(((__arm_cpu*)&cpu), 0);
+
+  __arm_operand2 op;
+  op.is_immediate = false;
+  op.op.reg.reg = REG_R4;
+  op.op.reg.is_register_shift = false;
+  op.op.reg.shift_type = SHIFT_ROTATE_RIGHT;
+  op.op.reg.shift_imm = 0;
+
+  cpu.r4 = 0x7FFFFFFE;
+  
+  uint32_t result = eval_operand2(&cpu, &op, &carryValid, &carry);
+
+  cr_assert_eq(result, 0x3FFFFFFF);
+  cr_assert_eq(carryValid, true);
+  cr_assert_eq(carry, false);
+}
+
+Test(eval_operand2, can_evaluate_register_ror_r3_without_carry) {
+  __arm_cpu cpu;
+  arm_init_cpu(&cpu, NULL, NULL, NULL);
+  bool carryValid;
+  bool carry;
+
+  __arm_operand2 op;
+  op.is_immediate = false;
+  op.op.reg.reg = REG_R4;
+  op.op.reg.is_register_shift = true;
+  op.op.reg.shift_type = SHIFT_ROTATE_RIGHT;
+  op.op.reg.shift_reg = REG_R3;
+
+  cpu.r3 = 4;
+  cpu.r4 = 0x0FFFFFF4;
+  
+  uint32_t result = eval_operand2(&cpu, &op, &carryValid, &carry);
+
+  cr_assert_eq(result, 0x40FFFFFF);
+  cr_assert_eq(carryValid, true);
+  cr_assert_eq(carry, false);
+}
+
+Test(eval_operand2, can_evaluate_register_ror_r3_with_carry) {
+  __arm_cpu cpu;
+  arm_init_cpu(&cpu, NULL, NULL, NULL);
+  bool carryValid;
+  bool carry;
+
+  __arm_operand2 op;
+  op.is_immediate = false;
+  op.op.reg.reg = REG_R4;
+  op.op.reg.is_register_shift = true;
+  op.op.reg.shift_type = SHIFT_ROTATE_RIGHT;
+  op.op.reg.shift_reg = REG_R3;
+
+  cpu.r3 = 4;
+  cpu.r4 = 0x0FFFFFF8;
+  
+  uint32_t result = eval_operand2(&cpu, &op, &carryValid, &carry);
+
+  cr_assert_eq(result, 0x80FFFFFF);
+  cr_assert_eq(carryValid, true);
+  cr_assert_eq(carry, true);
+}
+
+Test(eval_operand2, can_evaluate_register_ror_r3_where_r3_is_0) {
+  __arm_cpu cpu;
+  arm_init_cpu(&cpu, NULL, NULL, NULL);
+  bool carryValid;
+  bool carry;
+
+  __arm_operand2 op;
+  op.is_immediate = false;
+  op.op.reg.reg = REG_R4;
+  op.op.reg.is_register_shift = true;
+  op.op.reg.shift_type = SHIFT_ROTATE_RIGHT;
   op.op.reg.shift_reg = REG_R3;
 
   cpu.r3 = 0;

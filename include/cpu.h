@@ -98,6 +98,9 @@ struct __arm_cpu_struct {
   uint8_t (*fetch_byte)(__arm_cpu*, uint32_t);
 };
 
+#define GET_CARRY_FLAG(cpu) ((cpu->cpsr >> 29)&0x1)
+#define SET_CARRY_FLAG(cpu, value) (cpu->cpsr |= ((value&0x1)<<29))
+
 extern int arm_init_cpu(__arm_cpu* cpu,
 			uint32_t (*bus_fetch_word)(uint32_t),
 			uint16_t (*bus_fetch_halfword)(uint32_t),

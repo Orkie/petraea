@@ -1,5 +1,6 @@
 #include "cpu.h"
 #include "instr.h"
+#include "util.h"
 
 static int execute_branch(__arm_cpu* cpu, __arm_instr_branch* i) {
   __arm_registers* regs = arm_get_regs(cpu);
@@ -91,6 +92,17 @@ uint32_t eval_operand2(__arm_cpu* cpu, __arm_operand2* operand2, bool* carryVali
 	*carry = (shiftedValue >> (shiftBy-1))&0x1;
 	*carryValid = true;
       }      
+      break;
+    case SHIFT_ROTATE_RIGHT:
+      if(shiftBy == 0  && !operand2->op.reg.is_register_shift) {
+	*carryValid = true;
+	*carry = shiftedValue&0x1;
+	shiftedValue = (shiftedValue >> 1) | (GET_CARRY_FLAG(cpu) << 31);
+      } else {
+	*carryValid = true;
+	*carry = (shiftedValue >> (shiftBy-1))&0x1;
+	shiftedValue = rrot32(shiftedValue, shiftBy);
+      }
       break;
     }
     
