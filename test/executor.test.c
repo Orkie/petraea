@@ -83,12 +83,12 @@ Test(eval_operand2, can_evaluate_register_lsl_r3_with_carry) {
   op.op.reg.shift_type = SHIFT_LOGICAL_LEFT;
   op.op.reg.shift_reg = REG_R3;
 
-  cpu.r3 = 4;
-  cpu.r4 = 0xFFFFFFFF;
+  cpu.r3 = 1;
+  cpu.r4 = 0x80000001;
   
   uint32_t result = eval_operand2(&cpu, &op, &carryValid, &carry);
 
-  cr_assert_eq(result, 0xFFFFFFF0);
+  cr_assert_eq(result, 0x00000002);
   cr_assert_eq(carryValid, true);
   cr_assert_eq(carry, true);
 }

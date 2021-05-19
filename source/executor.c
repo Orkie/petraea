@@ -63,12 +63,9 @@ uint32_t eval_operand2(__arm_cpu* cpu, __arm_operand2* operand2, bool* carryVali
 	*carryValid = false;
 	*carry = false;
       } else {
-	uint64_t s = ((uint64_t)shiftedValue) << shiftBy;
-	uint32_t lower = s&0xFFFFFFFF;
-	uint32_t upper = s>>32;
+	*carry = (shiftedValue >> (32-shiftBy))&0x1;
 	*carryValid = true;
-	*carry = upper&0x1;
-	shiftedValue = lower;
+	shiftedValue = shiftedValue << shiftBy;
       }
       break;
     case SHIFT_LOGICAL_RIGHT:
@@ -77,12 +74,9 @@ uint32_t eval_operand2(__arm_cpu* cpu, __arm_operand2* operand2, bool* carryVali
 	*carry = (shiftedValue>>31)&0x1;
 	shiftedValue = 0;
       } else {
-	uint64_t s = (((uint64_t)shiftedValue)<<32) >> shiftBy;
-	uint32_t lower = s&0xFFFFFFFF;
-	uint32_t upper = s>>32;
 	*carryValid = true;
-	*carry = (lower>>31)&0x1;
-	shiftedValue = upper;
+	*carry = (shiftedValue >> (shiftBy-1))&0x1;
+	shiftedValue = shiftedValue >> shiftBy;
       }
       break;
     case SHIFT_ARITHMETIC_RIGHT:
@@ -93,12 +87,9 @@ uint32_t eval_operand2(__arm_cpu* cpu, __arm_operand2* operand2, bool* carryVali
       } else {
 	bool top = (shiftedValue>>31)&0x1;
 	uint32_t extraBits = top ? (0xFFFFFFFF << (32 - shiftBy)) : 0x0;
-	uint64_t s = (((uint64_t)shiftedValue)<<32) >> shiftBy;
-	uint32_t lower = s&0xFFFFFFFF;
-	uint32_t upper = s>>32;
+	shiftedValue = (shiftedValue >> shiftBy) | extraBits;
+	*carry = (shiftedValue >> (shiftBy-1))&0x1;
 	*carryValid = true;
-	*carry = (lower>>31)&0x1;
-	shiftedValue = (upper | extraBits);
       }      
       break;
     }
