@@ -57,6 +57,8 @@ typedef enum {
 
 typedef struct {
   uint32_t value;
+  bool carry;
+  bool carryValid;
 } __arm_immediate_operand;
 
 typedef enum {

@@ -53,8 +53,8 @@ int arm_execute_instruction(__arm_cpu* cpu, __arm_instruction* instr) {
 
 uint32_t eval_operand2(__arm_cpu* cpu, __arm_operand2* operand2, bool* carryValid, bool* carry) {
   if(operand2->is_immediate) {
-    *carry = false;
-    *carryValid = true;
+    *carry = operand2->op.imm.carry;
+    *carryValid = operand2->op.imm.carryValid;
     // rotation is handled in the decoder
     return operand2->op.imm.value;
   } else {

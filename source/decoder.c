@@ -5,6 +5,8 @@ static void arm_decode_operand2_immRot(__arm_operand2* dest, uint16_t op) {
   dest->is_immediate = true;
   unsigned int rotateBy = ((op&0xF00) >> 8) * 2;
   dest->op.imm.value = rrot32(op & 0xFF, rotateBy);
+  dest->op.imm.carryValid = rotateBy != 0;
+  dest->op.imm.carry = (dest->op.imm.value >> 31)&0x1;
 }
 
 static void arm_decode_operand2_immVal(__arm_operand2* dest, uint16_t op) {
