@@ -2,6 +2,10 @@
 #include "instr.h"
 #include "util.h"
 
+static inline bool subOverflow(uint32_t result, uint32_t operand1, uint32_t operand2) {
+  return (sign32(operand1) != sign32(operand2)) && (sign32(result) != sign32(operand1));
+}
+
 static int execute_branch(__arm_cpu* cpu, __arm_instr_branch* i) {
   __arm_registers* regs = arm_get_regs(cpu);
   if(i->link) {
@@ -24,9 +28,20 @@ static int execute_data_processing(__arm_cpu* cpu, __arm_instr_data_processing* 
     if(i->set_condition_codes && i->dest == REG_R15) {
       *regs->cpsr = *regs->spsr;
     } else if(i->set_condition_codes) {
-      SET_NEGATIVE_FLAG(cpu, ((*dest)>>31)&0x1);
+      SET_NEGATIVE_FLAG(cpu, sign32(*dest));
       SET_ZERO_FLAG(cpu, (*dest) == 0);
       SET_CARRY_FLAG(cpu, carry);
+    }
+    break;
+  case OPCODE_SUB:
+    *dest = operand1 - operand2;
+    if(i->set_condition_codes && i->dest == REG_R15) {
+      *regs->cpsr = *regs->spsr;
+    } else if(i->set_condition_codes) {
+      SET_NEGATIVE_FLAG(cpu, sign32(*dest));
+      SET_ZERO_FLAG(cpu, (*dest) == 0);
+      SET_CARRY_FLAG(cpu, operand1 >= operand2);
+      SET_OVERFLOW_FLAG(cpu, subOverflow(*dest, operand1, operand2));
     }
     break;
   default: return -1;
@@ -37,10 +52,9 @@ static int execute_data_processing(__arm_cpu* cpu, __arm_instr_data_processing* 
   return 0;
 }
 
-// NOTE - we assume PC here is the same as that of the instruction we are trying to execute
+// NOTE - we assume PC here is the same as that of the instruction we are trying to execute - TODO is this a correct assumption? Offset can be 8 or 12 bytes apparently. in the decoder we should store a pc offset at the top level, and apply that before execute. next instruction fetch however needs to deapply it and do +4
 int arm_execute_instruction(__arm_cpu* cpu, __arm_instruction* instr) {
   // TODO - cond
-  // TODO - Using R15 as an operand
   
   switch(instr->type) {
   case INSTR_BRANCH:
