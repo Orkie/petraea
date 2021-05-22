@@ -48,6 +48,18 @@ static int execute_data_processing(__arm_cpu* cpu, __arm_instr_data_processing* 
       }
     }
     break;
+  case OPCODE_EOR:
+    *dest = operand1 ^ operand2;
+    if(i->set_condition_codes && i->dest == REG_R15) {
+      *regs->cpsr = *regs->spsr;
+    } else if(i->set_condition_codes) {
+      SET_NEGATIVE_FLAG(cpu, sign32(*dest));
+      SET_ZERO_FLAG(cpu, (*dest) == 0);
+      if(shifterCarryValid) {
+	SET_CARRY_FLAG(cpu, shifterCarry);
+      }
+    }
+    break;
   case OPCODE_SUB:
     *dest = operand1 - operand2;
     if(i->set_condition_codes && i->dest == REG_R15) {

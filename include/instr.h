@@ -25,6 +25,7 @@ typedef enum {
 
 typedef enum {
   OPCODE_AND = 0b0000,//
+  OPCODE_EOR = 0b0001,//
   OPCODE_SUB = 0b0010,//
   OPCODE_RSB = 0b0011,//
   OPCODE_ADD = 0b0100,//
