@@ -11,7 +11,7 @@ static inline bool addOverflow(int32_t a, int32_t b, bool carry) {
 }
 
 static inline bool subBorrow(uint32_t a, uint32_t b, bool carry) {
-  return a > (b-(carry? 1 : 0));
+  return a > (((int64_t)b)+(carry? 1 : 0));
 }
 
 static inline bool addCarry(uint32_t a, uint32_t b, bool carry) {
@@ -90,10 +90,20 @@ static int execute_data_processing(__arm_cpu* cpu, __arm_instr_data_processing* 
       SET_OVERFLOW_FLAG(cpu, addOverflow(operand1, operand2, carry));
     }
     break;
+  case OPCODE_SBC:
+    *dest = operand1 - operand2 - (GET_CARRY_FLAG(cpu) ? 0 : 1);
+    if(i->set_condition_codes && i->dest == REG_R15) {
+      *regs->cpsr = *regs->spsr;
+    } else if(i->set_condition_codes) {
+      bool carry = !GET_CARRY_FLAG(cpu);
+      SET_NEGATIVE_FLAG(cpu, sign32(*dest));
+      SET_ZERO_FLAG(cpu, (*dest) == 0);
+      SET_CARRY_FLAG(cpu, subBorrow(operand1, operand2, carry));
+      SET_OVERFLOW_FLAG(cpu, subOverflow(operand1, operand2, !carry));
+    }
+    break;
   default: return -1;
   }
-
-  // TODO - flags?
 
   return 0;
 }
