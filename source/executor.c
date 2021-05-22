@@ -102,6 +102,18 @@ static int execute_data_processing(__arm_cpu* cpu, __arm_instr_data_processing* 
       SET_OVERFLOW_FLAG(cpu, subOverflow(operand1, operand2, !carry));
     }
     break;
+  case OPCODE_RSC:
+    *dest = operand2 - operand1 - (GET_CARRY_FLAG(cpu) ? 0 : 1);
+    if(i->set_condition_codes && i->dest == REG_R15) {
+      *regs->cpsr = *regs->spsr;
+    } else if(i->set_condition_codes) {
+      bool carry = !GET_CARRY_FLAG(cpu);
+      SET_NEGATIVE_FLAG(cpu, sign32(*dest));
+      SET_ZERO_FLAG(cpu, (*dest) == 0);
+      SET_CARRY_FLAG(cpu, subBorrow(operand2, operand1, carry));
+      SET_OVERFLOW_FLAG(cpu, subOverflow(operand2, operand1, !carry));
+    }
+    break;
   default: return -1;
   }
 
