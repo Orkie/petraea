@@ -44,6 +44,17 @@ static int execute_data_processing(__arm_cpu* cpu, __arm_instr_data_processing* 
       SET_OVERFLOW_FLAG(cpu, subOverflow(*dest, operand1, operand2));
     }
     break;
+  case OPCODE_RSB:
+    *dest = operand2 - operand1;
+    if(i->set_condition_codes && i->dest == REG_R15) {
+      *regs->cpsr = *regs->spsr;
+    } else if(i->set_condition_codes) {
+      SET_NEGATIVE_FLAG(cpu, sign32(*dest));
+      SET_ZERO_FLAG(cpu, (*dest) == 0);
+      SET_CARRY_FLAG(cpu, operand2 >= operand1);
+      SET_OVERFLOW_FLAG(cpu, subOverflow(*dest, operand2, operand1));
+    }
+    break;
   default: return -1;
   }
 
