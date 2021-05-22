@@ -6,6 +6,10 @@ static inline bool subOverflow(uint32_t result, uint32_t operand1, uint32_t oper
   return (sign32(operand1) != sign32(operand2)) && (sign32(result) != sign32(operand1));
 }
 
+static inline bool addOverflow(uint32_t result, uint32_t operand1, uint32_t operand2) {
+  return (sign32(operand1) == sign32(operand2)) && (sign32(result) != sign32(operand1));
+}
+
 static int execute_branch(__arm_cpu* cpu, __arm_instr_branch* i) {
   __arm_registers* regs = arm_get_regs(cpu);
   if(i->link) {
@@ -53,6 +57,17 @@ static int execute_data_processing(__arm_cpu* cpu, __arm_instr_data_processing* 
       SET_ZERO_FLAG(cpu, (*dest) == 0);
       SET_CARRY_FLAG(cpu, operand2 >= operand1);
       SET_OVERFLOW_FLAG(cpu, subOverflow(*dest, operand2, operand1));
+    }
+    break;
+  case OPCODE_ADD:
+    *dest = operand1 + operand2;
+    if(i->set_condition_codes && i->dest == REG_R15) {
+      *regs->cpsr = *regs->spsr;
+    } else if(i->set_condition_codes) {
+      SET_NEGATIVE_FLAG(cpu, sign32(*dest));
+      SET_ZERO_FLAG(cpu, (*dest) == 0);
+      SET_CARRY_FLAG(cpu, (((uint64_t)operand1)+operand2) > 0xFFFFFFFF);
+      SET_OVERFLOW_FLAG(cpu, addOverflow(*dest, operand1, operand2));      
     }
     break;
   default: return -1;
