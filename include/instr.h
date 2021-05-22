@@ -24,13 +24,13 @@ typedef enum {
 } __arm_condition;
 
 typedef enum {
-  OPCODE_AND = 0b0000,
-  OPCODE_SUB = 0b0010,
-  OPCODE_RSB = 0b0011,
-  OPCODE_ADD = 0b0100,
-  OPCODE_ADC = 0b0101,
-  OPCODE_SBC = 0b0110,
-  OPCODE_RSC = 0b0111,
+  OPCODE_AND = 0b0000,//
+  OPCODE_SUB = 0b0010,//
+  OPCODE_RSB = 0b0011,//
+  OPCODE_ADD = 0b0100,//
+  OPCODE_ADC = 0b0101,//
+  OPCODE_SBC = 0b0110,//
+  OPCODE_RSC = 0b0111,//
   OPCODE_TST = 0b1000,
   OPCODE_TEQ = 0b1001,
   OPCODE_CMP = 0b1010,

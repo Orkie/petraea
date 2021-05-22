@@ -29,10 +29,10 @@ static int execute_branch(__arm_cpu* cpu, __arm_instr_branch* i) {
 
 static int execute_data_processing(__arm_cpu* cpu, __arm_instr_data_processing* i) {
   __arm_registers* regs = arm_get_regs(cpu);
-  bool carry = false;
-  bool carryValid = false;
+  bool shifterCarry = false;
+  bool shifterCarryValid = false;
   uint32_t operand1 = (*regs->regs)[i->operand1];
-  uint32_t operand2 = eval_operand2(cpu, &i->operand2, &carryValid, &carry);
+  uint32_t operand2 = eval_operand2(cpu, &i->operand2, &shifterCarryValid, &shifterCarry);
   uint32_t* dest = regs->regs[i->dest];
   switch(i->opcode) {
   case OPCODE_AND:
@@ -42,7 +42,9 @@ static int execute_data_processing(__arm_cpu* cpu, __arm_instr_data_processing* 
     } else if(i->set_condition_codes) {
       SET_NEGATIVE_FLAG(cpu, sign32(*dest));
       SET_ZERO_FLAG(cpu, (*dest) == 0);
-      SET_CARRY_FLAG(cpu, carry);
+      if(shifterCarryValid) {
+	SET_CARRY_FLAG(cpu, shifterCarry);
+      }
     }
     break;
   case OPCODE_SUB:
@@ -114,6 +116,15 @@ static int execute_data_processing(__arm_cpu* cpu, __arm_instr_data_processing* 
       SET_OVERFLOW_FLAG(cpu, subOverflow(operand2, operand1, !carry));
     }
     break;
+  case OPCODE_TST: ;
+    uint32_t aluOut = operand1 & operand2;
+    SET_NEGATIVE_FLAG(cpu, sign32(aluOut));
+    SET_ZERO_FLAG(cpu, (aluOut) == 0);
+    if(shifterCarryValid) {
+      SET_CARRY_FLAG(cpu, shifterCarry);
+    }
+    break;
+
   default: return -1;
   }
 
