@@ -2,12 +2,20 @@
 #include "instr.h"
 #include "util.h"
 
-static inline bool subOverflow(uint32_t result, uint32_t operand1, uint32_t operand2) {
-  return (sign32(operand1) != sign32(operand2)) && (sign32(result) != sign32(operand1));
+static inline bool subOverflow(int32_t a, int32_t b, bool carry) {
+  return (((int64_t)a) - ((int64_t)b) - (carry? 0 : 1)) < ((int32_t)0x80000000);
 }
 
-static inline bool addOverflow(uint32_t result, uint32_t operand1, uint32_t operand2) {
-  return (sign32(operand1) == sign32(operand2)) && (sign32(result) != sign32(operand1));
+static inline bool addOverflow(int32_t a, int32_t b, bool carry) {
+  return (((int64_t)a) + ((int64_t)b) + carry) > 0x7FFFFFFF;
+}
+
+static inline bool subBorrow(uint32_t a, uint32_t b, bool carry) {
+  return a > (b-(carry? 1 : 0));
+}
+
+static inline bool addCarry(uint32_t a, uint32_t b, bool carry) {
+  return (((uint64_t)a) + b + carry) > 0xFFFFFFFF;
 }
 
 static int execute_branch(__arm_cpu* cpu, __arm_instr_branch* i) {
@@ -44,8 +52,8 @@ static int execute_data_processing(__arm_cpu* cpu, __arm_instr_data_processing* 
     } else if(i->set_condition_codes) {
       SET_NEGATIVE_FLAG(cpu, sign32(*dest));
       SET_ZERO_FLAG(cpu, (*dest) == 0);
-      SET_CARRY_FLAG(cpu, operand1 >= operand2);
-      SET_OVERFLOW_FLAG(cpu, subOverflow(*dest, operand1, operand2));
+      SET_CARRY_FLAG(cpu, subBorrow(operand1, operand2, false));
+      SET_OVERFLOW_FLAG(cpu, subOverflow(operand1, operand2, true));
     }
     break;
   case OPCODE_RSB:
@@ -55,8 +63,8 @@ static int execute_data_processing(__arm_cpu* cpu, __arm_instr_data_processing* 
     } else if(i->set_condition_codes) {
       SET_NEGATIVE_FLAG(cpu, sign32(*dest));
       SET_ZERO_FLAG(cpu, (*dest) == 0);
-      SET_CARRY_FLAG(cpu, operand2 >= operand1);
-      SET_OVERFLOW_FLAG(cpu, subOverflow(*dest, operand2, operand1));
+      SET_CARRY_FLAG(cpu, subBorrow(operand2, operand1, false));
+      SET_OVERFLOW_FLAG(cpu, subOverflow(operand2, operand1, true));
     }
     break;
   case OPCODE_ADD:
@@ -66,8 +74,20 @@ static int execute_data_processing(__arm_cpu* cpu, __arm_instr_data_processing* 
     } else if(i->set_condition_codes) {
       SET_NEGATIVE_FLAG(cpu, sign32(*dest));
       SET_ZERO_FLAG(cpu, (*dest) == 0);
-      SET_CARRY_FLAG(cpu, (((uint64_t)operand1)+operand2) > 0xFFFFFFFF);
-      SET_OVERFLOW_FLAG(cpu, addOverflow(*dest, operand1, operand2));      
+      SET_CARRY_FLAG(cpu, addCarry(operand1, operand2, false));
+      SET_OVERFLOW_FLAG(cpu, addOverflow(operand1, operand2, false));      
+    }
+    break;
+  case OPCODE_ADC:
+    *dest = operand1 + operand2 + GET_CARRY_FLAG(cpu);
+    if(i->set_condition_codes && i->dest == REG_R15) {
+      *regs->cpsr = *regs->spsr;
+    } else if(i->set_condition_codes) {
+      bool carry = GET_CARRY_FLAG(cpu);
+      SET_NEGATIVE_FLAG(cpu, sign32(*dest));
+      SET_ZERO_FLAG(cpu, (*dest) == 0);
+      SET_CARRY_FLAG(cpu, addCarry(operand1, operand2, carry));
+      SET_OVERFLOW_FLAG(cpu, addOverflow(operand1, operand2, carry));
     }
     break;
   default: return -1;

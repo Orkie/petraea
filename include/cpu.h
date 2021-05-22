@@ -98,17 +98,18 @@ struct __arm_cpu_struct {
   uint8_t (*fetch_byte)(__arm_cpu*, uint32_t);
 };
 
+
 #define GET_NEGATIVE_FLAG(cpu) ((cpu->cpsr >> 31)&0x1)
-#define SET_NEGATIVE_FLAG(cpu, value) (cpu->cpsr |= (((value)&0x1)<<31))
+#define SET_NEGATIVE_FLAG(cpu, value) (cpu->cpsr = ((cpu->cpsr & (~(1<<31))) | (((value)&1)<<31)))
 
 #define GET_ZERO_FLAG(cpu) ((cpu->cpsr >> 30)&0x1)
-#define SET_ZERO_FLAG(cpu, value) (cpu->cpsr |= (((value)&0x1)<<30))
+#define SET_ZERO_FLAG(cpu, value) (cpu->cpsr = ((cpu->cpsr & (~(1<<30))) | (((value)&1)<<30)))
 
 #define GET_CARRY_FLAG(cpu) ((cpu->cpsr >> 29)&0x1)
-#define SET_CARRY_FLAG(cpu, value) (cpu->cpsr |= (((value)&0x1)<<29))
+#define SET_CARRY_FLAG(cpu, value) (cpu->cpsr = ((cpu->cpsr & (~(1<<29))) | (((value)&1)<<29)))
 
 #define GET_OVERFLOW_FLAG(cpu) ((cpu->cpsr >> 28)&0x1)
-#define SET_OVERFLOW_FLAG(cpu, value) (cpu->cpsr |= (((value)&0x1)<<28))
+#define SET_OVERFLOW_FLAG(cpu, value) (cpu->cpsr = ((cpu->cpsr & (~(1<<28))) | (((value)&1)<<28)))
 
 extern int arm_init_cpu(__arm_cpu* cpu,
 			uint32_t (*bus_fetch_word)(uint32_t),
