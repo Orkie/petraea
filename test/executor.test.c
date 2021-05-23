@@ -3051,3 +3051,437 @@ Test(executor_mvn, can_execute_mvn_c_nz_nn) {
   cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
 }
 
+///////////////////////////////////////////
+// Conditions
+///////////////////////////////////////////
+
+#define SET_N (1<<31)
+#define SET_Z (1<<30)
+#define SET_C (1<<29)
+#define SET_V (1<<28)
+
+Test(executor_conditions, EQ_nz) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL);
+  
+  bool result = _petraea_eval_condition(&cpu, COND_EQ);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, EQ_z) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL);
+  cpu.cpsr = SET_Z;
+  
+  bool result = _petraea_eval_condition(&cpu, COND_EQ);
+  cr_assert_eq(result, true);
+}
+
+Test(executor_conditions, NE_nz) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL);
+  
+  bool result = _petraea_eval_condition(&cpu, COND_NE);
+  cr_assert_eq(result, true);
+}
+
+Test(executor_conditions, NE_z) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL);
+  cpu.cpsr = SET_Z;
+  
+  bool result = _petraea_eval_condition(&cpu, COND_NE);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, CS_nc) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL);
+  
+  bool result = _petraea_eval_condition(&cpu, COND_CS);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, CS_c) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL);
+  cpu.cpsr = SET_C;
+  
+  bool result = _petraea_eval_condition(&cpu, COND_CS);
+  cr_assert_eq(result, true);
+}
+
+Test(executor_conditions, CC_nc) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL);
+  
+  bool result = _petraea_eval_condition(&cpu, COND_CC);
+  cr_assert_eq(result, true);
+}
+
+Test(executor_conditions, CC_c) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL);
+  cpu.cpsr = SET_C;
+  
+  bool result = _petraea_eval_condition(&cpu, COND_CC);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, MI_nn) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL);
+  
+  bool result = _petraea_eval_condition(&cpu, COND_MI);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, MI_n) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL);
+  cpu.cpsr = SET_N;
+  
+  bool result = _petraea_eval_condition(&cpu, COND_MI);
+  cr_assert_eq(result, true);
+}
+
+Test(executor_conditions, PL_nn) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL);
+  
+  bool result = _petraea_eval_condition(&cpu, COND_PL);
+  cr_assert_eq(result, true);
+}
+
+Test(executor_conditions, PL_n) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL);
+  cpu.cpsr = SET_N;
+  
+  bool result = _petraea_eval_condition(&cpu, COND_PL);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, VS_nv) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL);
+  
+  bool result = _petraea_eval_condition(&cpu, COND_VS);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, VS_v) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL);
+  cpu.cpsr = SET_V;
+  
+  bool result = _petraea_eval_condition(&cpu, COND_VS);
+  cr_assert_eq(result, true);
+}
+
+Test(executor_conditions, VC_nv) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL);
+  
+  bool result = _petraea_eval_condition(&cpu, COND_VC);
+  cr_assert_eq(result, true);
+}
+
+Test(executor_conditions, VC_v) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL);
+  cpu.cpsr = SET_V;
+  
+  bool result = _petraea_eval_condition(&cpu, COND_VC);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, HI_c_nz) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL);
+  cpu.cpsr = SET_C;
+  
+  bool result = _petraea_eval_condition(&cpu, COND_HI);
+  cr_assert_eq(result, true);
+}
+
+Test(executor_conditions, HI_c_z) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+  cpu.cpsr = SET_C | SET_Z;
+ 
+  bool result = _petraea_eval_condition(&cpu, COND_HI);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, HI_nc_nz) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+ 
+  bool result = _petraea_eval_condition(&cpu, COND_HI);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, LS_nc_nz) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+ 
+  bool result = _petraea_eval_condition(&cpu, COND_LS);
+  cr_assert_eq(result, true);
+}
+
+Test(executor_conditions, LS_nc_z) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+  cpu.cpsr = SET_Z;
+ 
+  bool result = _petraea_eval_condition(&cpu, COND_LS);
+  cr_assert_eq(result, true);
+}
+
+Test(executor_conditions, LS_c_nz) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+  cpu.cpsr = SET_C;
+ 
+  bool result = _petraea_eval_condition(&cpu, COND_LS);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, LS_c_z) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+  cpu.cpsr = SET_C | SET_Z;
+ 
+  bool result = _petraea_eval_condition(&cpu, COND_LS);
+  cr_assert_eq(result, true);
+}
+
+Test(executor_conditions, GE_n_v) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+  cpu.cpsr = SET_N | SET_V;
+ 
+  bool result = _petraea_eval_condition(&cpu, COND_GE);
+  cr_assert_eq(result, true);
+}
+
+Test(executor_conditions, GE_nn_nv) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+
+  bool result = _petraea_eval_condition(&cpu, COND_GE);
+  cr_assert_eq(result, true);
+}
+
+Test(executor_conditions, GE_nn_v) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+  cpu.cpsr = SET_V;
+ 
+  bool result = _petraea_eval_condition(&cpu, COND_GE);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, GE_n_nv) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+  cpu.cpsr = SET_N;
+ 
+  bool result = _petraea_eval_condition(&cpu, COND_GE);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, LT_n_v) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+  cpu.cpsr = SET_N | SET_V;
+ 
+  bool result = _petraea_eval_condition(&cpu, COND_LT);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, LT_nn_nv) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+
+  bool result = _petraea_eval_condition(&cpu, COND_LT);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, LT_nn_v) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+  cpu.cpsr = SET_V;
+ 
+  bool result = _petraea_eval_condition(&cpu, COND_LT);
+  cr_assert_eq(result, true);
+}
+
+Test(executor_conditions, LT_n_nv) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+  cpu.cpsr = SET_N;
+ 
+  bool result = _petraea_eval_condition(&cpu, COND_LT);
+  cr_assert_eq(result, true);
+}
+
+Test(executor_conditions, AL) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+ 
+  bool result = _petraea_eval_condition(&cpu, COND_AL);
+  cr_assert_eq(result, true);
+}
+
+Test(executor_conditions, NV) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+ 
+  bool result = _petraea_eval_condition(&cpu, COND_NV);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, GT_n_v_nz) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+  cpu.cpsr = SET_N | SET_V;
+ 
+  bool result = _petraea_eval_condition(&cpu, COND_GT);
+  cr_assert_eq(result, true);
+}
+
+Test(executor_conditions, GT_nn_nv_nz) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+
+  bool result = _petraea_eval_condition(&cpu, COND_GT);
+  cr_assert_eq(result, true);
+}
+
+Test(executor_conditions, GT_nn_v_nz) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+  cpu.cpsr = SET_V;
+ 
+  bool result = _petraea_eval_condition(&cpu, COND_GT);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, GT_n_nv_nz) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+  cpu.cpsr = SET_N;
+ 
+  bool result = _petraea_eval_condition(&cpu, COND_GT);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, GT_n_v_z) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+  cpu.cpsr = SET_N | SET_V | SET_Z;
+ 
+  bool result = _petraea_eval_condition(&cpu, COND_GT);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, GT_nn_nv_z) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL);
+  cpu.cpsr = SET_Z;
+
+  bool result = _petraea_eval_condition(&cpu, COND_GT);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, GT_nn_v_z) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+  cpu.cpsr = SET_V | SET_Z;
+ 
+  bool result = _petraea_eval_condition(&cpu, COND_GT);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, GT_n_nv_z) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+  cpu.cpsr = SET_N | SET_Z;
+ 
+  bool result = _petraea_eval_condition(&cpu, COND_GT);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, LE_n_v_nz) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+  cpu.cpsr = SET_N | SET_V;
+ 
+  bool result = _petraea_eval_condition(&cpu, COND_LE);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, LE_nn_nv_nz) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+
+  bool result = _petraea_eval_condition(&cpu, COND_LE);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, LE_nn_v_nz) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+  cpu.cpsr = SET_V;
+ 
+  bool result = _petraea_eval_condition(&cpu, COND_LE);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, LE_n_nv_nz) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+  cpu.cpsr = SET_N;
+ 
+  bool result = _petraea_eval_condition(&cpu, COND_LE);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, LE_n_v_z) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+  cpu.cpsr = SET_N | SET_V | SET_Z;
+ 
+  bool result = _petraea_eval_condition(&cpu, COND_LE);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, LE_nn_nv_z) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL);
+  cpu.cpsr = SET_Z;
+
+  bool result = _petraea_eval_condition(&cpu, COND_LE);
+  cr_assert_eq(result, false);
+}
+
+Test(executor_conditions, LE_nn_v_z) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+  cpu.cpsr = SET_V | SET_Z;
+ 
+  bool result = _petraea_eval_condition(&cpu, COND_LE);
+  cr_assert_eq(result, true);
+}
+
+Test(executor_conditions, LE_n_nv_z) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL); 
+  cpu.cpsr = SET_N | SET_Z;
+ 
+  bool result = _petraea_eval_condition(&cpu, COND_LE);
+  cr_assert_eq(result, true);
+}
+

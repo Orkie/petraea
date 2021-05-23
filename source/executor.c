@@ -192,18 +192,37 @@ static int execute_data_processing(pt_arm_cpu* cpu, pt_arm_instr_data_processing
 
 // NOTE - we assume PC here is the same as that of the instruction we are trying to execute - TODO is this a correct assumption? Offset can be 8 or 12 bytes apparently. in the decoder we should store a pc offset at the top level, and apply that before execute. next instruction fetch however needs to deapply it and do +4, or detect that an instruction has changed it and use that instead
 int pt_arm_execute_instruction(pt_arm_cpu* cpu, pt_arm_instruction* instr) {
-  // TODO - cond
-  
-  switch(instr->type) {
-  case INSTR_BRANCH:
-    return execute_branch(cpu, &instr->instr.branch);
-  case INSTR_DATA_PROCESSING:
-    return execute_data_processing(cpu, &instr->instr.data_processing);
-  default: return -1;
+  if(_petraea_eval_condition(cpu, instr->cond)) {
+    switch(instr->type) {
+    case INSTR_BRANCH:
+      return execute_branch(cpu, &instr->instr.branch);
+    case INSTR_DATA_PROCESSING:
+      return execute_data_processing(cpu, &instr->instr.data_processing);
+    default: return -1;
+    }
   }
+  return 0;
 }
 
-bool _petraea_eval_condition(pt_arm_cpu* cpu) {
+bool _petraea_eval_condition(pt_arm_cpu* cpu, pt_arm_condition cond) {
+  switch(cond) {
+  case COND_EQ: return GET_ZERO_FLAG(cpu);
+  case COND_NE: return !GET_ZERO_FLAG(cpu);
+  case COND_CS: return GET_CARRY_FLAG(cpu);
+  case COND_CC: return !GET_CARRY_FLAG(cpu);
+  case COND_MI: return GET_NEGATIVE_FLAG(cpu);
+  case COND_PL: return !GET_NEGATIVE_FLAG(cpu);
+  case COND_VS: return GET_OVERFLOW_FLAG(cpu);
+  case COND_VC: return !GET_OVERFLOW_FLAG(cpu);
+  case COND_HI: return GET_CARRY_FLAG(cpu) && !GET_ZERO_FLAG(cpu);
+  case COND_LS: return !GET_CARRY_FLAG(cpu) || GET_ZERO_FLAG(cpu);
+  case COND_GE: return GET_NEGATIVE_FLAG(cpu) == GET_OVERFLOW_FLAG(cpu);
+  case COND_LT: return GET_NEGATIVE_FLAG(cpu) != GET_OVERFLOW_FLAG(cpu);
+  case COND_GT: return !GET_ZERO_FLAG(cpu) && (GET_NEGATIVE_FLAG(cpu) == GET_OVERFLOW_FLAG(cpu));
+  case COND_LE: return GET_ZERO_FLAG(cpu) && (GET_NEGATIVE_FLAG(cpu) != GET_OVERFLOW_FLAG(cpu));
+  case COND_AL: return true;
+  case COND_NV: return false;
+  }
   return false;
 }
 
