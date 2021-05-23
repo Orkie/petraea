@@ -1,12 +1,12 @@
 #include "cpu.h"
 #include "instr.h"
 
-static void _init_regs(__arm_cpu* cpu);
-static uint8_t _fetch_byte(__arm_cpu* cpu, uint32_t address);
-static uint16_t _fetch_halfword(__arm_cpu* cpu, uint32_t address);
-static uint32_t _fetch_word(__arm_cpu* cpu, uint32_t address);
+static void _init_regs(pt_arm_cpu* cpu);
+static uint8_t _fetch_byte(pt_arm_cpu* cpu, uint32_t address);
+static uint16_t _fetch_halfword(pt_arm_cpu* cpu, uint32_t address);
+static uint32_t _fetch_word(pt_arm_cpu* cpu, uint32_t address);
 
-int arm_init_cpu(__arm_cpu* cpu,
+int pt_arm_init_cpu(pt_arm_cpu* cpu,
 		 uint32_t (*bus_fetch_word)(uint32_t),
 		 uint16_t (*bus_fetch_halfword)(uint32_t),
 		 uint8_t (*bus_fetch_byte)(uint32_t)) {
@@ -20,7 +20,7 @@ int arm_init_cpu(__arm_cpu* cpu,
   return 0;
 }
 
-__arm_mode arm_current_mode(__arm_cpu* cpu) {
+pt_arm_mode pt_arm_current_mode(pt_arm_cpu* cpu) {
   switch(cpu->cpsr&0xF) {
   case 0b0000: return MODE_USER;
   case 0b0001: return MODE_FIQ;
@@ -33,7 +33,7 @@ __arm_mode arm_current_mode(__arm_cpu* cpu) {
   return 7; // unknown mode - maybe we should log this somehow rather than just causing a segfault?
 }
 
-void arm_set_mode(__arm_cpu* cpu, __arm_mode mode) {
+void pt_arm_set_mode(pt_arm_cpu* cpu, pt_arm_mode mode) {
   switch(mode) {
   case MODE_USER: cpu->cpsr = (cpu->cpsr&0xF) | 0b0000; break;
   case MODE_FIQ: cpu->cpsr = (cpu->cpsr&0xF) | 0b0001; break;
@@ -45,32 +45,32 @@ void arm_set_mode(__arm_cpu* cpu, __arm_mode mode) {
   }
 }
 
-bool arm_is_little_endian(__arm_cpu* cpu) {
+bool arm_is_little_endian(pt_arm_cpu* cpu) {
   return ((cpu->cpsr >> 9)&0x1) == 0x0;
 }
 
 // TODO - implement MMU/PU here
-static uint8_t _fetch_byte(__arm_cpu* cpu, uint32_t address) {
+static uint8_t _fetch_byte(pt_arm_cpu* cpu, uint32_t address) {
   return 0;
 }
 
-static uint16_t _fetch_halfword(__arm_cpu* cpu, uint32_t address) {
+static uint16_t _fetch_halfword(pt_arm_cpu* cpu, uint32_t address) {
   return 0;
 }
 
-static uint32_t _fetch_word(__arm_cpu* cpu, uint32_t address) {
+static uint32_t _fetch_word(pt_arm_cpu* cpu, uint32_t address) {
   const uint32_t value = (*cpu->bus_fetch_word)(address);
   // TODO - handle endianess, and MMU, PU
   return value;
 }
 
-__arm_registers* arm_get_regs(__arm_cpu* cpu) {
-  __arm_mode mode = arm_current_mode(cpu);
+pt_arm_registers* pt_arm_get_regs(pt_arm_cpu* cpu) {
+  pt_arm_mode mode = pt_arm_current_mode(cpu);
   return &cpu->regs[mode];
 }
 
-int arm_clock(__arm_cpu* cpu) {
-  __arm_mode mode = arm_current_mode(cpu);
+int pt_arm_clock(pt_arm_cpu* cpu) {
+  pt_arm_mode mode = pt_arm_current_mode(cpu);
   
   // fetch
   uint32_t pc = *cpu->regs[mode].regs[REG_PC];
@@ -78,13 +78,13 @@ int arm_clock(__arm_cpu* cpu) {
   
   // decode
   // TODO - thumb
-  __arm_instruction decoded;
-  if(arm_decode_instruction(&decoded, instruction) < 0) {
+  pt_arm_instruction decoded;
+  if(pt_arm_decode_instruction(&decoded, instruction) < 0) {
     return -1;
   }
   
   // execute
-  if(arm_execute_instruction(cpu, &decoded) < 0) {
+  if(pt_arm_execute_instruction(cpu, &decoded) < 0) {
     return -2;
   }
 
@@ -93,7 +93,7 @@ int arm_clock(__arm_cpu* cpu) {
   return 0;
 }
 
-static void _init_regs(__arm_cpu* cpu) {
+static void _init_regs(pt_arm_cpu* cpu) {
   cpu->r0 = 0;
   cpu->r1 = 0;
   cpu->r2 = 0;

@@ -18,8 +18,8 @@ static inline bool addCarry(uint32_t a, uint32_t b, bool carry) {
   return (((uint64_t)a) + b + carry) > 0xFFFFFFFF;
 }
 
-static int execute_branch(__arm_cpu* cpu, __arm_instr_branch* i) {
-  __arm_registers* regs = arm_get_regs(cpu);
+static int execute_branch(pt_arm_cpu* cpu, pt_arm_instr_branch* i) {
+  pt_arm_registers* regs = pt_arm_get_regs(cpu);
   if(i->link) {
     (*regs->regs)[REG_LR] = (*regs->regs)[REG_PC];
   }
@@ -27,7 +27,7 @@ static int execute_branch(__arm_cpu* cpu, __arm_instr_branch* i) {
   return 0;
 }
 
-static inline void handle_flags_logical(__arm_cpu* cpu, uint32_t aluOut, bool shifterCarryValid, bool shifterCarry) {
+static inline void handle_flags_logical(pt_arm_cpu* cpu, uint32_t aluOut, bool shifterCarryValid, bool shifterCarry) {
   SET_NEGATIVE_FLAG(cpu, sign32(aluOut));
   SET_ZERO_FLAG(cpu, (aluOut) == 0);
   if(shifterCarryValid) {
@@ -35,12 +35,12 @@ static inline void handle_flags_logical(__arm_cpu* cpu, uint32_t aluOut, bool sh
   }
 }
 
-static int execute_data_processing(__arm_cpu* cpu, __arm_instr_data_processing* i) {
-  __arm_registers* regs = arm_get_regs(cpu);
+static int execute_data_processing(pt_arm_cpu* cpu, pt_arm_instr_data_processing* i) {
+  pt_arm_registers* regs = pt_arm_get_regs(cpu);
   bool shifterCarry = false;
   bool shifterCarryValid = false;
   uint32_t operand1 = (*regs->regs)[i->operand1];
-  uint32_t operand2 = eval_operand2(cpu, &i->operand2, &shifterCarryValid, &shifterCarry);
+  uint32_t operand2 = _petraea_eval_operand2(cpu, &i->operand2, &shifterCarryValid, &shifterCarry);
   uint32_t* dest = regs->regs[i->dest];
   uint32_t aluOut;
   switch(i->opcode) {
@@ -190,8 +190,8 @@ static int execute_data_processing(__arm_cpu* cpu, __arm_instr_data_processing* 
   return 0;
 }
 
-// NOTE - we assume PC here is the same as that of the instruction we are trying to execute - TODO is this a correct assumption? Offset can be 8 or 12 bytes apparently. in the decoder we should store a pc offset at the top level, and apply that before execute. next instruction fetch however needs to deapply it and do +4
-int arm_execute_instruction(__arm_cpu* cpu, __arm_instruction* instr) {
+// NOTE - we assume PC here is the same as that of the instruction we are trying to execute - TODO is this a correct assumption? Offset can be 8 or 12 bytes apparently. in the decoder we should store a pc offset at the top level, and apply that before execute. next instruction fetch however needs to deapply it and do +4, or detect that an instruction has changed it and use that instead
+int pt_arm_execute_instruction(pt_arm_cpu* cpu, pt_arm_instruction* instr) {
   // TODO - cond
   
   switch(instr->type) {
@@ -203,14 +203,18 @@ int arm_execute_instruction(__arm_cpu* cpu, __arm_instruction* instr) {
   }
 }
 
-uint32_t eval_operand2(__arm_cpu* cpu, __arm_operand2* operand2, bool* carryValid, bool* carry) {
+bool _petraea_eval_condition(pt_arm_cpu* cpu) {
+  return false;
+}
+
+uint32_t _petraea_eval_operand2(pt_arm_cpu* cpu, pt_arm_operand2* operand2, bool* carryValid, bool* carry) {
   if(operand2->is_immediate) {
     *carry = operand2->op.imm.carry;
     *carryValid = operand2->op.imm.carryValid;
     // rotation is handled in the decoder
     return operand2->op.imm.value;
   } else {
-    __arm_registers* regs = arm_get_regs(cpu);
+    pt_arm_registers* regs = pt_arm_get_regs(cpu);
     uint32_t regValue = (*regs->regs)[operand2->op.reg.reg];
     uint32_t shiftBy = operand2->op.reg.is_register_shift
       ? ((*regs->regs)[operand2->op.reg.shift_reg]&0xFF)

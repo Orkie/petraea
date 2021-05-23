@@ -1,5 +1,5 @@
-#ifndef __CPU_H__
-#define __CPU_H__
+#ifndef pt_CPU_Hpt_
+#define pt_CPU_Hpt_
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -24,13 +24,13 @@ typedef enum {
   REG_LR = 14,
   REG_R15 = 15,
   REG_PC = 15
-} __arm_register;
+} pt_arm_register;
 
 typedef struct {
   uint32_t* regs[16];
   uint32_t* spsr;
   uint32_t* cpsr;
-} __arm_registers;
+} pt_arm_registers;
 
 typedef enum {
   MODE_USER = 0,
@@ -40,11 +40,11 @@ typedef enum {
   MODE_UND = 4,
   MODE_IRQ = 5,
   MODE_FIQ = 6
-} __arm_mode;
+} pt_arm_mode;
 
-struct __arm_cpu_struct;
-typedef struct __arm_cpu_struct __arm_cpu;
-struct __arm_cpu_struct {
+struct pt_arm_cpu_struct;
+typedef struct pt_arm_cpu_struct pt_arm_cpu;
+struct pt_arm_cpu_struct {
   uint32_t r0;
   uint32_t r1;
   uint32_t r2;
@@ -87,15 +87,15 @@ struct __arm_cpu_struct {
   uint32_t spsr_irq;
   uint32_t spsr_fiq;
 
-  __arm_registers regs[7];
+  pt_arm_registers regs[7];
 
   uint32_t (*bus_fetch_word)(uint32_t);
   uint16_t (*bus_fetch_halfword)(uint32_t);
   uint8_t (*bus_fetch_byte)(uint32_t);
 
-  uint32_t (*fetch_word)(__arm_cpu*, uint32_t);
-  uint16_t (*fetch_halfword)(__arm_cpu*, uint32_t);
-  uint8_t (*fetch_byte)(__arm_cpu*, uint32_t);
+  uint32_t (*fetch_word)(pt_arm_cpu*, uint32_t);
+  uint16_t (*fetch_halfword)(pt_arm_cpu*, uint32_t);
+  uint8_t (*fetch_byte)(pt_arm_cpu*, uint32_t);
 };
 
 
@@ -111,13 +111,13 @@ struct __arm_cpu_struct {
 #define GET_OVERFLOW_FLAG(cpu) ((cpu->cpsr >> 28)&0x1)
 #define SET_OVERFLOW_FLAG(cpu, value) (cpu->cpsr = ((cpu->cpsr & (~(1<<28))) | (((value)&1)<<28)))
 
-extern int arm_init_cpu(__arm_cpu* cpu,
+extern int pt_arm_init_cpu(pt_arm_cpu* cpu,
 			uint32_t (*bus_fetch_word)(uint32_t),
 			uint16_t (*bus_fetch_halfword)(uint32_t),
 			uint8_t (*bus_fetch_byte)(uint32_t));
-extern __arm_mode arm_current_mode(__arm_cpu* cpu);
-extern void arm_set_mode(__arm_cpu* cpu, __arm_mode mode);
-extern int arm_clock(__arm_cpu* cpu);
-extern __arm_registers* arm_get_regs(__arm_cpu* cpu);
+extern pt_arm_mode pt_arm_current_mode(pt_arm_cpu* cpu);
+extern void pt_arm_set_mode(pt_arm_cpu* cpu, pt_arm_mode mode);
+extern int pt_arm_clock(pt_arm_cpu* cpu);
+extern pt_arm_registers* pt_arm_get_regs(pt_arm_cpu* cpu);
 
 #endif

@@ -1,7 +1,7 @@
 #include "instr.h"
 #include "util.h"
 
-static void arm_decode_operand2_immRot(__arm_operand2* dest, uint16_t op) {
+static void arm_decode_operand2_immRot(pt_arm_operand2* dest, uint16_t op) {
   dest->is_immediate = true;
   unsigned int rotateBy = ((op&0xF00) >> 8) * 2;
   dest->op.imm.value = rrot32(op & 0xFF, rotateBy);
@@ -9,12 +9,12 @@ static void arm_decode_operand2_immRot(__arm_operand2* dest, uint16_t op) {
   dest->op.imm.carry = (dest->op.imm.value >> 31)&0x1;
 }
 
-static void arm_decode_operand2_immVal(__arm_operand2* dest, uint16_t op) {
+static void arm_decode_operand2_immVal(pt_arm_operand2* dest, uint16_t op) {
   dest->is_immediate = true;
   dest->op.imm.value = op & 0xFFF;
 }
 
-static void arm_decode_operand2_reg(__arm_operand2* dest, uint16_t op) {
+static void arm_decode_operand2_reg(pt_arm_operand2* dest, uint16_t op) {
   dest->is_immediate = false;
   dest->op.reg.reg = op & 0b1111;
   uint8_t shift = (op >> 4)&0xFF;
@@ -33,7 +33,7 @@ static bool instr_is_data_processing(uint32_t i) {
   return (i & (0x3 << 26)) == 0x0;
 }
 
-static void decode_data_processing(__arm_instr_data_processing* dest, uint32_t i) {
+static void decode_data_processing(pt_arm_instr_data_processing* dest, uint32_t i) {
   dest->opcode = (i >> 21) & 0xF;
   dest->set_condition_codes = (i >> 20) & 0x1;
   dest->operand1 = (i >> 16) & 0xF;
@@ -50,7 +50,7 @@ static bool instr_is_single_data_transfer(uint32_t i) {
     || (((i&0x0E000000) == 0x06000000) && ((i&0x10) == 0x0));
 }
 
-static void decode_single_data_transfer(__arm_instr_single_data_transfer* dest, uint32_t i) {
+static void decode_single_data_transfer(pt_arm_instr_single_data_transfer* dest, uint32_t i) {
   const bool p = (i >> 24) & 0x1;
   const bool w = (i >> 21) & 0x1;
 
@@ -94,7 +94,7 @@ static bool instr_is_branch(uint32_t i) {
   return (i&0x0E000000) == 0x0A000000;
 }
 
-static void decode_branch(__arm_instr_branch* dest, uint32_t i) {
+static void decode_branch(pt_arm_instr_branch* dest, uint32_t i) {
   dest->link = (i&0x01000000) == 0x01000000;
   uint32_t offsetRaw = (i&0x00FFFFFF);
   if(offsetRaw&0x00800000) {
@@ -106,7 +106,7 @@ static void decode_branch(__arm_instr_branch* dest, uint32_t i) {
   }
 }
 
-int arm_decode_instruction(__arm_instruction* dest, uint32_t i) {
+int pt_arm_decode_instruction(pt_arm_instruction* dest, uint32_t i) {
   const unsigned int cond = (i&0xF0000000) >> 28;
 
   if(instr_is_branch_exchange(i)) {

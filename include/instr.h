@@ -1,5 +1,5 @@
-#ifndef __INSTR_H__
-#define __INSTR_H__
+#ifndef pt_INSTR_Hpt_
+#define pt_INSTR_Hpt_
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -20,8 +20,9 @@ typedef enum {
   COND_LT = 0b1011,
   COND_GT = 0b1100,
   COND_LE = 0b1101,
-  COND_AL = 0b1110
-} __arm_condition;
+  COND_AL = 0b1110,
+  COND_NV = 0b1111
+} pt_arm_condition;
 
 typedef enum {
   OPCODE_AND = 0b0000,
@@ -40,7 +41,7 @@ typedef enum {
   OPCODE_MOV = 0b1101,
   OPCODE_BIC = 0b1110,
   OPCODE_MVN = 0b1111
-} __arm_opcode;
+} pt_arm_opcode;
 
 typedef enum {
   INSTR_DATA_PROCESSING,
@@ -54,48 +55,48 @@ typedef enum {
   INSTR_UNDEFINED,
   INSTR_BRANCH,
   // TODO - the rest
-} __arm_instruction_type;
+} pt_arm_instruction_type;
 
 typedef struct {
   uint32_t value;
   bool carry;
   bool carryValid;
-} __arm_immediate_operand;
+} pt_arm_immediate_operand;
 
 typedef enum {
   SHIFT_LOGICAL_LEFT = 0b00,
   SHIFT_LOGICAL_RIGHT = 0b01,
   SHIFT_ARITHMETIC_RIGHT = 0b10,
   SHIFT_ROTATE_RIGHT = 0b11
-} __arm_shift_type;
+} pt_arm_shift_type;
 
 typedef struct {
-  __arm_register reg;
+  pt_arm_register reg;
   bool is_register_shift;
-  __arm_shift_type shift_type;
+  pt_arm_shift_type shift_type;
   uint8_t shift_imm;
-  __arm_register shift_reg;
-} __arm_register_operand;
+  pt_arm_register shift_reg;
+} pt_arm_register_operand;
 
 typedef struct {
   bool is_immediate;
   union Operand2 {
-    __arm_immediate_operand imm;
-    __arm_register_operand reg;
+    pt_arm_immediate_operand imm;
+    pt_arm_register_operand reg;
   } op;
-} __arm_operand2;
+} pt_arm_operand2;
 
 ///////////////////////////////////////////
 // Data processing
 ///////////////////////////////////////////
 
 typedef struct {
-  __arm_opcode opcode;
+  pt_arm_opcode opcode;
   bool set_condition_codes;
-  __arm_register operand1;
-  __arm_operand2 operand2;
-  __arm_register dest;
-} __arm_instr_data_processing;
+  pt_arm_register operand1;
+  pt_arm_operand2 operand2;
+  pt_arm_register dest;
+} pt_arm_instr_data_processing;
 
 ///////////////////////////////////////////
 // Single data transfer
@@ -108,18 +109,18 @@ typedef struct {
   bool unprivileged;
   bool write_back_address;
   bool load; // false == store
-  __arm_register base;
-  __arm_register source_dest;
-  __arm_operand2 offset;
-} __arm_instr_single_data_transfer;
+  pt_arm_register base;
+  pt_arm_register source_dest;
+  pt_arm_operand2 offset;
+} pt_arm_instr_single_data_transfer;
 
 ///////////////////////////////////////////
 // Branch exchange
 ///////////////////////////////////////////
 
 typedef struct {
-  __arm_register operand;
-} __arm_instr_branch_exchange;
+  pt_arm_register operand;
+} pt_arm_instr_branch_exchange;
 
 ///////////////////////////////////////////
 // Branch exchange
@@ -128,26 +129,27 @@ typedef struct {
 typedef struct {
   bool link;
   int32_t offset;
-} __arm_instr_branch;
+} pt_arm_instr_branch;
 
 ///////////////////////////////////////////
 
 typedef union {
-  __arm_instr_data_processing data_processing;
-  __arm_instr_single_data_transfer single_data_transfer;
-  __arm_instr_branch_exchange branch_exchange;
-  __arm_instr_branch branch;
-} __arm_instructions;
+  pt_arm_instr_data_processing data_processing;
+  pt_arm_instr_single_data_transfer single_data_transfer;
+  pt_arm_instr_branch_exchange branch_exchange;
+  pt_arm_instr_branch branch;
+} pt_arm_instructions;
 
 typedef struct {
-  __arm_condition cond;
-  __arm_instruction_type type;
-  __arm_instructions instr;
-} __arm_instruction;
+  pt_arm_condition cond;
+  pt_arm_instruction_type type;
+  pt_arm_instructions instr;
+} pt_arm_instruction;
 
-extern int arm_decode_instruction(__arm_instruction* dest, uint32_t i);
-extern int arm_execute_instruction(__arm_cpu* cpu, __arm_instruction* instr);
-extern uint32_t eval_operand2(__arm_cpu* cpu, __arm_operand2* operand2, bool* carryValid, bool* carry);
+extern int pt_arm_decode_instruction(pt_arm_instruction* dest, uint32_t i);
+extern int pt_arm_execute_instruction(pt_arm_cpu* cpu, pt_arm_instruction* instr);
+extern uint32_t _petraea_eval_operand2(pt_arm_cpu* cpu, pt_arm_operand2* operand2, bool* carryValid, bool* carry);
+extern bool _petraea_eval_condition(pt_arm_cpu* cpu);
 
 #endif
 
