@@ -3519,3 +3519,181 @@ Test(executor_conditions, LE_n_nv_z) {
   cr_assert_eq(result, true);
 }
 
+///////////////////////////////////////////
+// Single data transfer
+///////////////////////////////////////////
+
+Test(executor_single_data_transfer, read_word) {
+  uint32_t fetch_word(uint32_t address) {
+    return address == 0x13579240 ? 0x12345678 : 0x87654321;
+  }
+  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, &fetch_word, NULL, NULL, NULL, NULL, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_SINGLE_DATA_TRANSFER;
+  instr.cond = COND_AL;
+  instr.instr.single_data_transfer.add_offset_before_transfer = true;
+  instr.instr.single_data_transfer.add_offset = true;
+  instr.instr.single_data_transfer.transfer_byte = false;
+  instr.instr.single_data_transfer.write_back_address = false;
+  instr.instr.single_data_transfer.load = true;
+  instr.instr.single_data_transfer.base = REG_R1;
+  instr.instr.single_data_transfer.source_dest = REG_R0;
+  instr.instr.single_data_transfer.offset.is_immediate = true;
+  instr.instr.single_data_transfer.offset.op.imm.value = 4;
+  cpu.r1 = (0x13579240 - 4);
+  
+  pt_arm_execute_instruction(&cpu, &instr);
+
+  cr_assert_eq(cpu.r0, 0x12345678);
+  cr_assert_eq(cpu.r1, 0x13579240 - 4);
+}
+
+Test(executor_single_data_transfer, write_word) {
+  uint32_t writtenValue = 0xDEADBEEF;
+  void write_word(uint32_t address, uint32_t value) {
+    if(address == 0x13579240) {
+      writtenValue = value;
+    }
+  }
+  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL, &write_word, NULL, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_SINGLE_DATA_TRANSFER;
+  instr.cond = COND_AL;
+  instr.instr.single_data_transfer.add_offset_before_transfer = true;
+  instr.instr.single_data_transfer.add_offset = true;
+  instr.instr.single_data_transfer.transfer_byte = false;
+  instr.instr.single_data_transfer.write_back_address = false;
+  instr.instr.single_data_transfer.load = false;
+  instr.instr.single_data_transfer.base = REG_R1;
+  instr.instr.single_data_transfer.source_dest = REG_R0;
+  instr.instr.single_data_transfer.offset.is_immediate = true;
+  instr.instr.single_data_transfer.offset.op.imm.value = 4;
+  cpu.r0 = 0x12345678;
+  cpu.r1 = (0x13579240 - 4);
+  
+  pt_arm_execute_instruction(&cpu, &instr);
+
+  cr_assert_eq(writtenValue, 0x12345678);
+}
+
+Test(executor_single_data_transfer, read_word_byte) {
+  uint8_t fetch_byte(uint32_t address) {
+    return address == 0x13579240 ? 0x12 : 0x34;
+  }
+  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, &fetch_byte, NULL, NULL, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_SINGLE_DATA_TRANSFER;
+  instr.cond = COND_AL;
+  instr.instr.single_data_transfer.add_offset_before_transfer = true;
+  instr.instr.single_data_transfer.add_offset = true;
+  instr.instr.single_data_transfer.transfer_byte = true;
+  instr.instr.single_data_transfer.write_back_address = false;
+  instr.instr.single_data_transfer.load = true;
+  instr.instr.single_data_transfer.base = REG_R1;
+  instr.instr.single_data_transfer.source_dest = REG_R0;
+  instr.instr.single_data_transfer.offset.is_immediate = true;
+  instr.instr.single_data_transfer.offset.op.imm.value = 4;
+  cpu.r1 = (0x13579240 - 4);
+  
+  pt_arm_execute_instruction(&cpu, &instr);
+
+  cr_assert_eq(cpu.r0, 0x12);
+  cr_assert_eq(cpu.r1, 0x13579240 - 4);
+}
+
+Test(executor_single_data_transfer, write_byte) {
+  uint8_t writtenValue = 0xDE;
+  void write_byte(uint32_t address, uint8_t value) {
+    if(address == 0x13579240) {
+      writtenValue = value;
+    }
+  }
+  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL, NULL, NULL, &write_byte); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_SINGLE_DATA_TRANSFER;
+  instr.cond = COND_AL;
+  instr.instr.single_data_transfer.add_offset_before_transfer = true;
+  instr.instr.single_data_transfer.add_offset = true;
+  instr.instr.single_data_transfer.transfer_byte = true;
+  instr.instr.single_data_transfer.write_back_address = false;
+  instr.instr.single_data_transfer.load = false;
+  instr.instr.single_data_transfer.base = REG_R1;
+  instr.instr.single_data_transfer.source_dest = REG_R0;
+  instr.instr.single_data_transfer.offset.is_immediate = true;
+  instr.instr.single_data_transfer.offset.op.imm.value = 4;
+  cpu.r0 = 0x12345678;
+  cpu.r1 = (0x13579240 - 4);
+  
+  pt_arm_execute_instruction(&cpu, &instr);
+
+  cr_assert_eq(writtenValue, 0x78);
+}
+
+Test(executor_single_data_transfer, write_back_base) {
+  uint32_t fetch_word(uint32_t address) {
+    return address == 0x13579240 ? 0x12345678 : 0x87654321;
+  }
+  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, &fetch_word, NULL, NULL, NULL, NULL, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_SINGLE_DATA_TRANSFER;
+  instr.cond = COND_AL;
+  instr.instr.single_data_transfer.add_offset_before_transfer = true;
+  instr.instr.single_data_transfer.add_offset = true;
+  instr.instr.single_data_transfer.transfer_byte = false;
+  instr.instr.single_data_transfer.write_back_address = true;
+  instr.instr.single_data_transfer.load = true;
+  instr.instr.single_data_transfer.base = REG_R1;
+  instr.instr.single_data_transfer.source_dest = REG_R0;
+  instr.instr.single_data_transfer.offset.is_immediate = true;
+  instr.instr.single_data_transfer.offset.op.imm.value = 4;
+  cpu.r1 = (0x13579240 - 4);
+  
+  pt_arm_execute_instruction(&cpu, &instr);
+
+  cr_assert_eq(cpu.r0, 0x12345678);
+  cr_assert_eq(cpu.r1, 0x13579240);
+}
+
+Test(executor_single_data_transfer, offset_base_after_transfer) {
+  uint32_t fetch_word(uint32_t address) {
+    return address == 0x13579240 ? 0x12345678 : 0x87654321;
+  }
+  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, &fetch_word, NULL, NULL, NULL, NULL, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_SINGLE_DATA_TRANSFER;
+  instr.cond = COND_AL;
+  instr.instr.single_data_transfer.add_offset_before_transfer = false;
+  instr.instr.single_data_transfer.add_offset = true;
+  instr.instr.single_data_transfer.transfer_byte = false;
+  instr.instr.single_data_transfer.write_back_address = true;
+  instr.instr.single_data_transfer.load = true;
+  instr.instr.single_data_transfer.base = REG_R1;
+  instr.instr.single_data_transfer.source_dest = REG_R0;
+  instr.instr.single_data_transfer.offset.is_immediate = true;
+  instr.instr.single_data_transfer.offset.op.imm.value = 4;
+  cpu.r1 = 0x13579240;
+  
+  pt_arm_execute_instruction(&cpu, &instr);
+
+  cr_assert_eq(cpu.r0, 0x12345678);
+  cr_assert_eq(cpu.r1, 0x13579240+4);
+}
+
