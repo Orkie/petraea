@@ -71,9 +71,10 @@ pt_arm_registers* pt_arm_get_regs(pt_arm_cpu* cpu) {
 
 int pt_arm_clock(pt_arm_cpu* cpu) {
   pt_arm_mode mode = pt_arm_current_mode(cpu);
+  uint32_t* pcReg = cpu->regs[mode].regs[REG_PC];
   
   // fetch
-  uint32_t pc = *cpu->regs[mode].regs[REG_PC];
+  uint32_t pc = *pcReg;
   uint32_t instruction = _fetch_word(cpu, pc);
   
   // decode
@@ -84,11 +85,15 @@ int pt_arm_clock(pt_arm_cpu* cpu) {
   }
   
   // execute
+  *pcReg = pc+8;
   if(pt_arm_execute_instruction(cpu, &decoded) < 0) {
     return -2;
   }
 
-  *cpu->regs[mode].regs[REG_PC] += 4;
+  // no branch has been executed
+  if(*pcReg == (pc+8)) {
+    *pcReg = pc+4;
+  }
 
   return 0;
 }

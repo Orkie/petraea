@@ -115,6 +115,10 @@ struct pt_arm_cpu_struct {
 #define GET_OVERFLOW_FLAG(cpu) ((cpu->cpsr >> 28)&0x1)
 #define SET_OVERFLOW_FLAG(cpu, value) (cpu->cpsr = ((cpu->cpsr & (~(1<<28))) | (((value)&1)<<28)))
 
+// T
+#define GET_THUMB_FLAG(cpu) ((cpu->cpsr >> 5)&0x1)
+#define SET_THUMB_FLAG(cpu, value) (cpu->cpsr = ((cpu->cpsr & (~(1<<5))) | (((value)&1)<<5)))
+
 extern int pt_arm_init_cpu(pt_arm_cpu* cpu,
 			uint32_t (*bus_fetch_word)(uint32_t),
 			uint16_t (*bus_fetch_halfword)(uint32_t),

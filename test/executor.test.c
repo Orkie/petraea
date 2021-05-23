@@ -537,6 +537,40 @@ Test(executor_branch, can_execute_bl_with_positive_offset) {
 }
 
 ///////////////////////////////////////////
+// Branch
+///////////////////////////////////////////
+
+Test(executor_branch_and_exchange, can_execute_bx_to_arm) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL);
+  cpu.r0 = 0x12345678;
+  pt_arm_instruction instr;
+  instr.type = INSTR_BRANCH_EXCHANGE;
+  instr.cond = COND_AL;
+  instr.instr.branch_exchange.operand = REG_R0;
+
+  pt_arm_execute_instruction(&cpu, &instr);
+
+  cr_assert_eq(cpu.r15, 0x12345678);
+  cr_assert_eq(GET_THUMB_FLAG(((pt_arm_cpu*)&cpu)), false); 
+}
+
+Test(executor_branch_and_exchange, can_execute_bx_to_thumb) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL);
+  cpu.r0 = 0x12345679;
+  pt_arm_instruction instr;
+  instr.type = INSTR_BRANCH_EXCHANGE;
+  instr.cond = COND_AL;
+  instr.instr.branch_exchange.operand = REG_R0;
+
+  pt_arm_execute_instruction(&cpu, &instr);
+
+  cr_assert_eq(cpu.r15, 0x12345678);
+  cr_assert_eq(GET_THUMB_FLAG(((pt_arm_cpu*)&cpu)), true); 
+}
+
+///////////////////////////////////////////
 // AND
 ///////////////////////////////////////////
 

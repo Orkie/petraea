@@ -2,6 +2,24 @@
 #include "instr.h"
 #include "util.h"
 
+static int execute_branch(pt_arm_cpu* cpu, pt_arm_instr_branch* i) {
+  pt_arm_registers* regs = pt_arm_get_regs(cpu);
+  if(i->link) {
+    (*regs->regs)[REG_LR] = (*regs->regs)[REG_PC];
+  }
+  (*regs->regs)[REG_PC] += i->offset;
+  return 0;
+}
+
+static int execute_branch_exchange(pt_arm_cpu* cpu, pt_arm_instr_branch_exchange* i) {
+  pt_arm_registers* regs = pt_arm_get_regs(cpu);
+  uint32_t address = (*regs->regs)[i->operand];
+
+  SET_THUMB_FLAG(cpu, address&0x1);
+  (*regs->regs)[REG_PC] = (address&0xFFFFFFFE);
+  return 0;
+}
+
 static inline bool subOverflow(int32_t a, int32_t b, bool carry) {
   return (((int64_t)a) - ((int64_t)b) - (carry? 0 : 1)) < ((int32_t)0x80000000);
 }
@@ -16,15 +34,6 @@ static inline bool subBorrow(uint32_t a, uint32_t b, bool carry) {
 
 static inline bool addCarry(uint32_t a, uint32_t b, bool carry) {
   return (((uint64_t)a) + b + carry) > 0xFFFFFFFF;
-}
-
-static int execute_branch(pt_arm_cpu* cpu, pt_arm_instr_branch* i) {
-  pt_arm_registers* regs = pt_arm_get_regs(cpu);
-  if(i->link) {
-    (*regs->regs)[REG_LR] = (*regs->regs)[REG_PC];
-  }
-  (*regs->regs)[REG_PC] += i->offset;
-  return 0;
 }
 
 static inline void handle_flags_logical(pt_arm_cpu* cpu, uint32_t aluOut, bool shifterCarryValid, bool shifterCarry) {
@@ -196,6 +205,8 @@ int pt_arm_execute_instruction(pt_arm_cpu* cpu, pt_arm_instruction* instr) {
     switch(instr->type) {
     case INSTR_BRANCH:
       return execute_branch(cpu, &instr->instr.branch);
+    case INSTR_BRANCH_EXCHANGE:
+      return execute_branch_exchange(cpu, &instr->instr.branch_exchange);
     case INSTR_DATA_PROCESSING:
       return execute_data_processing(cpu, &instr->instr.data_processing);
     default: return -1;
