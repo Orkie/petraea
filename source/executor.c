@@ -145,7 +145,20 @@ static int execute_data_processing(__arm_cpu* cpu, __arm_instr_data_processing* 
       SET_CARRY_FLAG(cpu, shifterCarry);
     }
     break;
-
+  case OPCODE_CMP: ;
+    aluOut = operand1 - operand2;
+    SET_NEGATIVE_FLAG(cpu, sign32(aluOut));
+    SET_ZERO_FLAG(cpu, (aluOut) == 0);
+    SET_CARRY_FLAG(cpu, subBorrow(operand1, operand2, false));
+    SET_OVERFLOW_FLAG(cpu, subOverflow(operand1, operand2, true));
+    break;
+  case OPCODE_CMN: ;
+    aluOut = operand1 + operand2;
+    SET_NEGATIVE_FLAG(cpu, sign32(aluOut));
+    SET_ZERO_FLAG(cpu, (aluOut) == 0);
+    SET_CARRY_FLAG(cpu, addCarry(operand1, operand2, false));
+    SET_OVERFLOW_FLAG(cpu, addOverflow(operand1, operand2, false));      
+    break;
   default: return -1;
   }
 
