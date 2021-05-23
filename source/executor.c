@@ -27,7 +27,7 @@ static int execute_branch(__arm_cpu* cpu, __arm_instr_branch* i) {
   return 0;
 }
 
-static void handle_flags_logical(__arm_cpu* cpu, uint32_t aluOut, bool shifterCarryValid, bool shifterCarry) {
+static inline void handle_flags_logical(__arm_cpu* cpu, uint32_t aluOut, bool shifterCarryValid, bool shifterCarry) {
   SET_NEGATIVE_FLAG(cpu, sign32(aluOut));
   SET_ZERO_FLAG(cpu, (aluOut) == 0);
   if(shifterCarryValid) {
@@ -167,6 +167,15 @@ static int execute_data_processing(__arm_cpu* cpu, __arm_instr_data_processing* 
       handle_flags_logical(cpu, *dest, shifterCarryValid, shifterCarry);
     }
     break;
+  case OPCODE_BIC:
+    *dest = operand1 & (~operand2);
+    if(i->set_condition_codes && i->dest == REG_R15) {
+      *regs->cpsr = *regs->spsr;
+    } else if(i->set_condition_codes) {
+      handle_flags_logical(cpu, *dest, shifterCarryValid, shifterCarry);
+    }
+    break;      
+
   default: return -1;
   }
 
