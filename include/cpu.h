@@ -93,9 +93,17 @@ struct pt_arm_cpu_struct {
   uint16_t (*bus_fetch_halfword)(uint32_t);
   uint8_t (*bus_fetch_byte)(uint32_t);
 
-  uint32_t (*fetch_word)(pt_arm_cpu*, uint32_t);
-  uint16_t (*fetch_halfword)(pt_arm_cpu*, uint32_t);
-  uint8_t (*fetch_byte)(pt_arm_cpu*, uint32_t);
+  void (*bus_write_word)(uint32_t, uint32_t);
+  void (*bus_write_halfword)(uint32_t, uint16_t);
+  void (*bus_write_byte)(uint32_t, uint8_t);
+
+  uint32_t (*fetch_word)(pt_arm_cpu*, uint32_t, bool, bool);
+  uint16_t (*fetch_halfword)(pt_arm_cpu*, uint32_t, bool);
+  uint8_t (*fetch_byte)(pt_arm_cpu*, uint32_t, bool);
+  
+  void (*write_word)(pt_arm_cpu*, uint32_t, uint32_t, bool);
+  void (*write_halfword)(pt_arm_cpu*, uint32_t, uint16_t, bool);
+  void (*write_byte)(pt_arm_cpu*, uint32_t, uint8_t, bool);
 };
 
 
@@ -120,12 +128,16 @@ struct pt_arm_cpu_struct {
 #define SET_THUMB_FLAG(cpu, value) (cpu->cpsr = ((cpu->cpsr & (~(1<<5))) | (((value)&1)<<5)))
 
 extern int pt_arm_init_cpu(pt_arm_cpu* cpu,
-			uint32_t (*bus_fetch_word)(uint32_t),
-			uint16_t (*bus_fetch_halfword)(uint32_t),
-			uint8_t (*bus_fetch_byte)(uint32_t));
+		    uint32_t (*bus_fetch_word)(uint32_t),
+		    uint16_t (*bus_fetch_halfword)(uint32_t),
+		    uint8_t (*bus_fetch_byte)(uint32_t),
+		    void (*bus_write_word)(uint32_t, uint32_t),
+		    void (*bus_write_halfword)(uint32_t, uint16_t),
+		    void (*bus_write_byte)(uint32_t, uint8_t));
 extern pt_arm_mode pt_arm_current_mode(pt_arm_cpu* cpu);
 extern void pt_arm_set_mode(pt_arm_cpu* cpu, pt_arm_mode mode);
 extern int pt_arm_clock(pt_arm_cpu* cpu);
 extern pt_arm_registers* pt_arm_get_regs(pt_arm_cpu* cpu);
+extern bool pt_arm_is_privileged(pt_arm_cpu* cpu);
 
 #endif

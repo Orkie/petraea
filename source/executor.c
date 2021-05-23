@@ -2,6 +2,10 @@
 #include "instr.h"
 #include "util.h"
 
+///////////////////////////////////////////
+// Branching
+///////////////////////////////////////////
+
 static int execute_branch(pt_arm_cpu* cpu, pt_arm_instr_branch* i) {
   pt_arm_registers* regs = pt_arm_get_regs(cpu);
   if(i->link) {
@@ -19,6 +23,47 @@ static int execute_branch_exchange(pt_arm_cpu* cpu, pt_arm_instr_branch_exchange
   (*regs->regs)[REG_PC] = (address&0xFFFFFFFE);
   return 0;
 }
+
+///////////////////////////////////////////
+// Data transfer
+///////////////////////////////////////////
+
+static int execute_single_data_transfer(pt_arm_cpu* cpu, pt_arm_instr_single_data_transfer* i) {
+  pt_arm_registers* regs = pt_arm_get_regs(cpu);
+  bool shifterCarry, shifterCarryValid;
+  uint32_t offset = _petraea_eval_operand2(cpu, &i->offset, &shifterCarryValid, &shifterCarry);
+
+  uint32_t* baseReg = regs->regs[i->base];
+  uint32_t base = *baseReg;
+  uint32_t* sourceDestReg = regs->regs[i->source_dest];
+
+  uint32_t modifiedBase = i->add_offset ? (base + offset) : (base - offset);
+  uint32_t address = i->add_offset_before_transfer ? modifiedBase : base;
+
+  bool isPrivileged = i->unprivileged ? false : pt_arm_is_privileged(cpu);
+
+  if(i->load) {
+    *sourceDestReg = i->transfer_byte
+      ? (*cpu->fetch_byte)(cpu, address, isPrivileged)
+      : (*cpu->fetch_word)(cpu, address, isPrivileged, true);
+  } else {
+    if(i->transfer_byte) {
+      (*cpu->write_byte)(cpu, address, (*sourceDestReg)&0xFF, isPrivileged);
+    } else {
+      (*cpu->write_word)(cpu, address, *sourceDestReg, isPrivileged);
+    }
+  }
+
+  if(i->write_back_address) {
+    *baseReg = modifiedBase;
+  }
+
+  return 0;
+}
+
+///////////////////////////////////////////
+// ALU
+///////////////////////////////////////////
 
 static inline bool subOverflow(int32_t a, int32_t b, bool carry) {
   return (((int64_t)a) - ((int64_t)b) - (carry? 0 : 1)) < ((int32_t)0x80000000);
@@ -199,7 +244,9 @@ static int execute_data_processing(pt_arm_cpu* cpu, pt_arm_instr_data_processing
   return 0;
 }
 
-// NOTE - we assume PC here is the same as that of the instruction we are trying to execute - TODO is this a correct assumption? Offset can be 8 or 12 bytes apparently. in the decoder we should store a pc offset at the top level, and apply that before execute. next instruction fetch however needs to deapply it and do +4, or detect that an instruction has changed it and use that instead
+///////////////////////////////////////////
+// Execution utilities
+///////////////////////////////////////////
 int pt_arm_execute_instruction(pt_arm_cpu* cpu, pt_arm_instruction* instr) {
   if(_petraea_eval_condition(cpu, instr->cond)) {
     switch(instr->type) {
@@ -209,6 +256,8 @@ int pt_arm_execute_instruction(pt_arm_cpu* cpu, pt_arm_instruction* instr) {
       return execute_branch_exchange(cpu, &instr->instr.branch_exchange);
     case INSTR_DATA_PROCESSING:
       return execute_data_processing(cpu, &instr->instr.data_processing);
+    case INSTR_SINGLE_DATA_TRANSFER:
+      return execute_single_data_transfer(cpu, &instr->instr.single_data_transfer);
     default: return -1;
     }
   }

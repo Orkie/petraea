@@ -1,25 +1,6 @@
 #include "cpu.h"
 #include "instr.h"
 
-static void _init_regs(pt_arm_cpu* cpu);
-static uint8_t _fetch_byte(pt_arm_cpu* cpu, uint32_t address);
-static uint16_t _fetch_halfword(pt_arm_cpu* cpu, uint32_t address);
-static uint32_t _fetch_word(pt_arm_cpu* cpu, uint32_t address);
-
-int pt_arm_init_cpu(pt_arm_cpu* cpu,
-		 uint32_t (*bus_fetch_word)(uint32_t),
-		 uint16_t (*bus_fetch_halfword)(uint32_t),
-		 uint8_t (*bus_fetch_byte)(uint32_t)) {
-  _init_regs(cpu);
-  cpu->bus_fetch_word = bus_fetch_word;
-  cpu->bus_fetch_halfword = bus_fetch_halfword;
-  cpu->bus_fetch_byte = bus_fetch_byte;
-  cpu->fetch_word = _fetch_word;
-  cpu->fetch_halfword = _fetch_halfword;
-  cpu->fetch_byte = _fetch_byte;
-  return 0;
-}
-
 pt_arm_mode pt_arm_current_mode(pt_arm_cpu* cpu) {
   switch(cpu->cpsr&0xF) {
   case 0b0000: return MODE_USER;
@@ -31,6 +12,10 @@ pt_arm_mode pt_arm_current_mode(pt_arm_cpu* cpu) {
   case 0b1111: return MODE_SYSTEM;
   }
   return 7; // unknown mode - maybe we should log this somehow rather than just causing a segfault?
+}
+
+bool pt_arm_is_privileged(pt_arm_cpu* cpu) {
+  return pt_arm_current_mode(cpu) != MODE_USER;
 }
 
 void pt_arm_set_mode(pt_arm_cpu* cpu, pt_arm_mode mode) {
@@ -50,18 +35,30 @@ bool arm_is_little_endian(pt_arm_cpu* cpu) {
 }
 
 // TODO - implement MMU/PU here
-static uint8_t _fetch_byte(pt_arm_cpu* cpu, uint32_t address) {
-  return 0;
+// TODO - handle endianess
+static uint8_t _fetch_byte(pt_arm_cpu* cpu, uint32_t address, bool isPrivileged) {
+  return (*cpu->bus_fetch_byte)(address);
 }
 
-static uint16_t _fetch_halfword(pt_arm_cpu* cpu, uint32_t address) {
-  return 0;
+static uint16_t _fetch_halfword(pt_arm_cpu* cpu, uint32_t address, bool isPrivileged) {
+  return (*cpu->bus_fetch_halfword)(address);
 }
 
-static uint32_t _fetch_word(pt_arm_cpu* cpu, uint32_t address) {
-  const uint32_t value = (*cpu->bus_fetch_word)(address);
-  // TODO - handle endianess, and MMU, PU
-  return value;
+// TODO - instruction permissions are different to data I think
+static uint32_t _fetch_word(pt_arm_cpu* cpu, uint32_t address, bool isPrivileged, bool isDataRead) {
+  return (*cpu->bus_fetch_word)(address);
+}
+
+static void _write_byte(pt_arm_cpu* cpu, uint32_t address, uint8_t value, bool isPrivileged) {
+  (*cpu->bus_write_byte)(address, value);
+}
+
+static void _write_halfword(pt_arm_cpu* cpu, uint32_t address, uint16_t value, bool isPrivileged) {
+  (*cpu->bus_write_halfword)(address, value);
+}
+
+static void _write_word(pt_arm_cpu* cpu, uint32_t address, uint32_t value, bool isPrivileged) {
+  (*cpu->bus_write_word)(address, value);
 }
 
 pt_arm_registers* pt_arm_get_regs(pt_arm_cpu* cpu) {
@@ -75,7 +72,7 @@ int pt_arm_clock(pt_arm_cpu* cpu) {
   
   // fetch
   uint32_t pc = *pcReg;
-  uint32_t instruction = _fetch_word(cpu, pc);
+  uint32_t instruction = _fetch_word(cpu, pc, true, false); // TODO - not sure if you can have an unprivileged instruction read?
   
   // decode
   // TODO - thumb
@@ -269,5 +266,32 @@ static void _init_regs(pt_arm_cpu* cpu) {
   cpu->regs[MODE_FIQ].regs[15] = &cpu->r15;
   cpu->regs[MODE_FIQ].cpsr = &cpu->cpsr;
   cpu->regs[MODE_FIQ].spsr = &cpu->spsr_fiq;
+}
+
+int pt_arm_init_cpu(pt_arm_cpu* cpu,
+		    uint32_t (*bus_fetch_word)(uint32_t),
+		    uint16_t (*bus_fetch_halfword)(uint32_t),
+		    uint8_t (*bus_fetch_byte)(uint32_t),
+		    void (*bus_write_word)(uint32_t, uint32_t),
+		    void (*bus_write_halfword)(uint32_t, uint16_t),
+		    void (*bus_write_byte)(uint32_t, uint8_t)
+		    ) {
+  _init_regs(cpu);
+
+  cpu->bus_fetch_word = bus_fetch_word;
+  cpu->bus_fetch_halfword = bus_fetch_halfword;
+  cpu->bus_fetch_byte = bus_fetch_byte;
+  cpu->fetch_word = _fetch_word;
+  cpu->fetch_halfword = _fetch_halfword;
+  cpu->fetch_byte = _fetch_byte;
+
+  cpu->bus_write_word = bus_write_word;
+  cpu->bus_write_halfword = bus_write_halfword;
+  cpu->bus_write_byte = bus_write_byte;
+  cpu->write_word = _write_word;
+  cpu->write_halfword = _write_halfword;
+  cpu->write_byte = _write_byte;
+
+  return 0;
 }
 
