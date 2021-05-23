@@ -167,6 +167,14 @@ static int execute_data_processing(__arm_cpu* cpu, __arm_instr_data_processing* 
       handle_flags_logical(cpu, *dest, shifterCarryValid, shifterCarry);
     }
     break;
+  case OPCODE_MVN:
+    *dest = ~operand2;
+    if(i->set_condition_codes && i->dest == REG_R15) {
+      *regs->cpsr = *regs->spsr;
+    } else if(i->set_condition_codes) {
+      handle_flags_logical(cpu, *dest, shifterCarryValid, shifterCarry);
+    }
+    break;
   case OPCODE_BIC:
     *dest = operand1 & (~operand2);
     if(i->set_condition_codes && i->dest == REG_R15) {
