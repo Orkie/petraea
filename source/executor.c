@@ -27,6 +27,14 @@ static int execute_branch(__arm_cpu* cpu, __arm_instr_branch* i) {
   return 0;
 }
 
+static void handle_flags_logical(__arm_cpu* cpu, uint32_t aluOut, bool shifterCarryValid, bool shifterCarry) {
+  SET_NEGATIVE_FLAG(cpu, sign32(aluOut));
+  SET_ZERO_FLAG(cpu, (aluOut) == 0);
+  if(shifterCarryValid) {
+    SET_CARRY_FLAG(cpu, shifterCarry);
+  }
+}
+
 static int execute_data_processing(__arm_cpu* cpu, __arm_instr_data_processing* i) {
   __arm_registers* regs = arm_get_regs(cpu);
   bool shifterCarry = false;
@@ -41,11 +49,7 @@ static int execute_data_processing(__arm_cpu* cpu, __arm_instr_data_processing* 
     if(i->set_condition_codes && i->dest == REG_R15) {
       *regs->cpsr = *regs->spsr;
     } else if(i->set_condition_codes) {
-      SET_NEGATIVE_FLAG(cpu, sign32(*dest));
-      SET_ZERO_FLAG(cpu, (*dest) == 0);
-      if(shifterCarryValid) {
-	SET_CARRY_FLAG(cpu, shifterCarry);
-      }
+      handle_flags_logical(cpu, *dest, shifterCarryValid, shifterCarry);
     }
     break;
   case OPCODE_EOR:
@@ -53,11 +57,7 @@ static int execute_data_processing(__arm_cpu* cpu, __arm_instr_data_processing* 
     if(i->set_condition_codes && i->dest == REG_R15) {
       *regs->cpsr = *regs->spsr;
     } else if(i->set_condition_codes) {
-      SET_NEGATIVE_FLAG(cpu, sign32(*dest));
-      SET_ZERO_FLAG(cpu, (*dest) == 0);
-      if(shifterCarryValid) {
-	SET_CARRY_FLAG(cpu, shifterCarry);
-      }
+      handle_flags_logical(cpu, *dest, shifterCarryValid, shifterCarry);
     }
     break;
   case OPCODE_SUB:
@@ -131,19 +131,11 @@ static int execute_data_processing(__arm_cpu* cpu, __arm_instr_data_processing* 
     break;
   case OPCODE_TST: ;
     aluOut = operand1 & operand2;
-    SET_NEGATIVE_FLAG(cpu, sign32(aluOut));
-    SET_ZERO_FLAG(cpu, (aluOut) == 0);
-    if(shifterCarryValid) {
-      SET_CARRY_FLAG(cpu, shifterCarry);
-    }
+    handle_flags_logical(cpu, aluOut, shifterCarryValid, shifterCarry);
     break;
   case OPCODE_TEQ: ;
     aluOut = operand1 ^ operand2;
-    SET_NEGATIVE_FLAG(cpu, sign32(aluOut));
-    SET_ZERO_FLAG(cpu, (aluOut) == 0);
-    if(shifterCarryValid) {
-      SET_CARRY_FLAG(cpu, shifterCarry);
-    }
+    handle_flags_logical(cpu, aluOut, shifterCarryValid, shifterCarry);
     break;
   case OPCODE_CMP: ;
     aluOut = operand1 - operand2;
@@ -164,11 +156,15 @@ static int execute_data_processing(__arm_cpu* cpu, __arm_instr_data_processing* 
     if(i->set_condition_codes && i->dest == REG_R15) {
       *regs->cpsr = *regs->spsr;
     } else if(i->set_condition_codes) {
-      SET_NEGATIVE_FLAG(cpu, sign32(*dest));
-      SET_ZERO_FLAG(cpu, (*dest) == 0);
-      if(shifterCarryValid) {
-	SET_CARRY_FLAG(cpu, shifterCarry);
-      }
+      handle_flags_logical(cpu, *dest, shifterCarryValid, shifterCarry);
+    }
+    break;
+  case OPCODE_MOV:
+    *dest = operand2;
+    if(i->set_condition_codes && i->dest == REG_R15) {
+      *regs->cpsr = *regs->spsr;
+    } else if(i->set_condition_codes) {
+      handle_flags_logical(cpu, *dest, shifterCarryValid, shifterCarry);
     }
     break;
   default: return -1;

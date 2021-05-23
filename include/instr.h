@@ -36,8 +36,8 @@ typedef enum {
   OPCODE_TEQ = 0b1001,//
   OPCODE_CMP = 0b1010,//
   OPCODE_CMN = 0b1011,//
-  OPCODE_ORR = 0b1100,
-  OPCODE_MOV = 0b1101,
+  OPCODE_ORR = 0b1100,//
+  OPCODE_MOV = 0b1101,//
   OPCODE_BIC = 0b1110,
   OPCODE_MVN = 0b1111
 } __arm_opcode;
