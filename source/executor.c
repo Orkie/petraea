@@ -9,7 +9,7 @@
 static int execute_branch(pt_arm_cpu* cpu, pt_arm_instr_branch* i) {
   pt_arm_registers* regs = pt_arm_get_regs(cpu);
   if(i->link) {
-    (*regs->regs)[REG_LR] = (*regs->regs)[REG_PC];
+    (*regs->regs)[REG_LR] = (*regs->regs)[REG_PC]-4;
   }
   (*regs->regs)[REG_PC] += i->offset;
   return 0;

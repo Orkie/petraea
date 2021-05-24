@@ -532,7 +532,7 @@ Test(executor_branch, can_execute_bl_with_positive_offset) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  cr_assert_eq(cpu.r14, 0x24);
+  cr_assert_eq(cpu.r14, 0x20);
   cr_assert_eq(cpu.r15, 0x24+8);
 }
 
