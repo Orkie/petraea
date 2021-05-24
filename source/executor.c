@@ -61,6 +61,43 @@ static int execute_single_data_transfer(pt_arm_cpu* cpu, pt_arm_instr_single_dat
   return 0;
 }
 
+static int execute_halfword_data_transfer(pt_arm_cpu* cpu, pt_arm_instr_halfword_data_transfer* i) {
+  pt_arm_registers* regs = pt_arm_get_regs(cpu);
+  uint32_t offset = i->is_immediate_offset ? i->offset_imm : (*regs->regs)[i->offset_reg];
+
+  uint32_t* baseReg = regs->regs[i->base];
+  uint32_t base = *baseReg;
+  uint32_t* sourceDestReg = regs->regs[i->source_dest];
+
+  uint32_t modifiedBase = i->add_offset ? (base + offset) : (base - offset);
+  uint32_t address = i->add_offset_before_transfer ? modifiedBase : base;
+
+  bool isPrivileged = pt_arm_is_privileged(cpu);
+
+  if(i->load) {
+    *sourceDestReg = (i->transfer_byte
+       ? (*cpu->fetch_byte)(cpu, address, isPrivileged)
+       : (*cpu->fetch_halfword)(cpu, address, isPrivileged));
+    if(i->is_signed && i->transfer_byte && (*sourceDestReg&0x80)) {
+      *sourceDestReg |= 0xFFFFFF00;
+    } else if(i->is_signed && !i->transfer_byte && (*sourceDestReg&0x8000)) {
+      *sourceDestReg |= 0xFFFF0000;
+    }
+  } else {
+    if(i->transfer_byte) {
+      (*cpu->write_byte)(cpu, address, (*sourceDestReg)&0xFF, isPrivileged);
+    } else {
+      (*cpu->write_halfword)(cpu, address, *sourceDestReg, isPrivileged);
+    }
+  }
+
+  if(i->write_back_address) {
+    *baseReg = modifiedBase;
+  }
+
+  return 0;
+}
+
 ///////////////////////////////////////////
 // ALU
 ///////////////////////////////////////////
@@ -258,6 +295,8 @@ int pt_arm_execute_instruction(pt_arm_cpu* cpu, pt_arm_instruction* instr) {
       return execute_data_processing(cpu, &instr->instr.data_processing);
     case INSTR_SINGLE_DATA_TRANSFER:
       return execute_single_data_transfer(cpu, &instr->instr.single_data_transfer);
+    case INSTR_HALFWORD_DATA_TRANSFER:
+      return execute_halfword_data_transfer(cpu, &instr->instr.halfword_data_transfer);
     default: return -1;
     }
   }
