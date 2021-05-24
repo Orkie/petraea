@@ -273,8 +273,7 @@ static int execute_data_processing(pt_arm_cpu* cpu, pt_arm_instr_data_processing
     } else if(i->set_condition_codes) {
       handle_flags_logical(cpu, *dest, shifterCarryValid, shifterCarry);
     }
-    break;      
-
+    break;
   default: return -1;
   }
 
