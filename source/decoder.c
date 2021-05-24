@@ -106,6 +106,42 @@ static void decode_branch(pt_arm_instr_branch* dest, uint32_t i) {
   }
 }
 
+static bool instr_is_halfword_data_transfer(uint32_t i) {
+  return (((i>>25)&0x7) == 0x0) && (((i>>4)&0xF) == 0xD || ((i>>4)&0xF) == 0xB || ((i>>4)&0xF) == 0xF);
+}
+
+static void decode_halfword_data_transfer(pt_arm_instr_halfword_data_transfer* dest, uint32_t i) {
+  const bool p = (i >> 24) & 0x1;
+  const bool w = (i >> 21) & 0x1;
+
+  if(p == false) {
+    dest->add_offset_before_transfer = false;
+    dest->write_back_address = true;
+  } else {
+    dest->add_offset_before_transfer = true;
+    dest->write_back_address = false;    
+  }
+
+  if(w == true && p == true) {
+    dest->write_back_address = true;
+  }
+
+  dest->add_offset = (i >> 23) & 0x1;
+  dest->load = (i >> 20) & 0x1;
+  dest->base = (i >> 16) & 0xF;
+  dest->source_dest = (i >> 12) & 0xF;
+  dest->is_signed = (i >> 6) & 0x1;
+  dest->transfer_byte = !((i >> 5) & 0x1);
+
+  if((i >> 22) & 0x1) {
+    dest->is_immediate_offset = true;
+    dest->offset_imm = ((i >> 4) & 0xF0) | (i&0xF);
+  } else {
+    dest->is_immediate_offset = false;
+    dest->offset_reg = (i&0xF);
+  }
+}
+
 int pt_arm_decode_instruction(pt_arm_instruction* dest, uint32_t i) {
   const unsigned int cond = (i&0xF0000000) >> 28;
 
@@ -115,12 +151,15 @@ int pt_arm_decode_instruction(pt_arm_instruction* dest, uint32_t i) {
   } else if(instr_is_branch(i)) {
     dest->type = INSTR_BRANCH;
     decode_branch(&dest->instr.branch, i);
-  } else if(instr_is_data_processing(i)) {
-    dest->type = INSTR_DATA_PROCESSING;
-    decode_data_processing(&dest->instr.data_processing, i);
   } else if(instr_is_single_data_transfer(i)) {
     dest->type = INSTR_SINGLE_DATA_TRANSFER;
     decode_single_data_transfer(&dest->instr.single_data_transfer, i);
+  } else if(instr_is_halfword_data_transfer(i)) {
+    dest->type = INSTR_HALFWORD_DATA_TRANSFER;
+    decode_halfword_data_transfer(&dest->instr.halfword_data_transfer, i);
+  } else if(instr_is_data_processing(i)) {
+    dest->type = INSTR_DATA_PROCESSING;
+    decode_data_processing(&dest->instr.data_processing, i);
   } else if(instr_is_undefined(i)) {
     dest->type = INSTR_UNDEFINED;
   } else {

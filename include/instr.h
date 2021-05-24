@@ -1,5 +1,5 @@
-#ifndef pt_INSTR_Hpt_
-#define pt_INSTR_Hpt_
+#ifndef _INSTR_H_
+#define _INSTR_H_
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -49,8 +49,7 @@ typedef enum {
   INSTR_MULTIPLY_LONG,
   INSTR_SINGLE_DATA_SWAP,
   INSTR_BRANCH_EXCHANGE,
-  INSTR_HALFWORD_DATA_TRANSFER_REG_OFFSET,
-  INSTR_HALFWORD_DATA_TRANSFER_IMM_OFFSET,
+  INSTR_HALFWORD_DATA_TRANSFER,
   INSTR_SINGLE_DATA_TRANSFER,
   INSTR_UNDEFINED,
   INSTR_BRANCH,
@@ -115,6 +114,23 @@ typedef struct {
 } pt_arm_instr_single_data_transfer;
 
 ///////////////////////////////////////////
+// Halfword data transfer
+///////////////////////////////////////////
+typedef struct {
+  bool add_offset_before_transfer;
+  bool add_offset;
+  bool write_back_address;
+  bool load;
+  pt_arm_register base;
+  pt_arm_register source_dest;
+  bool is_immediate_offset;
+  uint8_t offset_imm;
+  pt_arm_register offset_reg;
+  bool is_signed;
+  bool transfer_byte;
+} pt_arm_instr_halfword_data_transfer;
+
+///////////////////////////////////////////
 // Branch exchange
 ///////////////////////////////////////////
 
@@ -136,6 +152,7 @@ typedef struct {
 typedef union {
   pt_arm_instr_data_processing data_processing;
   pt_arm_instr_single_data_transfer single_data_transfer;
+  pt_arm_instr_halfword_data_transfer halfword_data_transfer;
   pt_arm_instr_branch_exchange branch_exchange;
   pt_arm_instr_branch branch;
 } pt_arm_instructions;

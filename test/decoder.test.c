@@ -351,3 +351,135 @@ Test(decoder, can_decode_bl) {
   cr_assert_eq(result.instr.branch.offset, 0x1200);
 }
 
+///////////////////////////////////////////
+// Halfword data transfer
+///////////////////////////////////////////
+
+Test(decoder, can_decode_ldrh_immediate_offset) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE1D101B8); // LDRH R0, [R1, #24]
+  cr_assert_eq(result.type, INSTR_HALFWORD_DATA_TRANSFER);
+  cr_assert_eq(result.instr.halfword_data_transfer.add_offset_before_transfer, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.add_offset, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.write_back_address, false);
+  cr_assert_eq(result.instr.halfword_data_transfer.load, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.base, REG_R1);
+  cr_assert_eq(result.instr.halfword_data_transfer.source_dest, REG_R0);
+  cr_assert_eq(result.instr.halfword_data_transfer.is_immediate_offset, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.offset_imm, 24);
+  cr_assert_eq(result.instr.halfword_data_transfer.is_signed, false);
+  cr_assert_eq(result.instr.halfword_data_transfer.transfer_byte, false);
+}
+
+Test(decoder, can_decode_ldrh_reg_offset) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE19100B2); // STRH R0, [R1], R2
+  cr_assert_eq(result.type, INSTR_HALFWORD_DATA_TRANSFER);
+  cr_assert_eq(result.instr.halfword_data_transfer.add_offset_before_transfer, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.add_offset, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.write_back_address, false);
+  cr_assert_eq(result.instr.halfword_data_transfer.load, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.base, REG_R1);
+  cr_assert_eq(result.instr.halfword_data_transfer.source_dest, REG_R0);
+  cr_assert_eq(result.instr.halfword_data_transfer.is_immediate_offset, false);
+  cr_assert_eq(result.instr.halfword_data_transfer.offset_reg, REG_R2);
+  cr_assert_eq(result.instr.halfword_data_transfer.is_signed, false);
+  cr_assert_eq(result.instr.halfword_data_transfer.transfer_byte, false);
+}
+
+Test(decoder, can_decode_ldrh_post_increment) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE0D101B8); // LDRH R0, [R1], #24
+  cr_assert_eq(result.type, INSTR_HALFWORD_DATA_TRANSFER);
+  cr_assert_eq(result.instr.halfword_data_transfer.add_offset_before_transfer, false);
+  cr_assert_eq(result.instr.halfword_data_transfer.add_offset, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.write_back_address, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.load, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.base, REG_R1);
+  cr_assert_eq(result.instr.halfword_data_transfer.source_dest, REG_R0);
+  cr_assert_eq(result.instr.halfword_data_transfer.is_immediate_offset, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.offset_imm, 24);
+  cr_assert_eq(result.instr.halfword_data_transfer.is_signed, false);
+  cr_assert_eq(result.instr.halfword_data_transfer.transfer_byte, false);
+}
+
+Test(decoder, can_decode_ldrh_pre_increment_write_back) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE1F101B8); // LDRH R0, [R1, #24]!
+  cr_assert_eq(result.type, INSTR_HALFWORD_DATA_TRANSFER);
+  cr_assert_eq(result.instr.halfword_data_transfer.add_offset_before_transfer, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.add_offset, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.write_back_address, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.load, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.base, REG_R1);
+  cr_assert_eq(result.instr.halfword_data_transfer.source_dest, REG_R0);
+  cr_assert_eq(result.instr.halfword_data_transfer.is_immediate_offset, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.offset_imm, 24);
+  cr_assert_eq(result.instr.halfword_data_transfer.is_signed, false);
+  cr_assert_eq(result.instr.halfword_data_transfer.transfer_byte, false);
+}
+
+Test(decoder, can_decode_ldrsb) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE1D101D8); // LDRSB R0, [R1, #24]
+  cr_assert_eq(result.type, INSTR_HALFWORD_DATA_TRANSFER);
+  cr_assert_eq(result.instr.halfword_data_transfer.add_offset_before_transfer, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.add_offset, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.write_back_address, false);
+  cr_assert_eq(result.instr.halfword_data_transfer.load, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.base, REG_R1);
+  cr_assert_eq(result.instr.halfword_data_transfer.source_dest, REG_R0);
+  cr_assert_eq(result.instr.halfword_data_transfer.is_immediate_offset, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.offset_imm, 24);
+  cr_assert_eq(result.instr.halfword_data_transfer.is_signed, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.transfer_byte, true);
+}
+
+Test(decoder, can_decode_ldrsh) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE1D101F8); // LDRSH R0, [R1, #24]
+  cr_assert_eq(result.type, INSTR_HALFWORD_DATA_TRANSFER);
+  cr_assert_eq(result.instr.halfword_data_transfer.add_offset_before_transfer, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.add_offset, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.write_back_address, false);
+  cr_assert_eq(result.instr.halfword_data_transfer.load, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.base, REG_R1);
+  cr_assert_eq(result.instr.halfword_data_transfer.source_dest, REG_R0);
+  cr_assert_eq(result.instr.halfword_data_transfer.is_immediate_offset, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.offset_imm, 24);
+  cr_assert_eq(result.instr.halfword_data_transfer.is_signed, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.transfer_byte, false);
+}
+
+Test(decoder, can_decode_ldrh_subtract_offset) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE15101B8); // LDRH R0, [R1, #-24]
+  cr_assert_eq(result.type, INSTR_HALFWORD_DATA_TRANSFER);
+  cr_assert_eq(result.instr.halfword_data_transfer.add_offset_before_transfer, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.add_offset, false);
+  cr_assert_eq(result.instr.halfword_data_transfer.write_back_address, false);
+  cr_assert_eq(result.instr.halfword_data_transfer.load, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.base, REG_R1);
+  cr_assert_eq(result.instr.halfword_data_transfer.source_dest, REG_R0);
+  cr_assert_eq(result.instr.halfword_data_transfer.is_immediate_offset, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.offset_imm, 24);
+  cr_assert_eq(result.instr.halfword_data_transfer.is_signed, false);
+  cr_assert_eq(result.instr.halfword_data_transfer.transfer_byte, false);
+}
+
+Test(decoder, can_decode_strh_immediate_offset) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE1C101B8); // STRH R0, [R1, #24]
+  cr_assert_eq(result.type, INSTR_HALFWORD_DATA_TRANSFER);
+  cr_assert_eq(result.instr.halfword_data_transfer.add_offset_before_transfer, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.add_offset, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.write_back_address, false);
+  cr_assert_eq(result.instr.halfword_data_transfer.load, false);
+  cr_assert_eq(result.instr.halfword_data_transfer.base, REG_R1);
+  cr_assert_eq(result.instr.halfword_data_transfer.source_dest, REG_R0);
+  cr_assert_eq(result.instr.halfword_data_transfer.is_immediate_offset, true);
+  cr_assert_eq(result.instr.halfword_data_transfer.offset_imm, 24);
+  cr_assert_eq(result.instr.halfword_data_transfer.is_signed, false);
+  cr_assert_eq(result.instr.halfword_data_transfer.transfer_byte, false);
+}
+

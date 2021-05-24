@@ -1,5 +1,5 @@
-#ifndef pt_CPU_Hpt_
-#define pt_CPU_Hpt_
+#ifndef _CPU_H_
+#define _CPU_H_
 
 #include <stdint.h>
 #include <stdbool.h>
