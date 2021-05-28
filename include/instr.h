@@ -51,6 +51,7 @@ typedef enum {
   INSTR_BRANCH_EXCHANGE,
   INSTR_HALFWORD_DATA_TRANSFER,
   INSTR_SINGLE_DATA_TRANSFER,
+  INSTR_SWAP,
   INSTR_UNDEFINED,
   INSTR_BRANCH,
   // TODO - the rest
@@ -148,6 +149,16 @@ typedef struct {
 } pt_arm_instr_branch;
 
 ///////////////////////////////////////////
+// Swap
+///////////////////////////////////////////
+typedef struct {
+  bool transfer_byte;
+  pt_arm_register base;
+  pt_arm_register dest;
+  pt_arm_register source;
+} pt_arm_instr_swap;
+
+///////////////////////////////////////////
 
 typedef union {
   pt_arm_instr_data_processing data_processing;
@@ -155,6 +166,7 @@ typedef union {
   pt_arm_instr_halfword_data_transfer halfword_data_transfer;
   pt_arm_instr_branch_exchange branch_exchange;
   pt_arm_instr_branch branch;
+  pt_arm_instr_swap swap;
 } pt_arm_instructions;
 
 typedef struct {

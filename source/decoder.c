@@ -142,6 +142,17 @@ static void decode_halfword_data_transfer(pt_arm_instr_halfword_data_transfer* d
   }
 }
 
+static bool instr_is_swap(uint32_t i) {
+  return (i&0xFC000F0) == 0x1000090 || (i&0xFC000F0) == 0x1400090;
+}
+
+static void decode_swap(pt_arm_instr_swap* dest, uint32_t i) {
+  dest->transfer_byte = (i >> 22) & 0x1;
+  dest->source = i&0xF;
+  dest->dest = (i>>12)&0xF;
+  dest->base = (i>>16)&0xF;
+}
+
 int pt_arm_decode_instruction(pt_arm_instruction* dest, uint32_t i) {
   const unsigned int cond = (i&0xF0000000) >> 28;
 
@@ -157,6 +168,9 @@ int pt_arm_decode_instruction(pt_arm_instruction* dest, uint32_t i) {
   } else if(instr_is_halfword_data_transfer(i)) {
     dest->type = INSTR_HALFWORD_DATA_TRANSFER;
     decode_halfword_data_transfer(&dest->instr.halfword_data_transfer, i);
+  } else if(instr_is_swap(i)) {
+    dest->type = INSTR_SWAP;
+    decode_swap(&dest->instr.swap, i);
   } else if(instr_is_data_processing(i)) {
     dest->type = INSTR_DATA_PROCESSING;
     decode_data_processing(&dest->instr.data_processing, i);
