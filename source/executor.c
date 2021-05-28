@@ -281,6 +281,29 @@ static int execute_data_processing(pt_arm_cpu* cpu, pt_arm_instr_data_processing
 }
 
 ///////////////////////////////////////////
+// Swap
+///////////////////////////////////////////
+static int execute_swap(pt_arm_cpu* cpu, pt_arm_instr_swap* i) {
+  pt_arm_registers* regs = pt_arm_get_regs(cpu);
+  uint32_t addr = (*regs->regs)[i->addr];
+  uint32_t value = (*regs->regs)[i->value];
+  uint32_t* dest = regs->regs[i->dest];
+  
+  if(i->transfer_byte) {
+    uint8_t tempB = cpu->fetch_byte(cpu, addr, false);
+    cpu->write_byte(cpu, addr, value&0xFF, false);
+    *dest = tempB;
+  } else {
+    uint32_t tempW = cpu->fetch_word(cpu, addr, false, true);
+    tempW = rrot32(tempW, (addr&0x3)*8);
+    cpu->write_word(cpu, addr, value, false);
+    *dest = tempW;
+  }
+
+  return 0;
+}
+
+///////////////////////////////////////////
 // Execution utilities
 ///////////////////////////////////////////
 int pt_arm_execute_instruction(pt_arm_cpu* cpu, pt_arm_instruction* instr) {
@@ -296,6 +319,8 @@ int pt_arm_execute_instruction(pt_arm_cpu* cpu, pt_arm_instruction* instr) {
       return execute_single_data_transfer(cpu, &instr->instr.single_data_transfer);
     case INSTR_HALFWORD_DATA_TRANSFER:
       return execute_halfword_data_transfer(cpu, &instr->instr.halfword_data_transfer);
+    case INSTR_SWAP:
+      return execute_swap(cpu, &instr->instr.swap);
     default: return -1;
     }
   }

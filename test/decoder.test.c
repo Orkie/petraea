@@ -492,9 +492,9 @@ Test(decoder, can_decode_swap) {
   pt_arm_decode_instruction(&result, 0xE1001092); // SWP R1, R2, [R0]
   cr_assert_eq(result.type, INSTR_SWAP);
   cr_assert_eq(result.instr.swap.transfer_byte, false);
-  cr_assert_eq(result.instr.swap.source, REG_R2);
+  cr_assert_eq(result.instr.swap.value, REG_R2);
   cr_assert_eq(result.instr.swap.dest, REG_R1);
-  cr_assert_eq(result.instr.swap.base, REG_R0);
+  cr_assert_eq(result.instr.swap.addr, REG_R0);
 }
 
 Test(decoder, can_decode_swap_byte) {
@@ -502,8 +502,8 @@ Test(decoder, can_decode_swap_byte) {
   pt_arm_decode_instruction(&result, 0xE1401092); // SWPB R1, R2, [R0]
   cr_assert_eq(result.type, INSTR_SWAP);
   cr_assert_eq(result.instr.swap.transfer_byte, true);
-  cr_assert_eq(result.instr.swap.source, REG_R2);
+  cr_assert_eq(result.instr.swap.value, REG_R2);
   cr_assert_eq(result.instr.swap.dest, REG_R1);
-  cr_assert_eq(result.instr.swap.base, REG_R0);
+  cr_assert_eq(result.instr.swap.addr, REG_R0);
 }
 

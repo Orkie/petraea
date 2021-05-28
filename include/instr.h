@@ -153,9 +153,9 @@ typedef struct {
 ///////////////////////////////////////////
 typedef struct {
   bool transfer_byte;
-  pt_arm_register base;
+  pt_arm_register value;
   pt_arm_register dest;
-  pt_arm_register source;
+  pt_arm_register addr;
 } pt_arm_instr_swap;
 
 ///////////////////////////////////////////
