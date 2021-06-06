@@ -54,6 +54,7 @@ typedef enum {
   INSTR_SWAP,
   INSTR_UNDEFINED,
   INSTR_BRANCH,
+  INSTR_BLOCK_DATA_TRANSFER
   // TODO - the rest
 } pt_arm_instruction_type;
 
@@ -159,6 +160,19 @@ typedef struct {
 } pt_arm_instr_swap;
 
 ///////////////////////////////////////////
+// Block data transfer
+///////////////////////////////////////////
+typedef struct {
+  bool add_offset_before_transfer;
+  bool add_offset;
+  bool load_psr_or_force_user_mode;
+  bool write_back_address;
+  bool load;
+  pt_arm_register base;
+  uint16_t register_list;
+} pt_arm_instr_block_data_transfer;
+
+///////////////////////////////////////////
 
 typedef union {
   pt_arm_instr_data_processing data_processing;
@@ -167,6 +181,7 @@ typedef union {
   pt_arm_instr_branch_exchange branch_exchange;
   pt_arm_instr_branch branch;
   pt_arm_instr_swap swap;
+  pt_arm_instr_block_data_transfer block_data_transfer;
 } pt_arm_instructions;
 
 typedef struct {

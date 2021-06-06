@@ -153,6 +153,20 @@ static void decode_swap(pt_arm_instr_swap* dest, uint32_t i) {
   dest->addr = (i>>16)&0xF;
 }
 
+static bool instr_is_block_data_transfer(uint32_t i) {
+  return ((i&0x0E000000) == 0x08000000);
+}
+
+static void decode_block_data_transfer(pt_arm_instr_block_data_transfer* dest, uint32_t i) {
+  dest->add_offset_before_transfer = (i>>24)&0x1;
+  dest->add_offset = (i>>23)&0x1;
+  dest->load_psr_or_force_user_mode = (i>>22)&0x1;
+  dest->write_back_address = (i>>21)&0x1;
+  dest->load = (i>>20)&0x1;
+  dest->base = (i>>16)&0xF;
+  dest->register_list = i&0xFFFF;
+}
+
 int pt_arm_decode_instruction(pt_arm_instruction* dest, uint32_t i) {
   const unsigned int cond = (i&0xF0000000) >> 28;
 
@@ -174,6 +188,9 @@ int pt_arm_decode_instruction(pt_arm_instruction* dest, uint32_t i) {
   } else if(instr_is_data_processing(i)) {
     dest->type = INSTR_DATA_PROCESSING;
     decode_data_processing(&dest->instr.data_processing, i);
+  } else if(instr_is_block_data_transfer(i)) {
+    dest->type = INSTR_BLOCK_DATA_TRANSFER;
+    decode_block_data_transfer(&dest->instr.block_data_transfer, i);
   } else if(instr_is_undefined(i)) {
     dest->type = INSTR_UNDEFINED;
   } else {

@@ -507,3 +507,105 @@ Test(decoder, can_decode_swap_byte) {
   cr_assert_eq(result.instr.swap.addr, REG_R0);
 }
 
+///////////////////////////////////////////
+// Block data transfer
+///////////////////////////////////////////
+
+Test(decoder, can_decode_ldmia) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE8930101); // ldmia r3,{r0,r8}
+
+  cr_assert_eq(result.type, INSTR_BLOCK_DATA_TRANSFER);
+  cr_assert_eq(result.instr.block_data_transfer.add_offset_before_transfer, false);
+  cr_assert_eq(result.instr.block_data_transfer.add_offset, true);
+  cr_assert_eq(result.instr.block_data_transfer.load_psr_or_force_user_mode, false);
+  cr_assert_eq(result.instr.block_data_transfer.write_back_address, false);
+  cr_assert_eq(result.instr.block_data_transfer.load, true);
+  cr_assert_eq(result.instr.block_data_transfer.register_list, 0x101);
+  cr_assert_eq(result.instr.block_data_transfer.base, REG_R3);
+}
+
+Test(decoder, can_decode_ldmib) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE9930101); // ldmib r3,{r0,r8}
+
+  cr_assert_eq(result.type, INSTR_BLOCK_DATA_TRANSFER);
+  cr_assert_eq(result.instr.block_data_transfer.add_offset_before_transfer, true);
+  cr_assert_eq(result.instr.block_data_transfer.add_offset, true);
+  cr_assert_eq(result.instr.block_data_transfer.load_psr_or_force_user_mode, false);
+  cr_assert_eq(result.instr.block_data_transfer.write_back_address, false);
+  cr_assert_eq(result.instr.block_data_transfer.load, true);
+  cr_assert_eq(result.instr.block_data_transfer.register_list, 0x101);
+  cr_assert_eq(result.instr.block_data_transfer.base, REG_R3);
+}
+
+Test(decoder, can_decode_ldmda) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE8130101); // ldmda r3,{r0,r8}
+
+  cr_assert_eq(result.type, INSTR_BLOCK_DATA_TRANSFER);
+  cr_assert_eq(result.instr.block_data_transfer.add_offset_before_transfer, false);
+  cr_assert_eq(result.instr.block_data_transfer.add_offset, false);
+  cr_assert_eq(result.instr.block_data_transfer.load_psr_or_force_user_mode, false);
+  cr_assert_eq(result.instr.block_data_transfer.write_back_address, false);
+  cr_assert_eq(result.instr.block_data_transfer.load, true);
+  cr_assert_eq(result.instr.block_data_transfer.register_list, 0x101);
+  cr_assert_eq(result.instr.block_data_transfer.base, REG_R3);
+}
+
+Test(decoder, can_decode_ldmdb) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE9130101); // ldmdb r3,{r0,r8}
+
+  cr_assert_eq(result.type, INSTR_BLOCK_DATA_TRANSFER);
+  cr_assert_eq(result.instr.block_data_transfer.add_offset_before_transfer, true);
+  cr_assert_eq(result.instr.block_data_transfer.add_offset, false);
+  cr_assert_eq(result.instr.block_data_transfer.load_psr_or_force_user_mode, false);
+  cr_assert_eq(result.instr.block_data_transfer.write_back_address, false);
+  cr_assert_eq(result.instr.block_data_transfer.load, true);
+  cr_assert_eq(result.instr.block_data_transfer.register_list, 0x101);
+  cr_assert_eq(result.instr.block_data_transfer.base, REG_R3);
+}
+
+Test(decoder, can_decode_ldmdb_write_back) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE9330101); // ldmdb r3!,{r0,r8}
+
+  cr_assert_eq(result.type, INSTR_BLOCK_DATA_TRANSFER);
+  cr_assert_eq(result.instr.block_data_transfer.add_offset_before_transfer, true);
+  cr_assert_eq(result.instr.block_data_transfer.add_offset, false);
+  cr_assert_eq(result.instr.block_data_transfer.load_psr_or_force_user_mode, false);
+  cr_assert_eq(result.instr.block_data_transfer.write_back_address, true);
+  cr_assert_eq(result.instr.block_data_transfer.load, true);
+  cr_assert_eq(result.instr.block_data_transfer.register_list, 0x101);
+  cr_assert_eq(result.instr.block_data_transfer.base, REG_R3);
+}
+
+Test(decoder, can_decode_ldmdb_spr) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE9530101); // ldmdb r3,{r0,r8}^
+
+  cr_assert_eq(result.type, INSTR_BLOCK_DATA_TRANSFER);
+  cr_assert_eq(result.instr.block_data_transfer.add_offset_before_transfer, true);
+  cr_assert_eq(result.instr.block_data_transfer.add_offset, false);
+  cr_assert_eq(result.instr.block_data_transfer.load_psr_or_force_user_mode, true);
+  cr_assert_eq(result.instr.block_data_transfer.write_back_address, false);
+  cr_assert_eq(result.instr.block_data_transfer.load, true);
+  cr_assert_eq(result.instr.block_data_transfer.register_list, 0x101);
+  cr_assert_eq(result.instr.block_data_transfer.base, REG_R3);
+}
+
+Test(decoder, can_decode_stmia) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE8830101); // stmia r3,{r0,r8}
+
+  cr_assert_eq(result.type, INSTR_BLOCK_DATA_TRANSFER);
+  cr_assert_eq(result.instr.block_data_transfer.add_offset_before_transfer, false);
+  cr_assert_eq(result.instr.block_data_transfer.add_offset, true);
+  cr_assert_eq(result.instr.block_data_transfer.load_psr_or_force_user_mode, false);
+  cr_assert_eq(result.instr.block_data_transfer.write_back_address, false);
+  cr_assert_eq(result.instr.block_data_transfer.load, false);
+  cr_assert_eq(result.instr.block_data_transfer.register_list, 0x101);
+  cr_assert_eq(result.instr.block_data_transfer.base, REG_R3);
+}
+
