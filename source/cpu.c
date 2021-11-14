@@ -66,6 +66,10 @@ pt_arm_registers* pt_arm_get_regs(pt_arm_cpu* cpu) {
   return &cpu->regs[mode];
 }
 
+pt_arm_registers* pt_arm_get_regs_for_mode(pt_arm_cpu* cpu, pt_arm_mode mode) {
+  return &cpu->regs[mode];
+}
+
 int pt_arm_clock(pt_arm_cpu* cpu) {
   pt_arm_mode mode = pt_arm_current_mode(cpu);
   uint32_t* pcReg = cpu->regs[mode].regs[REG_PC];

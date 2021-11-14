@@ -98,6 +98,60 @@ static int execute_halfword_data_transfer(pt_arm_cpu* cpu, pt_arm_instr_halfword
   return 0;
 }
 
+static int execute_block_data_transfer(pt_arm_cpu* cpu, pt_arm_instr_block_data_transfer* i) {
+
+  bool isPCTouched = (i->register_list >> (15 - REG_PC))&0x1;
+  bool isPrivileged = pt_arm_is_privileged(cpu);
+
+  bool shouldUpdateCpsr = i->load && isPCTouched;
+
+  bool isIA = i->add_offset && !(i->add_offset_before_transfer);
+  bool isIB = i->add_offset && i->add_offset_before_transfer;
+  bool isDA = !i->add_offset && !(i->add_offset_before_transfer);
+  
+  // count registers
+  unsigned int numberOfRegisters = 0;
+  for(int r = 0 ; r < 16 ; r++) {
+    numberOfRegisters += (i->register_list >> r)&0x1 ? 1 : 0;
+  }
+  
+  pt_arm_registers* regs = shouldUpdateCpsr ? pt_arm_get_regs(cpu) :
+    (isPrivileged ? pt_arm_get_regs_for_mode(cpu, MODE_USER) : pt_arm_get_regs(cpu));
+
+  uint32_t* baseReg = regs->regs[i->base];
+  uint32_t baseAddress = *baseReg;
+
+  uint32_t address = isIA ? baseAddress
+    : isIB ? (baseAddress + 4)
+    : isDA ? (baseAddress - (numberOfRegisters * 4) + 4)
+    : (baseAddress - (numberOfRegisters * 4)); // isDB
+  
+  for(int ri = 0 ; ri < 16 ; i++) {
+    if((i->register_list >> ri)&0x1) {
+      if(i->load) {
+	*regs->regs[ri] = (*cpu->fetch_word)(cpu, address, isPrivileged, true);
+      } else {
+	(*cpu->write_word)(cpu, address, *regs->regs[ri], isPrivileged);
+      }
+
+      address += 4;
+    }
+  }
+
+  if(shouldUpdateCpsr) {
+    *regs->cpsr = *regs->spsr;
+  }
+
+  if(i->write_back_address) {
+    *baseReg = isIA ? (baseAddress + (numberOfRegisters * 4))
+      : isIB ? (baseAddress + (numberOfRegisters * 4))
+      : isDA ? (baseAddress - (numberOfRegisters * 4))
+      : (baseAddress - (numberOfRegisters * 4)); // isDB
+  }
+  
+  return 0;
+}
+
 ///////////////////////////////////////////
 // ALU
 ///////////////////////////////////////////
@@ -319,6 +373,8 @@ int pt_arm_execute_instruction(pt_arm_cpu* cpu, pt_arm_instruction* instr) {
       return execute_single_data_transfer(cpu, &instr->instr.single_data_transfer);
     case INSTR_HALFWORD_DATA_TRANSFER:
       return execute_halfword_data_transfer(cpu, &instr->instr.halfword_data_transfer);
+    case INSTR_BLOCK_DATA_TRANSFER:
+      return execute_block_data_transfer(cpu, &instr->instr.block_data_transfer);
     case INSTR_SWAP:
       return execute_swap(cpu, &instr->instr.swap);
     default: return -1;

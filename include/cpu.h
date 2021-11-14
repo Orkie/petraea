@@ -138,6 +138,7 @@ extern pt_arm_mode pt_arm_current_mode(pt_arm_cpu* cpu);
 extern void pt_arm_set_mode(pt_arm_cpu* cpu, pt_arm_mode mode);
 extern int pt_arm_clock(pt_arm_cpu* cpu);
 extern pt_arm_registers* pt_arm_get_regs(pt_arm_cpu* cpu);
+extern pt_arm_registers* pt_arm_get_regs_for_mode(pt_arm_cpu* cpu, pt_arm_mode mode);
 extern bool pt_arm_is_privileged(pt_arm_cpu* cpu);
 
 #endif
