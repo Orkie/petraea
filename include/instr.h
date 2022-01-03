@@ -54,7 +54,7 @@ typedef enum {
   INSTR_UNDEFINED,
   INSTR_BRANCH,
   INSTR_BLOCK_DATA_TRANSFER,
-  INSTR_COPROCESSOR_REGISTER_TRANSFER, // TODO MCR/MRC
+  INSTR_COPROCESSOR_REGISTER_TRANSFER,
   INSTR_SOFTWARE_INTERRUPT, // TODO
   // N/A - we only have CP15, which doesn't support these two
   INSTR_COPROCESSOR_DATA_TRANSFER,
@@ -181,7 +181,7 @@ typedef struct {
 typedef struct {
   bool load;
   pt_arm_register source_dest;
-  uint8_t cp_source_dest;
+  uint8_t cp_reg;
   uint8_t cp_num;
   uint8_t opcode_2;
   uint8_t crm;

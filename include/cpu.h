@@ -118,23 +118,23 @@ struct pt_arm_cpu_struct {
 
 
 // N
-#define GET_NEGATIVE_FLAG(cpu) ((cpu->cpsr >> 31)&0x1)
+#define GET_NEGATIVE_FLAG(cpu) (((cpu)->cpsr >> 31)&0x1)
 #define SET_NEGATIVE_FLAG(cpu, value) (cpu->cpsr = ((cpu->cpsr & (~(1<<31))) | (((value)&1)<<31)))
 
 // Z
-#define GET_ZERO_FLAG(cpu) ((cpu->cpsr >> 30)&0x1)
+#define GET_ZERO_FLAG(cpu) (((cpu)->cpsr >> 30)&0x1)
 #define SET_ZERO_FLAG(cpu, value) (cpu->cpsr = ((cpu->cpsr & (~(1<<30))) | (((value)&1)<<30)))
 
 // C
-#define GET_CARRY_FLAG(cpu) ((cpu->cpsr >> 29)&0x1)
+#define GET_CARRY_FLAG(cpu) (((cpu)->cpsr >> 29)&0x1)
 #define SET_CARRY_FLAG(cpu, value) (cpu->cpsr = ((cpu->cpsr & (~(1<<29))) | (((value)&1)<<29)))
 
 // V
-#define GET_OVERFLOW_FLAG(cpu) ((cpu->cpsr >> 28)&0x1)
+#define GET_OVERFLOW_FLAG(cpu) (((cpu)->cpsr >> 28)&0x1)
 #define SET_OVERFLOW_FLAG(cpu, value) (cpu->cpsr = ((cpu->cpsr & (~(1<<28))) | (((value)&1)<<28)))
 
 // T
-#define GET_THUMB_FLAG(cpu) ((cpu->cpsr >> 5)&0x1)
+#define GET_THUMB_FLAG(cpu) (((cpu)->cpsr >> 5)&0x1)
 #define SET_THUMB_FLAG(cpu, value) (cpu->cpsr = ((cpu->cpsr & (~(1<<5))) | (((value)&1)<<5)))
 
 extern int pt_arm_init_cpu(pt_arm_cpu* cpu,

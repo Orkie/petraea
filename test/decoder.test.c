@@ -620,7 +620,7 @@ Test(decoder, can_decode_mrc) {
   cr_assert_eq(result.type, INSTR_COPROCESSOR_REGISTER_TRANSFER);
   cr_assert_eq(result.instr.coprocessor_register_transfer.load, true);
   cr_assert_eq(result.instr.coprocessor_register_transfer.source_dest, REG_R3);
-  cr_assert_eq(result.instr.coprocessor_register_transfer.cp_source_dest, 2);
+  cr_assert_eq(result.instr.coprocessor_register_transfer.cp_reg, 2);
   cr_assert_eq(result.instr.coprocessor_register_transfer.cp_num, 15);
   cr_assert_eq(result.instr.coprocessor_register_transfer.crm, 4);
   cr_assert_eq(result.instr.coprocessor_register_transfer.opcode_2, 5);
@@ -633,7 +633,7 @@ Test(decoder, can_decode_mcr) {
   cr_assert_eq(result.type, INSTR_COPROCESSOR_REGISTER_TRANSFER);
   cr_assert_eq(result.instr.coprocessor_register_transfer.load, false);
   cr_assert_eq(result.instr.coprocessor_register_transfer.source_dest, REG_R8);
-  cr_assert_eq(result.instr.coprocessor_register_transfer.cp_source_dest, 1);
+  cr_assert_eq(result.instr.coprocessor_register_transfer.cp_reg, 1);
   cr_assert_eq(result.instr.coprocessor_register_transfer.cp_num, 13);
   cr_assert_eq(result.instr.coprocessor_register_transfer.crm, 2);
   cr_assert_eq(result.instr.coprocessor_register_transfer.opcode_2, 6);

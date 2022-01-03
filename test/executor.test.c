@@ -4114,3 +4114,130 @@ Test(executor_swap, swap_byte) {
   cr_assert_eq(writtenValue, 0xFA);
 }
 
+///////////////////////////////////////////
+// Coprocessor register transfer
+///////////////////////////////////////////
+
+Test(executor_cp_reg_transfer, unknown_coprocessor) {
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL, NULL, NULL, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_COPROCESSOR_REGISTER_TRANSFER;
+  instr.cond = COND_AL;
+  instr.instr.coprocessor_register_transfer.load = true;
+  instr.instr.coprocessor_register_transfer.source_dest = REG_R3;
+  instr.instr.coprocessor_register_transfer.cp_reg = 2;
+  instr.instr.coprocessor_register_transfer.cp_num = 1;
+  instr.instr.coprocessor_register_transfer.opcode_2 = 3;
+  instr.instr.coprocessor_register_transfer.crm = 4;
+  
+  cr_assert_eq(pt_arm_execute_instruction(&cpu, &instr), -1);
+}
+
+Test(executor_cp_reg_transfer, read_non_r15) {
+  uint32_t read(pt_arm_cpu* cpu, uint8_t cp_reg, uint8_t crm, uint8_t opcode2) {
+    if(cp_reg == 2 && crm == 4 && opcode2 == 3) {
+      return 0x12345678;
+    }
+    return 0x0;
+  }
+  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL, NULL, NULL, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_COPROCESSOR_REGISTER_TRANSFER;
+  instr.cond = COND_AL;
+  instr.instr.coprocessor_register_transfer.load = true;
+  instr.instr.coprocessor_register_transfer.source_dest = REG_R3;
+  instr.instr.coprocessor_register_transfer.cp_reg = 2;
+  instr.instr.coprocessor_register_transfer.cp_num = 1;
+  instr.instr.coprocessor_register_transfer.opcode_2 = 3;
+  instr.instr.coprocessor_register_transfer.crm = 4;
+
+  cpu.coprocessors[1].present = true;
+  cpu.coprocessors[1].read = &read;
+
+  int r = pt_arm_execute_instruction(&cpu, &instr);
+  cr_assert_eq(r, 0);
+  cr_assert_eq(cpu.r3, 0x12345678);
+}
+
+Test(executor_cp_reg_transfer, read_r15) {
+  uint32_t read(pt_arm_cpu* cpu, uint8_t cp_reg, uint8_t crm, uint8_t opcode2) {
+    if(cp_reg == 2 && crm == 4 && opcode2 == 3) {
+      return 0xA0000000;
+    } else if(cp_reg == 2 && crm == 4 && opcode2 == 4) {
+      return 0x50000000;
+    }
+    
+    return 0x0;
+  }
+  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL, NULL, NULL, NULL);
+  cpu.r15 = 0x13243546;
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_COPROCESSOR_REGISTER_TRANSFER;
+  instr.cond = COND_AL;
+  instr.instr.coprocessor_register_transfer.load = true;
+  instr.instr.coprocessor_register_transfer.source_dest = REG_R15;
+  instr.instr.coprocessor_register_transfer.cp_reg = 2;
+  instr.instr.coprocessor_register_transfer.cp_num = 1;
+  instr.instr.coprocessor_register_transfer.opcode_2 = 3;
+  instr.instr.coprocessor_register_transfer.crm = 4;
+
+  cpu.coprocessors[1].present = true;
+  cpu.coprocessors[1].read = &read;
+
+  int r = pt_arm_execute_instruction(&cpu, &instr);
+  cr_assert_eq(r, 0);
+  cr_assert_eq(cpu.r15, 0x13243546);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
+
+  instr.instr.coprocessor_register_transfer.opcode_2 = 4;
+  pt_arm_execute_instruction(&cpu, &instr);
+  cr_assert_eq(cpu.r15, 0x13243546);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), true);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), true);
+}
+
+Test(executor_cp_reg_transfer, write) {
+  uint32_t written = 0x0;
+  void write(pt_arm_cpu* cpu, uint8_t cp_reg, uint32_t value, uint8_t crm, uint8_t opcode2) {
+    if(cp_reg == 2 && crm == 4 && opcode2 == 3) {
+      written = value;
+    }
+  }
+  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, NULL, NULL, NULL, NULL, NULL, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_COPROCESSOR_REGISTER_TRANSFER;
+  instr.cond = COND_AL;
+  instr.instr.coprocessor_register_transfer.load = false;
+  instr.instr.coprocessor_register_transfer.source_dest = REG_R3;
+  instr.instr.coprocessor_register_transfer.cp_reg = 2;
+  instr.instr.coprocessor_register_transfer.cp_num = 1;
+  instr.instr.coprocessor_register_transfer.opcode_2 = 3;
+  instr.instr.coprocessor_register_transfer.crm = 4;
+
+  cpu.coprocessors[1].present = true;
+  cpu.coprocessors[1].write = &write;
+
+  cpu.r3 = 0x98765432;
+
+  int r = pt_arm_execute_instruction(&cpu, &instr);
+  cr_assert_eq(r, 0);
+  cr_assert_eq(written, 0x98765432);
+}
+
+

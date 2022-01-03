@@ -176,7 +176,7 @@ static void decode_coprocessor_register_transfer(pt_arm_instr_coprocessor_regist
   dest->opcode_2 = (i>>5)&0x7;
   dest->cp_num = (i>>8)&0xF;
   dest->source_dest = (i>>12)&0xF;
-  dest->cp_source_dest = (i>>16)&0xF;
+  dest->cp_reg = (i>>16)&0xF;
   dest->load = (i>>20)&0x1;
 }
 
