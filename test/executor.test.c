@@ -17,6 +17,8 @@ Test(_petraea_eval_operand2, can_evaluate_immediate_value) {
   pt_arm_operand2 op;
   op.is_immediate = true;
   op.op.imm.value = 0x123456;
+  op.op.imm.carryValid = true;
+  op.op.imm.carry = false;
   
   uint32_t result = _petraea_eval_operand2(&cpu, &op, &carryValid, &carry);
 

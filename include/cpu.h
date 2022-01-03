@@ -44,6 +44,13 @@ typedef enum {
 
 struct pt_arm_cpu_struct;
 typedef struct pt_arm_cpu_struct pt_arm_cpu;
+
+typedef struct {
+  bool present;
+  uint32_t (*read)(pt_arm_cpu*, uint8_t, uint8_t, uint8_t);
+  void (*write)(pt_arm_cpu*, uint8_t, uint32_t, uint8_t, uint8_t);
+} pt_arm_coprocessor;
+
 struct pt_arm_cpu_struct {
   uint32_t r0;
   uint32_t r1;
@@ -88,6 +95,7 @@ struct pt_arm_cpu_struct {
   uint32_t spsr_fiq;
 
   pt_arm_registers regs[7];
+  pt_arm_coprocessor coprocessors[16];
 
   uint32_t (*bus_fetch_word)(uint32_t);
   uint16_t (*bus_fetch_halfword)(uint32_t);
@@ -104,6 +112,7 @@ struct pt_arm_cpu_struct {
   void (*write_word)(pt_arm_cpu*, uint32_t, uint32_t, bool);
   void (*write_halfword)(pt_arm_cpu*, uint32_t, uint16_t, bool);
   void (*write_byte)(pt_arm_cpu*, uint32_t, uint8_t, bool);
+  
 };
 
 

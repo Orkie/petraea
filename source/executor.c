@@ -358,6 +358,28 @@ static int execute_swap(pt_arm_cpu* cpu, pt_arm_instr_swap* i) {
 }
 
 ///////////////////////////////////////////
+// Coprocessor register transfer
+///////////////////////////////////////////
+static int execute_coprocessor_register_transfer(pt_arm_cpu* cpu, pt_arm_instr_coprocessor_register_transfer* i) {
+  pt_arm_registers* regs = pt_arm_get_regs(cpu);
+  uint32_t* source_dest = regs->regs[i->source_dest];
+
+  pt_arm_coprocessor* cp = &cpu->coprocessors[i->cp_num];
+  if(cp->present) {
+    // TODO - this should raise an undefined instruction exception
+    return -1;
+  }
+  
+  if(i->load) {
+    *source_dest = cp->read(cpu, i->cp_source_dest, i->crm, i->opcode_2);
+  } else {
+    cp->write(cpu, i->cp_source_dest, *source_dest, i->crm, i->opcode_2);
+  }
+  
+  return 0;
+}
+
+///////////////////////////////////////////
 // Execution utilities
 ///////////////////////////////////////////
 int pt_arm_execute_instruction(pt_arm_cpu* cpu, pt_arm_instruction* instr) {
@@ -377,6 +399,8 @@ int pt_arm_execute_instruction(pt_arm_cpu* cpu, pt_arm_instruction* instr) {
       return execute_block_data_transfer(cpu, &instr->instr.block_data_transfer);
     case INSTR_SWAP:
       return execute_swap(cpu, &instr->instr.swap);
+    case INSTR_COPROCESSOR_REGISTER_TRANSFER:
+      return execute_coprocessor_register_transfer(cpu, &instr->instr.coprocessor_register_transfer);
     default: return -1;
     }
   }

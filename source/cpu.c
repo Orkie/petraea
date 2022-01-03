@@ -1,5 +1,6 @@
 #include "cpu.h"
 #include "instr.h"
+#include <stddef.h>
 
 pt_arm_mode pt_arm_current_mode(pt_arm_cpu* cpu) {
   switch(cpu->cpsr&0xF) {
@@ -295,6 +296,12 @@ int pt_arm_init_cpu(pt_arm_cpu* cpu,
   cpu->write_word = _write_word;
   cpu->write_halfword = _write_halfword;
   cpu->write_byte = _write_byte;
+
+  for(int i = 15 ; i-- ; ) {
+    cpu->coprocessors[i].present = false;
+    cpu->coprocessors[i].read = NULL;
+    cpu->coprocessors[i].write = NULL;
+  }
 
   return 0;
 }
