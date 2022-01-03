@@ -167,6 +167,19 @@ static void decode_block_data_transfer(pt_arm_instr_block_data_transfer* dest, u
   dest->register_list = i&0xFFFF;
 }
 
+static bool instr_is_coprocessor_register_transfer(uint32_t i) {
+  return ((i&0x0F000010) == 0x0E000010);
+}
+
+static void decode_coprocessor_register_transfer(pt_arm_instr_coprocessor_register_transfer* dest, uint32_t i) {
+  dest->crm = i&0xF;
+  dest->opcode_2 = (i>>5)&0x7;
+  dest->cp_num = (i>>8)&0xF;
+  dest->source_dest = (i>>12)&0xF;
+  dest->cp_source_dest = (i>>16)&0xF;
+  dest->load = (i>>20)&0x1;
+}
+
 int pt_arm_decode_instruction(pt_arm_instruction* dest, uint32_t i) {
   const unsigned int cond = (i&0xF0000000) >> 28;
 
@@ -191,6 +204,9 @@ int pt_arm_decode_instruction(pt_arm_instruction* dest, uint32_t i) {
   } else if(instr_is_block_data_transfer(i)) {
     dest->type = INSTR_BLOCK_DATA_TRANSFER;
     decode_block_data_transfer(&dest->instr.block_data_transfer, i);
+  } else if(instr_is_coprocessor_register_transfer(i)) {
+    dest->type = INSTR_COPROCESSOR_REGISTER_TRANSFER;
+    decode_coprocessor_register_transfer(&dest->instr.coprocessor_register_transfer, i);
   } else if(instr_is_undefined(i)) {
     dest->type = INSTR_UNDEFINED;
   } else {

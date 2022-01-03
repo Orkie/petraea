@@ -45,17 +45,20 @@ typedef enum {
 
 typedef enum {
   INSTR_DATA_PROCESSING,
-  INSTR_MULTIPLY,
-  INSTR_MULTIPLY_LONG,
-  INSTR_SINGLE_DATA_SWAP,
+  INSTR_MULTIPLY, // TODO NOT YET IMPLEMENTED
+  INSTR_MULTIPLY_LONG, // TODO NOT YET IMPLEMENTED
   INSTR_BRANCH_EXCHANGE,
   INSTR_HALFWORD_DATA_TRANSFER,
   INSTR_SINGLE_DATA_TRANSFER,
   INSTR_SWAP,
   INSTR_UNDEFINED,
   INSTR_BRANCH,
-  INSTR_BLOCK_DATA_TRANSFER
-  // TODO - the rest
+  INSTR_BLOCK_DATA_TRANSFER,
+  INSTR_COPROCESSOR_REGISTER_TRANSFER, // TODO MCR/MRC
+  INSTR_SOFTWARE_INTERRUPT, // TODO
+  // N/A - we only have CP15, which doesn't support these two
+  INSTR_COPROCESSOR_DATA_TRANSFER,
+  INSTR_COPROCESSOR_DATA_OPERATION
 } pt_arm_instruction_type;
 
 typedef struct {
@@ -173,6 +176,18 @@ typedef struct {
 } pt_arm_instr_block_data_transfer;
 
 ///////////////////////////////////////////
+// Coprocessor register transfer
+///////////////////////////////////////////
+typedef struct {
+  bool load;
+  pt_arm_register source_dest;
+  uint8_t cp_source_dest;
+  uint8_t cp_num;
+  uint8_t opcode_2;
+  uint8_t crm;
+} pt_arm_instr_coprocessor_register_transfer;
+
+///////////////////////////////////////////
 
 typedef union {
   pt_arm_instr_data_processing data_processing;
@@ -182,6 +197,7 @@ typedef union {
   pt_arm_instr_branch branch;
   pt_arm_instr_swap swap;
   pt_arm_instr_block_data_transfer block_data_transfer;
+  pt_arm_instr_coprocessor_register_transfer coprocessor_register_transfer;
 } pt_arm_instructions;
 
 typedef struct {

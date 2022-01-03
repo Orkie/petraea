@@ -609,3 +609,34 @@ Test(decoder, can_decode_stmia) {
   cr_assert_eq(result.instr.block_data_transfer.base, REG_R3);
 }
 
+///////////////////////////////////////////
+// Co-processor access
+///////////////////////////////////////////
+
+Test(decoder, can_decode_mrc) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xEE123FB4); // mrc p15, 0, r3, c2, c4, 5
+
+  cr_assert_eq(result.type, INSTR_COPROCESSOR_REGISTER_TRANSFER);
+  cr_assert_eq(result.instr.coprocessor_register_transfer.load, true);
+  cr_assert_eq(result.instr.coprocessor_register_transfer.source_dest, REG_R3);
+  cr_assert_eq(result.instr.coprocessor_register_transfer.cp_source_dest, 2);
+  cr_assert_eq(result.instr.coprocessor_register_transfer.cp_num, 15);
+  cr_assert_eq(result.instr.coprocessor_register_transfer.crm, 4);
+  cr_assert_eq(result.instr.coprocessor_register_transfer.opcode_2, 5);
+}
+
+Test(decoder, can_decode_mcr) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xEE018DD2); // mcr p13, 0, r8, c1, c2, 6
+
+  cr_assert_eq(result.type, INSTR_COPROCESSOR_REGISTER_TRANSFER);
+  cr_assert_eq(result.instr.coprocessor_register_transfer.load, false);
+  cr_assert_eq(result.instr.coprocessor_register_transfer.source_dest, REG_R8);
+  cr_assert_eq(result.instr.coprocessor_register_transfer.cp_source_dest, 1);
+  cr_assert_eq(result.instr.coprocessor_register_transfer.cp_num, 13);
+  cr_assert_eq(result.instr.coprocessor_register_transfer.crm, 2);
+  cr_assert_eq(result.instr.coprocessor_register_transfer.opcode_2, 6);
+}
+
+
