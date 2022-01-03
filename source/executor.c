@@ -371,7 +371,15 @@ static int execute_coprocessor_register_transfer(pt_arm_cpu* cpu, pt_arm_instr_c
   }
   
   if(i->load) {
-    *source_dest = cp->read(cpu, i->cp_source_dest, i->crm, i->opcode_2);
+    uint32_t value_from_cp = cp->read(cpu, i->cp_source_dest, i->crm, i->opcode_2);
+    if(i->source_dest == REG_R15) {
+      SET_NEGATIVE_FLAG(cpu, (value_from_cp>>31)&0x1);
+      SET_ZERO_FLAG(cpu, (value_from_cp>>30)&0x1);
+      SET_CARRY_FLAG(cpu, (value_from_cp>>29)&0x1);
+      SET_OVERFLOW_FLAG(cpu, (value_from_cp>>28)&0x1);
+    } else {
+      *source_dest = value_from_cp;
+    }
   } else {
     cp->write(cpu, i->cp_source_dest, *source_dest, i->crm, i->opcode_2);
   }

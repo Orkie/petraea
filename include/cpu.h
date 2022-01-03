@@ -49,6 +49,7 @@ typedef struct {
   bool present;
   uint32_t (*read)(pt_arm_cpu*, uint8_t, uint8_t, uint8_t);
   void (*write)(pt_arm_cpu*, uint8_t, uint32_t, uint8_t, uint8_t);
+  void* state;
 } pt_arm_coprocessor;
 
 struct pt_arm_cpu_struct {
