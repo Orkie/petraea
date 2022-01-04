@@ -273,7 +273,22 @@ static void _init_regs(pt_arm_cpu* cpu) {
   cpu->regs[MODE_FIQ].spsr = &cpu->spsr_fiq;
 }
 
+void cp15_write(pt_arm_cpu* cpu, void* state, uint8_t cp_reg, uint32_t value, uint8_t crm, uint8_t opcode2) {
+}
+
+uint32_t cp15_read(pt_arm_cpu* cpu, void* state, uint8_t cp_reg, uint8_t crm, uint8_t opcode2) {
+  pt_cp15_state* s = (pt_cp15_state*) state;
+
+  switch(cp_reg) {
+  case 0:
+    return opcode2 == 0x1 ? s->cache_type : s->id;
+  }
+
+  return 0x0;
+}
+
 int pt_arm_init_cpu(pt_arm_cpu* cpu,
+		    pt_arm_part part,
 		    uint32_t (*bus_fetch_word)(uint32_t),
 		    uint16_t (*bus_fetch_halfword)(uint32_t),
 		    uint8_t (*bus_fetch_byte)(uint32_t),
@@ -301,8 +316,21 @@ int pt_arm_init_cpu(pt_arm_cpu* cpu,
     cpu->coprocessors[i].present = false;
     cpu->coprocessors[i].read = NULL;
     cpu->coprocessors[i].write = NULL;
+    cpu->coprocessors[i].state = NULL;
   }
 
+  uint32_t arch = 0x2; // TODO - this is vt4
+
+  // set up cp15
+  cpu->coprocessors[15].present = true;
+  cpu->coprocessors[15].read = &cp15_read;
+  cpu->coprocessors[15].write = &cp15_write;
+  cpu->coprocessors[15].state = (void*) &cpu->cp15;
+  cpu->cp15.id = (0x41 << 24) | (1 << 20) | (arch << 16) | (part << 4);
+  cpu->cp15.cache_type = part == ARM920T ? 0xD172172
+    : part == ARM940T ? 0xF0F10F1
+    : 0x0;
+  
   return 0;
 }
 

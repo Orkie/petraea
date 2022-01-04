@@ -360,7 +360,6 @@ static int execute_swap(pt_arm_cpu* cpu, pt_arm_instr_swap* i) {
 ///////////////////////////////////////////
 // Coprocessor register transfer
 ///////////////////////////////////////////
-#include <stdio.h>
 static int execute_coprocessor_register_transfer(pt_arm_cpu* cpu, pt_arm_instr_coprocessor_register_transfer* i) {
   pt_arm_registers* regs = pt_arm_get_regs(cpu);
   uint32_t* source_dest = regs->regs[i->source_dest];
@@ -372,7 +371,7 @@ static int execute_coprocessor_register_transfer(pt_arm_cpu* cpu, pt_arm_instr_c
   }
   
   if(i->load) {
-    uint32_t value_from_cp = cp->read(cpu, i->cp_reg, i->crm, i->opcode_2);
+    uint32_t value_from_cp = cp->read(cpu, cp->state, i->cp_reg, i->crm, i->opcode_2);
     if(i->source_dest == REG_R15) {
       SET_NEGATIVE_FLAG(cpu, (value_from_cp>>31)&0x1);
       SET_ZERO_FLAG(cpu, (value_from_cp>>30)&0x1);
@@ -382,7 +381,7 @@ static int execute_coprocessor_register_transfer(pt_arm_cpu* cpu, pt_arm_instr_c
       *source_dest = value_from_cp;
     }
   } else {
-    cp->write(cpu, i->cp_reg, *source_dest, i->crm, i->opcode_2);
+    cp->write(cpu, cp->state, i->cp_reg, *source_dest, i->crm, i->opcode_2);
   }
   
   return 0;

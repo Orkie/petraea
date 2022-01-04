@@ -26,6 +26,11 @@ typedef enum {
   REG_PC = 15
 } pt_arm_register;
 
+typedef enum {
+  ARM920T = 0x920,
+  ARM940T = 0x940
+} pt_arm_part;
+
 typedef struct {
   uint32_t* regs[16];
   uint32_t* spsr;
@@ -47,10 +52,15 @@ typedef struct pt_arm_cpu_struct pt_arm_cpu;
 
 typedef struct {
   bool present;
-  uint32_t (*read)(pt_arm_cpu*, uint8_t, uint8_t, uint8_t);
-  void (*write)(pt_arm_cpu*, uint8_t, uint32_t, uint8_t, uint8_t);
+  uint32_t (*read)(pt_arm_cpu*, void*, uint8_t, uint8_t, uint8_t);
+  void (*write)(pt_arm_cpu*, void*, uint8_t, uint32_t, uint8_t, uint8_t);
   void* state;
 } pt_arm_coprocessor;
+
+typedef struct {
+  uint32_t id;
+  uint32_t cache_type;
+} pt_cp15_state;
 
 struct pt_arm_cpu_struct {
   uint32_t r0;
@@ -97,6 +107,7 @@ struct pt_arm_cpu_struct {
 
   pt_arm_registers regs[7];
   pt_arm_coprocessor coprocessors[16];
+  pt_cp15_state cp15;
 
   uint32_t (*bus_fetch_word)(uint32_t);
   uint16_t (*bus_fetch_halfword)(uint32_t);
@@ -138,12 +149,13 @@ struct pt_arm_cpu_struct {
 #define SET_THUMB_FLAG(cpu, value) (cpu->cpsr = ((cpu->cpsr & (~(1<<5))) | (((value)&1)<<5)))
 
 extern int pt_arm_init_cpu(pt_arm_cpu* cpu,
-		    uint32_t (*bus_fetch_word)(uint32_t),
-		    uint16_t (*bus_fetch_halfword)(uint32_t),
-		    uint8_t (*bus_fetch_byte)(uint32_t),
-		    void (*bus_write_word)(uint32_t, uint32_t),
-		    void (*bus_write_halfword)(uint32_t, uint16_t),
-		    void (*bus_write_byte)(uint32_t, uint8_t));
+			   pt_arm_part part,
+			   uint32_t (*bus_fetch_word)(uint32_t),
+			   uint16_t (*bus_fetch_halfword)(uint32_t),
+			   uint8_t (*bus_fetch_byte)(uint32_t),
+			   void (*bus_write_word)(uint32_t, uint32_t),
+			   void (*bus_write_halfword)(uint32_t, uint16_t),
+			   void (*bus_write_byte)(uint32_t, uint8_t));
 extern pt_arm_mode pt_arm_current_mode(pt_arm_cpu* cpu);
 extern void pt_arm_set_mode(pt_arm_cpu* cpu, pt_arm_mode mode);
 extern int pt_arm_clock(pt_arm_cpu* cpu);
