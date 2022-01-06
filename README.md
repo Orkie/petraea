@@ -5,3 +5,15 @@ Named after the [Sessile Oak](https://en.wikipedia.org/wiki/Quercus_petraea), wh
 
 Uses criterion for unit testing: https://github.com/Snaipe/Criterion
 
+## How to compile
+Petraea uses meson as a build system, you may need to install this.
+
+Run the following commands (parts in square brackets are optional).
+
+```sh
+meson build/ [-Dprefix=/path/to/install] && cd build/
+meson compile
+meson test
+meson install
+```
+
