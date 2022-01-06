@@ -31,24 +31,28 @@ install_headers([
   'include/instr.h'
 ])
 
-petraealib = shared_library(
+libpetraea = shared_library(
   'petraea',
   petraea_sources,
   include_directories : inc,
   install : true)
 
-petraealib_static = static_library(
+libpetraea_static = static_library(
   'petraea',
   petraea_sources,
   include_directories : inc,
   install : true)
 
 pkg_mod = import('pkgconfig')
-pkg_mod.generate(libraries : petraealib,
+pkg_mod.generate(libraries : libpetraea,
                  version : '1.0',
                  name : 'libpetraea',
                  filebase : 'petraea',
                  description : 'An ARM emulator core.')
+
+libpetraea_dep = declare_dependency(
+  include_directories : inc,
+  link_with : libpetraea)
 
 #################################################
 # Unit tests
@@ -59,6 +63,6 @@ criterion_dep = dependency('criterion')
 testexe = executable('petraea.test', test_sources,
                      include_directories : inc,
 		     dependencies : criterion_dep,
-		     link_with : petraealib)
+		     link_with : libpetraea)
 test('petraea test', testexe)
 
