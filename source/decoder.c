@@ -99,10 +99,10 @@ static void decode_branch(pt_arm_instr_branch* dest, uint32_t i) {
   uint32_t offsetRaw = (i&0x00FFFFFF);
   if(offsetRaw&0x00800000) {
     // negative
-    dest->offset = (((i&0x00FFFFFF) << 2) | 0xFC000000)+8;
+    dest->offset = ((i&0x00FFFFFF) << 2) | 0xFC000000;
   } else {
     // positive
-    dest->offset = ((i&0x00FFFFFF) << 2)+8;
+    dest->offset = (i&0x00FFFFFF) << 2;
   }
 }
 

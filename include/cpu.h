@@ -63,6 +63,8 @@ typedef struct {
 } pt_cp15_state;
 
 struct pt_arm_cpu_struct {
+  bool logging;
+  
   uint32_t r0;
   uint32_t r1;
   uint32_t r2;

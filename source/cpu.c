@@ -1,6 +1,7 @@
 #include "cpu.h"
 #include "instr.h"
 #include <stddef.h>
+#include <stdio.h>
 
 pt_arm_mode pt_arm_current_mode(pt_arm_cpu* cpu) {
   switch(cpu->cpsr&0xF) {
@@ -77,7 +78,13 @@ int pt_arm_clock(pt_arm_cpu* cpu) {
   
   // fetch
   uint32_t pc = *pcReg;
+  if(cpu->logging) {
+    printf("PREFETCH: PC: 0x%.8x\n", (*pcReg));
+  }
   uint32_t instruction = _fetch_word(cpu, pc, true, false); // TODO - not sure if you can have an unprivileged instruction read?
+  if(cpu->logging) {
+    printf("PREFETCH: Instruction: 0x%.8x\n", instruction);
+  }
   
   // decode
   // TODO - thumb
@@ -97,6 +104,10 @@ int pt_arm_clock(pt_arm_cpu* cpu) {
     *pcReg = pc+4;
   }
 
+  if(cpu->logging) {
+    printf("AFTER_EXECUTE: PC: 0x%.8x\n", (*pcReg));
+  }
+  
   return 0;
 }
 
