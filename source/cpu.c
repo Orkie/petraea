@@ -39,28 +39,34 @@ bool arm_is_little_endian(pt_arm_cpu* cpu) {
 // TODO - implement MMU/PU here
 // TODO - handle endianess
 static uint8_t _fetch_byte(pt_arm_cpu* cpu, uint32_t address, bool isPrivileged) {
-  return (*cpu->bus_fetch_byte)(address);
+  uint8_t d;
+  (*cpu->bus_fetch)(address, 1, &d);
+  return d;
 }
 
 static uint16_t _fetch_halfword(pt_arm_cpu* cpu, uint32_t address, bool isPrivileged) {
-  return (*cpu->bus_fetch_halfword)(address);
+  uint16_t d;
+  (*cpu->bus_fetch)(address, 2, &d);
+  return d;
 }
 
 // TODO - instruction permissions are different to data I think
 static uint32_t _fetch_word(pt_arm_cpu* cpu, uint32_t address, bool isPrivileged, bool isDataRead) {
-  return (*cpu->bus_fetch_word)(address);
+  uint32_t d;
+  (*cpu->bus_fetch)(address, 4, &d);
+  return d;
 }
 
 static void _write_byte(pt_arm_cpu* cpu, uint32_t address, uint8_t value, bool isPrivileged) {
-  (*cpu->bus_write_byte)(address, value);
+  (*cpu->bus_write)(address, 1, &value);
 }
 
 static void _write_halfword(pt_arm_cpu* cpu, uint32_t address, uint16_t value, bool isPrivileged) {
-  (*cpu->bus_write_halfword)(address, value);
+  (*cpu->bus_write)(address, 2, &value);
 }
 
 static void _write_word(pt_arm_cpu* cpu, uint32_t address, uint32_t value, bool isPrivileged) {
-  (*cpu->bus_write_word)(address, value);
+  (*cpu->bus_write)(address, 4, &value);
 }
 
 pt_arm_registers* pt_arm_get_regs(pt_arm_cpu* cpu) {
@@ -300,25 +306,16 @@ uint32_t cp15_read(pt_arm_cpu* cpu, void* state, uint8_t cp_reg, uint8_t crm, ui
 
 int pt_arm_init_cpu(pt_arm_cpu* cpu,
 		    pt_arm_part part,
-		    uint32_t (*bus_fetch_word)(uint32_t),
-		    uint16_t (*bus_fetch_halfword)(uint32_t),
-		    uint8_t (*bus_fetch_byte)(uint32_t),
-		    void (*bus_write_word)(uint32_t, uint32_t),
-		    void (*bus_write_halfword)(uint32_t, uint16_t),
-		    void (*bus_write_byte)(uint32_t, uint8_t)
-		    ) {
+		    int (*bus_fetch)(uint32_t, int, void*),
+		    int (*bus_write)(uint32_t, int, void*)) {
   _init_regs(cpu);
 
-  cpu->bus_fetch_word = bus_fetch_word;
-  cpu->bus_fetch_halfword = bus_fetch_halfword;
-  cpu->bus_fetch_byte = bus_fetch_byte;
+  cpu->bus_fetch = bus_fetch;
   cpu->fetch_word = _fetch_word;
   cpu->fetch_halfword = _fetch_halfword;
   cpu->fetch_byte = _fetch_byte;
 
-  cpu->bus_write_word = bus_write_word;
-  cpu->bus_write_halfword = bus_write_halfword;
-  cpu->bus_write_byte = bus_write_byte;
+  cpu->bus_write = bus_write;
   cpu->write_word = _write_word;
   cpu->write_halfword = _write_halfword;
   cpu->write_byte = _write_byte;

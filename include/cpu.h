@@ -111,13 +111,8 @@ struct pt_arm_cpu_struct {
   pt_arm_coprocessor coprocessors[16];
   pt_cp15_state cp15;
 
-  uint32_t (*bus_fetch_word)(uint32_t);
-  uint16_t (*bus_fetch_halfword)(uint32_t);
-  uint8_t (*bus_fetch_byte)(uint32_t);
-
-  void (*bus_write_word)(uint32_t, uint32_t);
-  void (*bus_write_halfword)(uint32_t, uint16_t);
-  void (*bus_write_byte)(uint32_t, uint8_t);
+  int (*bus_fetch)(uint32_t, int, void*);
+  int (*bus_write)(uint32_t, int, void*);
 
   uint32_t (*fetch_word)(pt_arm_cpu*, uint32_t, bool, bool);
   uint16_t (*fetch_halfword)(pt_arm_cpu*, uint32_t, bool);
@@ -151,13 +146,9 @@ struct pt_arm_cpu_struct {
 #define SET_THUMB_FLAG(cpu, value) (cpu->cpsr = ((cpu->cpsr & (~(1<<5))) | (((value)&1)<<5)))
 
 extern int pt_arm_init_cpu(pt_arm_cpu* cpu,
-			   pt_arm_part part,
-			   uint32_t (*bus_fetch_word)(uint32_t),
-			   uint16_t (*bus_fetch_halfword)(uint32_t),
-			   uint8_t (*bus_fetch_byte)(uint32_t),
-			   void (*bus_write_word)(uint32_t, uint32_t),
-			   void (*bus_write_halfword)(uint32_t, uint16_t),
-			   void (*bus_write_byte)(uint32_t, uint8_t));
+		    pt_arm_part part,
+		    int (*bus_fetch)(uint32_t, int, void*),
+		    int (*bus_write)(uint32_t, int, void*));
 extern pt_arm_mode pt_arm_current_mode(pt_arm_cpu* cpu);
 extern void pt_arm_set_mode(pt_arm_cpu* cpu, pt_arm_mode mode);
 extern int pt_arm_clock(pt_arm_cpu* cpu);

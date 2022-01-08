@@ -10,7 +10,7 @@
 
 Test(id_reg, arm920t) {
   pt_arm_cpu cpu;
-  pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL, NULL, NULL, NULL, NULL); 
+  pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
 
   pt_arm_instruction instr;
   instr.type = INSTR_COPROCESSOR_REGISTER_TRANSFER;
@@ -28,7 +28,7 @@ Test(id_reg, arm920t) {
 
 Test(id_reg, arm940t) {
   pt_arm_cpu cpu;
-  pt_arm_init_cpu(&cpu, ARM940T, NULL, NULL, NULL, NULL, NULL, NULL); 
+  pt_arm_init_cpu(&cpu, ARM940T, NULL, NULL);
 
   pt_arm_instruction instr;
   instr.type = INSTR_COPROCESSOR_REGISTER_TRANSFER;
@@ -50,7 +50,7 @@ Test(id_reg, arm940t) {
 
 Test(cache_type_reg, arm920t) {
   pt_arm_cpu cpu;
-  pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL, NULL, NULL, NULL, NULL); 
+  pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL); 
 
   pt_arm_instruction instr;
   instr.type = INSTR_COPROCESSOR_REGISTER_TRANSFER;
@@ -68,7 +68,7 @@ Test(cache_type_reg, arm920t) {
 
 Test(cache_type_reg, arm940t) {
   pt_arm_cpu cpu;
-  pt_arm_init_cpu(&cpu, ARM940T, NULL, NULL, NULL, NULL, NULL, NULL); 
+  pt_arm_init_cpu(&cpu, ARM940T, NULL, NULL);
 
   pt_arm_instruction instr;
   instr.type = INSTR_COPROCESSOR_REGISTER_TRANSFER;
