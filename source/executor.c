@@ -126,7 +126,7 @@ static int execute_block_data_transfer(pt_arm_cpu* cpu, pt_arm_instr_block_data_
     : isDA ? (baseAddress - (numberOfRegisters * 4) + 4)
     : (baseAddress - (numberOfRegisters * 4)); // isDB
   
-  for(int ri = 0 ; ri < 16 ; i++) {
+  for(int ri = 0 ; ri < 16 ; ri++) {
     if((i->register_list >> ri)&0x1) {
       if(i->load) {
 	*regs->regs[ri] = (*cpu->fetch_word)(cpu, address, isPrivileged, true);

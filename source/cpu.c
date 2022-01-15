@@ -36,37 +36,61 @@ bool arm_is_little_endian(pt_arm_cpu* cpu) {
   return ((cpu->cpsr >> 9)&0x1) == 0x0;
 }
 
+uint32_t current_pc(pt_arm_cpu* cpu) {
+  pt_arm_mode mode = pt_arm_current_mode(cpu);
+  uint32_t* pcReg = cpu->regs[mode].regs[REG_PC];
+  return *pcReg;
+}
+
 // TODO - implement MMU/PU here
 // TODO - handle endianess
 static uint8_t _fetch_byte(pt_arm_cpu* cpu, uint32_t address, bool isPrivileged) {
   uint8_t d;
-  (*cpu->bus_fetch)(address, 1, &d);
+  int ret = (*cpu->bus_fetch)(address, 1, &d);
+  if(cpu->logging && ret != 0) {
+    fprintf(stderr, "Failed to read word from 0x%.8x from instruction at 0x%.8x\n", address, current_pc(cpu));
+  }
   return d;
 }
 
 static uint16_t _fetch_halfword(pt_arm_cpu* cpu, uint32_t address, bool isPrivileged) {
   uint16_t d;
-  (*cpu->bus_fetch)(address, 2, &d);
+  int ret = (*cpu->bus_fetch)(address, 2, &d);
+  if(cpu->logging && ret != 0) {
+    fprintf(stderr, "Failed to read word from 0x%.8x from instruction at 0x%.8x\n", address, current_pc(cpu));
+  }
   return d;
 }
 
 // TODO - instruction permissions are different to data I think
 static uint32_t _fetch_word(pt_arm_cpu* cpu, uint32_t address, bool isPrivileged, bool isDataRead) {
   uint32_t d;
-  (*cpu->bus_fetch)(address, 4, &d);
+  int ret = (*cpu->bus_fetch)(address, 4, &d);
+  if(cpu->logging && ret != 0) {
+    fprintf(stderr, "Failed to read word from 0x%.8x from instruction at 0x%.8x\n", address, current_pc(cpu));
+  }
   return d;
 }
 
 static void _write_byte(pt_arm_cpu* cpu, uint32_t address, uint8_t value, bool isPrivileged) {
-  (*cpu->bus_write)(address, 1, &value);
+  int ret = (*cpu->bus_write)(address, 1, &value);
+  if(cpu->logging && ret != 0) {
+    fprintf(stderr, "Failed to write byte to 0x%.8x from instruction at 0x%.8x\n", address, current_pc(cpu));
+  }
 }
 
 static void _write_halfword(pt_arm_cpu* cpu, uint32_t address, uint16_t value, bool isPrivileged) {
-  (*cpu->bus_write)(address, 2, &value);
+  int ret = (*cpu->bus_write)(address, 2, &value);
+  if(cpu->logging && ret != 0) {
+    fprintf(stderr, "Failed to write halfword to 0x%.8x from instruction at 0x%.8x\n", address, current_pc(cpu));
+  }
 }
 
 static void _write_word(pt_arm_cpu* cpu, uint32_t address, uint32_t value, bool isPrivileged) {
-  (*cpu->bus_write)(address, 4, &value);
+  int ret = (*cpu->bus_write)(address, 4, &value);
+  if(cpu->logging && ret != 0) {
+    fprintf(stderr, "Failed to write word to 0x%.8x from instruction at 0x%.8x\n", address, current_pc(cpu));
+  }
 }
 
 pt_arm_registers* pt_arm_get_regs(pt_arm_cpu* cpu) {
