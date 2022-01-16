@@ -4850,3 +4850,224 @@ Test(executor_multiply, accumulate_set_condition_codes) {
   cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
 }
 
+///////////////////////////////////////////
+// Multiply long
+///////////////////////////////////////////
+
+Test(executor_multiply_long, no_accumulate_no_condition_codes_unsigned) {  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_MULTIPLY_LONG;
+  instr.cond = COND_AL;
+  instr.instr.multiply_long.rd_hi = REG_R0;
+  instr.instr.multiply_long.rd_lo = REG_R1;
+  instr.instr.multiply_long.rs = REG_R2;
+  instr.instr.multiply_long.rm = REG_R3;
+  instr.instr.multiply_long.set_condition_codes = false;
+  instr.instr.multiply_long.accumulate = false;
+  instr.instr.multiply_long.is_signed = false;
+  SET_ZERO_FLAG(&cpu, true);
+
+  cpu.r0 = 0x0;
+  cpu.r1 = 0x0;
+  cpu.r2 = 0x7FFFFFFF;
+  cpu.r3 = 0x3;
+
+  pt_arm_execute_instruction(&cpu, &instr);
+
+  cr_assert_eq(cpu.r0, 0x1);
+  cr_assert_eq(cpu.r1, 0x7FFFFFFD);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), true);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+}
+
+Test(executor_multiply_long, no_accumulate_with_condition_codes_unsigned) {  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_MULTIPLY_LONG;
+  instr.cond = COND_AL;
+  instr.instr.multiply_long.rd_hi = REG_R0;
+  instr.instr.multiply_long.rd_lo = REG_R1;
+  instr.instr.multiply_long.rs = REG_R2;
+  instr.instr.multiply_long.rm = REG_R3;
+  instr.instr.multiply_long.set_condition_codes = true;
+  instr.instr.multiply_long.accumulate = false;
+  instr.instr.multiply_long.is_signed = false;
+  SET_ZERO_FLAG(&cpu, true);
+
+  cpu.r0 = 0x0;
+  cpu.r1 = 0x0;
+  cpu.r2 = 0xFFFFFFFF;
+  cpu.r3 = 0x90000000;
+
+  pt_arm_execute_instruction(&cpu, &instr);
+
+  cr_assert_eq(cpu.r0, 0x8FFFFFFF);
+  cr_assert_eq(cpu.r1, 0x70000000);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+}
+
+Test(executor_multiply_long, no_accumulate_with_condition_codes_zero_unsigned) {  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_MULTIPLY_LONG;
+  instr.cond = COND_AL;
+  instr.instr.multiply_long.rd_hi = REG_R0;
+  instr.instr.multiply_long.rd_lo = REG_R1;
+  instr.instr.multiply_long.rs = REG_R2;
+  instr.instr.multiply_long.rm = REG_R3;
+  instr.instr.multiply_long.set_condition_codes = true;
+  instr.instr.multiply_long.accumulate = false;
+  instr.instr.multiply_long.is_signed = false;
+  SET_ZERO_FLAG(&cpu, true);
+
+  cpu.r0 = 0x0;
+  cpu.r1 = 0x0;
+  cpu.r2 = 0xFFFFFFFF;
+  cpu.r3 = 0x0;
+
+  pt_arm_execute_instruction(&cpu, &instr);
+
+  cr_assert_eq(cpu.r0, 0x0);
+  cr_assert_eq(cpu.r1, 0x0);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), true);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+}
+
+Test(executor_multiply_long, accumulate_no_carry_unsigned) {  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_MULTIPLY_LONG;
+  instr.cond = COND_AL;
+  instr.instr.multiply_long.rd_hi = REG_R0;
+  instr.instr.multiply_long.rd_lo = REG_R1;
+  instr.instr.multiply_long.rs = REG_R2;
+  instr.instr.multiply_long.rm = REG_R3;
+  instr.instr.multiply_long.set_condition_codes = false;
+  instr.instr.multiply_long.accumulate = true;
+  instr.instr.multiply_long.is_signed = false;
+
+  cpu.r0 = 0x1;
+  cpu.r1 = 0x1;
+  cpu.r2 = 0x7FFFFFFF;
+  cpu.r3 = 0x3;
+
+  pt_arm_execute_instruction(&cpu, &instr);
+
+  cr_assert_eq(cpu.r0, 0x2);
+  cr_assert_eq(cpu.r1, 0x7FFFFFFE);
+}
+
+Test(executor_multiply_long, accumulate_with_carry_unsigned) {  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_MULTIPLY_LONG;
+  instr.cond = COND_AL;
+  instr.instr.multiply_long.rd_hi = REG_R0;
+  instr.instr.multiply_long.rd_lo = REG_R1;
+  instr.instr.multiply_long.rs = REG_R2;
+  instr.instr.multiply_long.rm = REG_R3;
+  instr.instr.multiply_long.set_condition_codes = false;
+  instr.instr.multiply_long.accumulate = true;
+  instr.instr.multiply_long.is_signed = false;
+
+  cpu.r0 = 0x0;
+  cpu.r1 = 0x80000003;
+  cpu.r2 = 0x7FFFFFFF;
+  cpu.r3 = 0x3;
+
+  pt_arm_execute_instruction(&cpu, &instr);
+
+  cr_assert_eq(cpu.r0, 0x2);
+  cr_assert_eq(cpu.r1, 0x0);
+}
+
+Test(executor_multiply_long, no_accumulate_signed) {  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_MULTIPLY_LONG;
+  instr.cond = COND_AL;
+  instr.instr.multiply_long.rd_hi = REG_R0;
+  instr.instr.multiply_long.rd_lo = REG_R1;
+  instr.instr.multiply_long.rs = REG_R2;
+  instr.instr.multiply_long.rm = REG_R3;
+  instr.instr.multiply_long.set_condition_codes = false;
+  instr.instr.multiply_long.accumulate = false;
+  instr.instr.multiply_long.is_signed = true;
+
+  cpu.r0 = 0x0;
+  cpu.r1 = 0x0;
+  cpu.r2 = 0xFFFFFFFE;
+  cpu.r3 = 0x8;
+
+  pt_arm_execute_instruction(&cpu, &instr);
+
+  cr_assert_eq(cpu.r0, 0xFFFFFFFF);
+  cr_assert_eq(cpu.r1, 0xFFFFFFF0);
+}
+
+Test(executor_multiply_long, accumulate_no_carry_signed) {  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_MULTIPLY_LONG;
+  instr.cond = COND_AL;
+  instr.instr.multiply_long.rd_hi = REG_R0;
+  instr.instr.multiply_long.rd_lo = REG_R1;
+  instr.instr.multiply_long.rs = REG_R2;
+  instr.instr.multiply_long.rm = REG_R3;
+  instr.instr.multiply_long.set_condition_codes = false;
+  instr.instr.multiply_long.accumulate = true;
+  instr.instr.multiply_long.is_signed = true;
+
+  cpu.r0 = 0x0;
+  cpu.r1 = 0x1;
+  cpu.r2 = 0xFFFFFFFE;
+  cpu.r3 = 0x8;
+
+  pt_arm_execute_instruction(&cpu, &instr);
+
+  cr_assert_eq(cpu.r0, 0xFFFFFFFF);
+  cr_assert_eq(cpu.r1, 0xFFFFFFF1);
+}
+
+Test(executor_multiply_long, accumulate_carry_signed) {  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_MULTIPLY_LONG;
+  instr.cond = COND_AL;
+  instr.instr.multiply_long.rd_hi = REG_R0;
+  instr.instr.multiply_long.rd_lo = REG_R1;
+  instr.instr.multiply_long.rs = REG_R2;
+  instr.instr.multiply_long.rm = REG_R3;
+  instr.instr.multiply_long.set_condition_codes = false;
+  instr.instr.multiply_long.accumulate = true;
+  instr.instr.multiply_long.is_signed = true;
+
+  cpu.r0 = 0x0;
+  cpu.r1 = 0x10;
+  cpu.r2 = 0xFFFFFFFE;
+  cpu.r3 = 0x8;
+
+  pt_arm_execute_instruction(&cpu, &instr);
+
+  cr_assert_eq(cpu.r0, 0x0);
+  cr_assert_eq(cpu.r1, 0x0);
+}
+

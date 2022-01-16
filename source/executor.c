@@ -410,6 +410,37 @@ static int execute_multiply(pt_arm_cpu* cpu, pt_arm_instr_multiply* i) {
 }
 
 ///////////////////////////////////////////
+// Multiply long
+///////////////////////////////////////////
+static int execute_multiply_long(pt_arm_cpu* cpu, pt_arm_instr_multiply_long* i) {
+  pt_arm_registers* regs = pt_arm_get_regs(cpu);
+  uint32_t* rd_lo = regs->regs[i->rd_lo];
+  uint32_t* rd_hi = regs->regs[i->rd_hi];
+  uint32_t* rs = regs->regs[i->rs];
+  uint32_t* rm = regs->regs[i->rm];
+
+  if(i->is_signed) {
+    int64_t rS = ((int32_t)(*rs)) * ((int32_t)(*rm));
+    uint32_t carryS = (i->accumulate && ((((uint64_t)*rd_lo) + (rS&0xFFFFFFFF)) > 0xFFFFFFFF) ? 1 : 0);
+    *rd_lo = (rS&0xFFFFFFFF) + (i->accumulate ? *rd_lo : 0);
+    *rd_hi = (rS>>32) + (i->accumulate ? *rd_hi : 0) + carryS;
+  } else {
+    uint64_t rU = ((uint64_t)(*rs)) * ((uint64_t)(*rm));
+    uint32_t carryU = (i->accumulate && ((((uint64_t)*rd_lo) + (rU&0xFFFFFFFF)) > 0xFFFFFFFF) ? 1 : 0);
+    *rd_lo = (rU&0xFFFFFFFF) + (i->accumulate ? *rd_lo : 0);
+    *rd_hi = (rU>>32) + (i->accumulate ? *rd_hi : 0) + carryU;
+  }
+  
+  if(i->set_condition_codes) {
+    SET_NEGATIVE_FLAG(cpu, (((*rd_hi)&0x80000000) != 0));
+    SET_ZERO_FLAG(cpu, ((*rd_hi)|(*rd_lo)) == 0);
+  }
+  
+  return 0;
+}
+
+
+///////////////////////////////////////////
 // Execution utilities
 ///////////////////////////////////////////
 int pt_arm_execute_instruction(pt_arm_cpu* cpu, pt_arm_instruction* instr) {
@@ -433,6 +464,8 @@ int pt_arm_execute_instruction(pt_arm_cpu* cpu, pt_arm_instruction* instr) {
       return execute_coprocessor_register_transfer(cpu, &instr->instr.coprocessor_register_transfer);
     case INSTR_MULTIPLY:
       return execute_multiply(cpu, &instr->instr.multiply);
+    case INSTR_MULTIPLY_LONG:
+      return execute_multiply_long(cpu, &instr->instr.multiply_long);
     default: return -1;
     }
   }
