@@ -596,11 +596,10 @@ Test(executor_and, can_execute_and_nc_nz_nn) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 1);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 Test(executor_and, can_execute_and_nc_z_nn) {
@@ -623,11 +622,10 @@ Test(executor_and, can_execute_and_nc_z_nn) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), true);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), true);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 Test(executor_and, can_execute_and_nc_nz_n) {
@@ -650,11 +648,10 @@ Test(executor_and, can_execute_and_nc_nz_n) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0x80000000);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), true);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 Test(executor_and, can_execute_and_c_nz_nn) {
@@ -677,11 +674,10 @@ Test(executor_and, can_execute_and_c_nz_nn) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0x7FFFFFFE);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
 }
 
 Test(executor_and, can_execute_and_ns) {
@@ -704,16 +700,14 @@ Test(executor_and, can_execute_and_ns) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 Test(executor_and, can_execute_and_r15_dest) {
   pt_arm_cpu cpu;
-  pt_arm_cpu* cpuptr = &cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
   pt_arm_set_mode(&cpu, MODE_FIQ);
   cpu.r1 = 0x30;
@@ -737,9 +731,9 @@ Test(executor_and, can_execute_and_r15_dest) {
   
   cr_assert_eq(cpu.r15, 0);
   cr_assert_eq(cpu.cpsr, cpu.spsr_fiq);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 ///////////////////////////////////////////
@@ -766,11 +760,10 @@ Test(executor_eor, can_execute_eor_nc_nz_nn) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0xF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 Test(executor_eor, can_execute_eor_nc_z_nn) {
@@ -793,11 +786,10 @@ Test(executor_eor, can_execute_eor_nc_z_nn) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), true);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), true);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 Test(executor_eor, can_execute_eor_nc_nz_n) {
@@ -820,11 +812,10 @@ Test(executor_eor, can_execute_eor_nc_nz_n) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0xFFFFFFFF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), true);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 Test(executor_eor, can_execute_eor_c_nz_nn) {
@@ -847,16 +838,14 @@ Test(executor_eor, can_execute_eor_c_nz_nn) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0x1);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
 }
 
 Test(executor_eor, can_execute_eor_r15_dest) {
   pt_arm_cpu cpu;
-  pt_arm_cpu* cpuptr = &cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
   pt_arm_set_mode(&cpu, MODE_FIQ);
   cpu.r1 = 0xAAAAAAAA;
@@ -880,9 +869,9 @@ Test(executor_eor, can_execute_eor_r15_dest) {
 
   cr_assert_eq(cpu.r15, 0xFFFFFFFF);
   cr_assert_eq(cpu.cpsr, cpu.spsr_fiq);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 ///////////////////////////////////////////
@@ -909,12 +898,11 @@ Test(executor_sub, can_execute_sub_nc_nz_n_nv) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, -5);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), true);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_sub, can_execute_sub_c_nz_nn_nv) {
@@ -937,12 +925,11 @@ Test(executor_sub, can_execute_sub_c_nz_nn_nv) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 5);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_sub, can_execute_sub_c_z_nn_v) {
@@ -965,12 +952,11 @@ Test(executor_sub, can_execute_sub_c_z_nn_v) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), true);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), true);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_sub, can_execute_sub_c_nz_nn_v) {
@@ -993,12 +979,11 @@ Test(executor_sub, can_execute_sub_c_nz_nn_v) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0x7FFFFFFF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), true);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), true);
 }
 
 ///////////////////////////////////////////
@@ -1025,12 +1010,11 @@ Test(executor_rsb, can_execute_rsb_nc_nz_n_nv) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, -5);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), true);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_rsb, can_execute_rsb_c_nz_nn_nv) {
@@ -1053,12 +1037,11 @@ Test(executor_rsb, can_execute_rsb_c_nz_nn_nv) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 5);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_rsb, can_execute_rsb_c_z_nn_v) {
@@ -1081,12 +1064,11 @@ Test(executor_rsb, can_execute_rsb_c_z_nn_v) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), true);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), true);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_rsb, can_execute_rsb_c_nz_nn_v) {
@@ -1109,12 +1091,11 @@ Test(executor_rsb, can_execute_rsb_c_nz_nn_v) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0x7FFFFFFF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), true);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), true);
 }
 
 ///////////////////////////////////////////
@@ -1141,12 +1122,11 @@ Test(executor_add, can_execute_add_nc_nz_nn_nv) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 11);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_add, can_execute_add_nc_nz_n_nv) {
@@ -1169,12 +1149,11 @@ Test(executor_add, can_execute_add_nc_nz_n_nv) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, -4);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), true);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_add, can_execute_add_nc_nz_n_v) {
@@ -1197,12 +1176,11 @@ Test(executor_add, can_execute_add_nc_nz_n_v) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0x80000000);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), true);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), true);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), true);
 }
 
 Test(executor_add, can_execute_add_c_nz_nn_nv) {
@@ -1225,12 +1203,11 @@ Test(executor_add, can_execute_add_c_nz_nn_nv) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 1);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_add, can_execute_add_nc_z_nn_nv) {
@@ -1253,12 +1230,11 @@ Test(executor_add, can_execute_add_nc_z_nn_nv) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), true);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), true);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 ///////////////////////////////////////////
@@ -1268,8 +1244,7 @@ Test(executor_add, can_execute_add_nc_z_nn_nv) {
 Test(executor_adc, can_execute_adc_nc_nz_nn_nv_carry_not_set) {
   pt_arm_cpu cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
-  pt_arm_cpu* cpuptr = &cpu;
-  SET_CARRY_FLAG(cpuptr, false);
+  SET_CARRY_FLAG(&cpu, false);
   cpu.r1 = 8;
   cpu.r2 = 3;
   pt_arm_instruction instr;
@@ -1288,17 +1263,16 @@ Test(executor_adc, can_execute_adc_nc_nz_nn_nv_carry_not_set) {
   pt_arm_execute_instruction(&cpu, &instr);
 
   cr_assert_eq(cpu.r0, 11);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_adc, can_execute_adc_nc_nz_n_nv_carry_not_set) {
   pt_arm_cpu cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
-  pt_arm_cpu* cpuptr = &cpu;
-  SET_CARRY_FLAG(cpuptr, false);
+  SET_CARRY_FLAG(&cpu, false);
   cpu.r1 = 8;
   cpu.r2 = -12;
   pt_arm_instruction instr;
@@ -1317,17 +1291,16 @@ Test(executor_adc, can_execute_adc_nc_nz_n_nv_carry_not_set) {
   pt_arm_execute_instruction(&cpu, &instr);
 
   cr_assert_eq(cpu.r0, -4);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), true);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_adc, can_execute_adc_nc_nz_n_v_carry_not_set) {
   pt_arm_cpu cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
-  pt_arm_cpu* cpuptr = &cpu;
-  SET_CARRY_FLAG(cpuptr, false);
+  SET_CARRY_FLAG(&cpu, false);
   cpu.r1 = 0x7FFFFFFF;
   cpu.r2 = 1;
   pt_arm_instruction instr;
@@ -1346,17 +1319,16 @@ Test(executor_adc, can_execute_adc_nc_nz_n_v_carry_not_set) {
   pt_arm_execute_instruction(&cpu, &instr);
 
   cr_assert_eq(cpu.r0, 0x80000000);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), true);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), true);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), true);
 }
 
 Test(executor_adc, can_execute_adc_c_nz_nn_nv_carry_not_set) {
   pt_arm_cpu cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
-  pt_arm_cpu* cpuptr = &cpu;
-  SET_CARRY_FLAG(cpuptr, false);
+  SET_CARRY_FLAG(&cpu, false);
   cpu.r1 = 0xFFFFFFFF;
   cpu.r2 = 2;
   pt_arm_instruction instr;
@@ -1375,17 +1347,16 @@ Test(executor_adc, can_execute_adc_c_nz_nn_nv_carry_not_set) {
   pt_arm_execute_instruction(&cpu, &instr);
 
   cr_assert_eq(cpu.r0, 1);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_adc, can_execute_adc_nc_z_nn_nv_carry_not_set) {
   pt_arm_cpu cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
-  pt_arm_cpu* cpuptr = &cpu;
-  SET_CARRY_FLAG(cpuptr, false);
+  SET_CARRY_FLAG(&cpu, false);
   cpu.r1 = 0;
   cpu.r2 = 0;
   pt_arm_instruction instr;
@@ -1404,17 +1375,16 @@ Test(executor_adc, can_execute_adc_nc_z_nn_nv_carry_not_set) {
   pt_arm_execute_instruction(&cpu, &instr);
 
   cr_assert_eq(cpu.r0, 0);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), true);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), true);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_adc, can_execute_adc_nc_nz_nn_nv_carry_set) {
   pt_arm_cpu cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
-  pt_arm_cpu* cpuptr = &cpu;
-  SET_CARRY_FLAG(cpuptr, true);
+  SET_CARRY_FLAG(&cpu, true);
   cpu.r1 = 8;
   cpu.r2 = 3;
   pt_arm_instruction instr;
@@ -1433,17 +1403,16 @@ Test(executor_adc, can_execute_adc_nc_nz_nn_nv_carry_set) {
   pt_arm_execute_instruction(&cpu, &instr);
 
   cr_assert_eq(cpu.r0, 12);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_adc, can_execute_adc_nc_nz_n_nv_carry_set) {
   pt_arm_cpu cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
-  pt_arm_cpu* cpuptr = &cpu;
-  SET_CARRY_FLAG(cpuptr, true);
+  SET_CARRY_FLAG(&cpu, true);
   cpu.r1 = -3;
   cpu.r2 = 1;
   pt_arm_instruction instr;
@@ -1462,17 +1431,16 @@ Test(executor_adc, can_execute_adc_nc_nz_n_nv_carry_set) {
   pt_arm_execute_instruction(&cpu, &instr);
   
   cr_assert_eq(cpu.r0, -1);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), true);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_adc, can_execute_adc_nc_nz_n_v_carry_set) {
   pt_arm_cpu cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
-  pt_arm_cpu* cpuptr = &cpu;
-  SET_CARRY_FLAG(cpuptr, true);
+  SET_CARRY_FLAG(&cpu, true);
   cpu.r1 = 0x7FFFFFFE;
   cpu.r2 = 1;
   pt_arm_instruction instr;
@@ -1491,17 +1459,16 @@ Test(executor_adc, can_execute_adc_nc_nz_n_v_carry_set) {
   pt_arm_execute_instruction(&cpu, &instr);
 
   cr_assert_eq(cpu.r0, 0x80000000);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), true);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), true);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), true);
 }
 
 Test(executor_adc, can_execute_adc_c_nz_nn_nv_carry_set) {
   pt_arm_cpu cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
-  pt_arm_cpu* cpuptr = &cpu;
-  SET_CARRY_FLAG(cpuptr, true);
+  SET_CARRY_FLAG(&cpu, true);
   cpu.r1 = 0xFFFFFFFF;
   cpu.r2 = 1;
   pt_arm_instruction instr;
@@ -1520,17 +1487,16 @@ Test(executor_adc, can_execute_adc_c_nz_nn_nv_carry_set) {
   pt_arm_execute_instruction(&cpu, &instr);
 
   cr_assert_eq(cpu.r0, 1);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_adc, can_execute_adc_c_z_nn_nv_carry_set) {
   pt_arm_cpu cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
-  pt_arm_cpu* cpuptr = &cpu;
-  SET_CARRY_FLAG(cpuptr, true);
+  SET_CARRY_FLAG(&cpu, true);
   cpu.r1 = -1;
   cpu.r2 = 0;
   pt_arm_instruction instr;
@@ -1549,10 +1515,10 @@ Test(executor_adc, can_execute_adc_c_z_nn_nv_carry_set) {
   pt_arm_execute_instruction(&cpu, &instr);
 
   cr_assert_eq(cpu.r0, 0);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), true);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), true);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 ///////////////////////////////////////////
@@ -1562,8 +1528,7 @@ Test(executor_adc, can_execute_adc_c_z_nn_nv_carry_set) {
 Test(executor_sbc, can_execute_sbc_nc_nz_n_nv_carry_set) {
   pt_arm_cpu cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
-  pt_arm_cpu* cpuptr = &cpu;
-  SET_CARRY_FLAG(cpuptr, true);
+  SET_CARRY_FLAG(&cpu, true);
   cpu.r1 = 3;
   cpu.r2 = 8;
   pt_arm_instruction instr;
@@ -1582,17 +1547,16 @@ Test(executor_sbc, can_execute_sbc_nc_nz_n_nv_carry_set) {
   pt_arm_execute_instruction(&cpu, &instr);
 
   cr_assert_eq(cpu.r0, -5);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), true);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_sbc, can_execute_sbc_c_nz_nn_nv_carry_set) {
   pt_arm_cpu cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
-  pt_arm_cpu* cpuptr = &cpu;
-  SET_CARRY_FLAG(cpuptr, true);
+  SET_CARRY_FLAG(&cpu, true);
   cpu.r1 = 8;
   cpu.r2 = 3;
   pt_arm_instruction instr;
@@ -1611,17 +1575,16 @@ Test(executor_sbc, can_execute_sbc_c_nz_nn_nv_carry_set) {
   pt_arm_execute_instruction(&cpu, &instr);
 
   cr_assert_eq(cpu.r0, 5);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_sbc, can_execute_sbc_c_z_nn_v_carry_set) {
   pt_arm_cpu cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
-  pt_arm_cpu* cpuptr = &cpu;
-  SET_CARRY_FLAG(cpuptr, true);
+  SET_CARRY_FLAG(&cpu, true);
   cpu.r1 = 8;
   cpu.r2 = 8;
   pt_arm_instruction instr;
@@ -1640,17 +1603,16 @@ Test(executor_sbc, can_execute_sbc_c_z_nn_v_carry_set) {
   pt_arm_execute_instruction(&cpu, &instr);
 
   cr_assert_eq(cpu.r0, 0);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), true);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), true);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_sbc, can_execute_sbc_c_nz_nn_v_carry_set) {
   pt_arm_cpu cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
-  pt_arm_cpu* cpuptr = &cpu;
-  SET_CARRY_FLAG(cpuptr, true);
+  SET_CARRY_FLAG(&cpu, true);
   cpu.r1 = 0x80000000;
   cpu.r2 = 1;
   pt_arm_instruction instr;
@@ -1669,17 +1631,16 @@ Test(executor_sbc, can_execute_sbc_c_nz_nn_v_carry_set) {
   pt_arm_execute_instruction(&cpu, &instr);
 
   cr_assert_eq(cpu.r0, 0x7FFFFFFF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), true);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), true);
 }
 
 Test(executor_sbc, can_execute_sbc_nc_nz_n_nv_carry_not_set) {
   pt_arm_cpu cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
-  pt_arm_cpu* cpuptr = &cpu;
-  SET_CARRY_FLAG(cpuptr, false);
+  SET_CARRY_FLAG(&cpu, false);
   cpu.r1 = 3;
   cpu.r2 = 7;
   pt_arm_instruction instr;
@@ -1698,17 +1659,16 @@ Test(executor_sbc, can_execute_sbc_nc_nz_n_nv_carry_not_set) {
   pt_arm_execute_instruction(&cpu, &instr);
 
   cr_assert_eq(cpu.r0, -5);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), true);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_sbc, can_execute_sbc_c_nz_nn_nv_carry_not_set) {
   pt_arm_cpu cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
-  pt_arm_cpu* cpuptr = &cpu;
-  SET_CARRY_FLAG(cpuptr, false);
+  SET_CARRY_FLAG(&cpu, false);
   cpu.r1 = 8;
   cpu.r2 = 2;
   pt_arm_instruction instr;
@@ -1727,17 +1687,16 @@ Test(executor_sbc, can_execute_sbc_c_nz_nn_nv_carry_not_set) {
   pt_arm_execute_instruction(&cpu, &instr);
 
   cr_assert_eq(cpu.r0, 5);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_sbc, can_execute_sbc_nc_z_nn_v_carry_not_set) {
   pt_arm_cpu cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
-  pt_arm_cpu* cpuptr = &cpu;
-  SET_CARRY_FLAG(cpuptr, false);
+  SET_CARRY_FLAG(&cpu, false);
   cpu.r1 = 8;
   cpu.r2 = 7;
   pt_arm_instruction instr;
@@ -1756,17 +1715,16 @@ Test(executor_sbc, can_execute_sbc_nc_z_nn_v_carry_not_set) {
   pt_arm_execute_instruction(&cpu, &instr);
 
   cr_assert_eq(cpu.r0, 0);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), true);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), true);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_sbc, can_execute_sbc_c_nz_nn_v_carry_not_set) {
   pt_arm_cpu cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
-  pt_arm_cpu* cpuptr = &cpu;
-  SET_CARRY_FLAG(cpuptr, false);
+  SET_CARRY_FLAG(&cpu, false);
   cpu.r1 = 0x80000000;
   cpu.r2 = 0;
   pt_arm_instruction instr;
@@ -1785,10 +1743,10 @@ Test(executor_sbc, can_execute_sbc_c_nz_nn_v_carry_not_set) {
   pt_arm_execute_instruction(&cpu, &instr);
 
   cr_assert_eq(cpu.r0, 0x7FFFFFFF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), true);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), true);
 }
 
 ///////////////////////////////////////////
@@ -1798,8 +1756,7 @@ Test(executor_sbc, can_execute_sbc_c_nz_nn_v_carry_not_set) {
 Test(executor_rsc, can_execute_rsc_nc_nz_n_nv_carry_set) {
   pt_arm_cpu cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
-  pt_arm_cpu* cpuptr = &cpu;
-  SET_CARRY_FLAG(cpuptr, true);
+  SET_CARRY_FLAG(&cpu, true);
   cpu.r1 = 8;
   cpu.r2 = 3;
   pt_arm_instruction instr;
@@ -1818,17 +1775,16 @@ Test(executor_rsc, can_execute_rsc_nc_nz_n_nv_carry_set) {
   pt_arm_execute_instruction(&cpu, &instr);
 
   cr_assert_eq(cpu.r0, -5);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), true);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_rsc, can_execute_rsc_c_nz_nn_nv_carry_set) {
   pt_arm_cpu cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
-  pt_arm_cpu* cpuptr = &cpu;
-  SET_CARRY_FLAG(cpuptr, true);
+  SET_CARRY_FLAG(&cpu, true);
   cpu.r1 = 3;
   cpu.r2 = 8;
   pt_arm_instruction instr;
@@ -1847,17 +1803,16 @@ Test(executor_rsc, can_execute_rsc_c_nz_nn_nv_carry_set) {
   pt_arm_execute_instruction(&cpu, &instr);
 
   cr_assert_eq(cpu.r0, 5);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_rsc, can_execute_rsc_c_z_nn_v_carry_set) {
   pt_arm_cpu cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
-  pt_arm_cpu* cpuptr = &cpu;
-  SET_CARRY_FLAG(cpuptr, true);
+  SET_CARRY_FLAG(&cpu, true);
   cpu.r1 = 8;
   cpu.r2 = 8;
   pt_arm_instruction instr;
@@ -1876,17 +1831,16 @@ Test(executor_rsc, can_execute_rsc_c_z_nn_v_carry_set) {
   pt_arm_execute_instruction(&cpu, &instr);
 
   cr_assert_eq(cpu.r0, 0);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), true);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), true);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_rsc, can_execute_rsc_c_nz_nn_v_carry_set) {
   pt_arm_cpu cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
-  pt_arm_cpu* cpuptr = &cpu;
-  SET_CARRY_FLAG(cpuptr, true);
+  SET_CARRY_FLAG(&cpu, true);
   cpu.r1 = 1;
   cpu.r2 = 0x80000000;
   pt_arm_instruction instr;
@@ -1905,17 +1859,16 @@ Test(executor_rsc, can_execute_rsc_c_nz_nn_v_carry_set) {
   pt_arm_execute_instruction(&cpu, &instr);
 
   cr_assert_eq(cpu.r0, 0x7FFFFFFF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), true);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), true);
 }
 
 Test(executor_rsc, can_execute_rsc_nc_nz_n_nv_carry_not_set) {
   pt_arm_cpu cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
-  pt_arm_cpu* cpuptr = &cpu;
-  SET_CARRY_FLAG(cpuptr, false);
+  SET_CARRY_FLAG(&cpu, false);
   cpu.r1 = 7;
   cpu.r2 = 3;
   pt_arm_instruction instr;
@@ -1934,17 +1887,16 @@ Test(executor_rsc, can_execute_rsc_nc_nz_n_nv_carry_not_set) {
   pt_arm_execute_instruction(&cpu, &instr);
 
   cr_assert_eq(cpu.r0, -5);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), true);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_rsc, can_execute_rsc_c_nz_nn_nv_carry_not_set) {
   pt_arm_cpu cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
-  pt_arm_cpu* cpuptr = &cpu;
-  SET_CARRY_FLAG(cpuptr, false);
+  SET_CARRY_FLAG(&cpu, false);
   cpu.r1 = 2;
   cpu.r2 = 8;
   pt_arm_instruction instr;
@@ -1963,17 +1915,16 @@ Test(executor_rsc, can_execute_rsc_c_nz_nn_nv_carry_not_set) {
   pt_arm_execute_instruction(&cpu, &instr);
 
   cr_assert_eq(cpu.r0, 5);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_rsc, can_execute_rsc_nc_z_nn_v_carry_not_set) {
   pt_arm_cpu cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
-  pt_arm_cpu* cpuptr = &cpu;
-  SET_CARRY_FLAG(cpuptr, false);
+  SET_CARRY_FLAG(&cpu, false);
   cpu.r1 = 7;
   cpu.r2 = 8;
   pt_arm_instruction instr;
@@ -1992,17 +1943,16 @@ Test(executor_rsc, can_execute_rsc_nc_z_nn_v_carry_not_set) {
   pt_arm_execute_instruction(&cpu, &instr);
 
   cr_assert_eq(cpu.r0, 0);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), true);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), true);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_rsc, can_execute_rsc_c_nz_nn_v_carry_not_set) {
   pt_arm_cpu cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
-  pt_arm_cpu* cpuptr = &cpu;
-  SET_CARRY_FLAG(cpuptr, false);
+  SET_CARRY_FLAG(&cpu, false);
   cpu.r1 = 0;
   cpu.r2 = 0x80000000;
   pt_arm_instruction instr;
@@ -2021,10 +1971,10 @@ Test(executor_rsc, can_execute_rsc_c_nz_nn_v_carry_not_set) {
   pt_arm_execute_instruction(&cpu, &instr);
 
   cr_assert_eq(cpu.r0, 0x7FFFFFFF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), true);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), true);
 }
 
 ///////////////////////////////////////////
@@ -2052,11 +2002,10 @@ Test(executor_tst, can_execute_tst_nc_nz_nn) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0xDEADBEEF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 Test(executor_tst, can_execute_tst_nc_z_nn) {
@@ -2080,11 +2029,10 @@ Test(executor_tst, can_execute_tst_nc_z_nn) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0xDEADBEEF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), true);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), true);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 Test(executor_tst, can_execute_tst_nc_nz_n) {
@@ -2108,11 +2056,10 @@ Test(executor_tst, can_execute_tst_nc_nz_n) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0xDEADBEEF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), true);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 Test(executor_tst, can_execute_tst_c_nz_nn) {
@@ -2136,11 +2083,10 @@ Test(executor_tst, can_execute_tst_c_nz_nn) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0xDEADBEEF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
 }
 
 Test(executor_tst, can_execute_tst_ns) {
@@ -2164,11 +2110,10 @@ Test(executor_tst, can_execute_tst_ns) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0xDEADBEEF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), true);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), true);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 ///////////////////////////////////////////
@@ -2196,11 +2141,10 @@ Test(executor_teq, can_execute_teq_nc_nz_nn) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0xDEADBEEF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 Test(executor_teq, can_execute_teq_nc_z_nn) {
@@ -2224,11 +2168,10 @@ Test(executor_teq, can_execute_teq_nc_z_nn) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0xDEADBEEF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), true);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), true);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 Test(executor_teq, can_execute_teq_nc_nz_n) {
@@ -2252,11 +2195,10 @@ Test(executor_teq, can_execute_teq_nc_nz_n) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0xDEADBEEF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), true);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 Test(executor_teq, can_execute_teq_c_nz_nn) {
@@ -2280,11 +2222,10 @@ Test(executor_teq, can_execute_teq_c_nz_nn) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0xDEADBEEF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), true);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
 }
 
 ///////////////////////////////////////////
@@ -2312,12 +2253,11 @@ Test(executor_cmp, can_execute_cmp_nc_nz_n_nv) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0xDEADBEEF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), true);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_cmp, can_execute_cmp_c_nz_nn_nv) {
@@ -2341,12 +2281,11 @@ Test(executor_cmp, can_execute_cmp_c_nz_nn_nv) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0xDEADBEEF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_cmp, can_execute_cmp_c_z_nn_v) {
@@ -2370,12 +2309,11 @@ Test(executor_cmp, can_execute_cmp_c_z_nn_v) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0xDEADBEEF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), true);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), true);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_cmp, can_execute_cmp_c_nz_nn_v) {
@@ -2399,12 +2337,11 @@ Test(executor_cmp, can_execute_cmp_c_nz_nn_v) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0xDEADBEEF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), true);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), true);
 }
 
 ///////////////////////////////////////////
@@ -2432,12 +2369,11 @@ Test(executor_cmn, can_execute_cmn_nc_nz_nn_nv) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0xDEADBEEF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_cmn, can_execute_cmn_nc_nz_n_nv) {
@@ -2461,12 +2397,11 @@ Test(executor_cmn, can_execute_cmn_nc_nz_n_nv) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0xDEADBEEF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), true);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_cmn, can_execute_cmn_nc_nz_n_v) {
@@ -2490,12 +2425,11 @@ Test(executor_cmn, can_execute_cmn_nc_nz_n_v) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0xDEADBEEF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), true);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), true);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), true);
 }
 
 Test(executor_cmn, can_execute_cmn_c_nz_nn_nv) {
@@ -2519,12 +2453,11 @@ Test(executor_cmn, can_execute_cmn_c_nz_nn_nv) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0xDEADBEEF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 Test(executor_cmn, can_execute_cmn_nc_z_nn_nv) {
@@ -2548,12 +2481,11 @@ Test(executor_cmn, can_execute_cmn_nc_z_nn_nv) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0xDEADBEEF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), true);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
-  cr_assert_eq(GET_OVERFLOW_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), true);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
+  cr_assert_eq(GET_OVERFLOW_FLAG(&cpu), false);
 }
 
 ///////////////////////////////////////////
@@ -2580,11 +2512,10 @@ Test(executor_orr, can_execute_orr_nc_nz_nn) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0x1);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 Test(executor_orr, can_execute_orr_nc_z_nn) {
@@ -2607,11 +2538,10 @@ Test(executor_orr, can_execute_orr_nc_z_nn) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0x0);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), true);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), true);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 Test(executor_orr, can_execute_orr_nc_nz_n) {
@@ -2634,11 +2564,10 @@ Test(executor_orr, can_execute_orr_nc_nz_n) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0xD5555555);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), true);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 Test(executor_orr, can_execute_orr_c_nz_n) {
@@ -2661,16 +2590,14 @@ Test(executor_orr, can_execute_orr_c_nz_n) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0xFFFFFFFE);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), true);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
 }
 
 Test(executor_orr, can_execute_orr_r15_dest) {
   pt_arm_cpu cpu;
-  pt_arm_cpu* cpuptr = &cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
   pt_arm_set_mode(&cpu, MODE_FIQ);
   cpu.r1 = 0xAAAAAAAA;
@@ -2694,9 +2621,9 @@ Test(executor_orr, can_execute_orr_r15_dest) {
 
   cr_assert_eq(cpu.r15, 0xFFFFFFFF);
   cr_assert_eq(cpu.cpsr, cpu.spsr_fiq);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 ///////////////////////////////////////////
@@ -2722,11 +2649,10 @@ Test(executor_mov, can_execute_mov_nc_nz_nn) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 3);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 Test(executor_mov, can_execute_mov_nc_nz_n) {
@@ -2748,11 +2674,10 @@ Test(executor_mov, can_execute_mov_nc_nz_n) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, -12);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), true);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 Test(executor_mov, can_execute_mov_nc_z_nn) {
@@ -2775,11 +2700,10 @@ Test(executor_mov, can_execute_mov_nc_z_nn) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0x0);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), true);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), true);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 Test(executor_mov, can_execute_mov_c_nz_nn) {
@@ -2801,11 +2725,10 @@ Test(executor_mov, can_execute_mov_c_nz_nn) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0x1FFFFFFE);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
 }
 
 ///////////////////////////////////////////
@@ -2832,11 +2755,10 @@ Test(executor_bic, can_execute_bic_nc_nz_nn) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 1);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 Test(executor_bic, can_execute_bic_nc_z_nn) {
@@ -2859,11 +2781,10 @@ Test(executor_bic, can_execute_bic_nc_z_nn) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), true);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), true);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 Test(executor_bic, can_execute_bic_nc_nz_n) {
@@ -2886,11 +2807,10 @@ Test(executor_bic, can_execute_bic_nc_nz_n) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0x80000000);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), true);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 Test(executor_bic, can_execute_bic_c_nz_nn) {
@@ -2913,11 +2833,10 @@ Test(executor_bic, can_execute_bic_c_nz_nn) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0x7FFFFFFD);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
 }
 
 Test(executor_bic, can_execute_bic_ns) {
@@ -2940,16 +2859,14 @@ Test(executor_bic, can_execute_bic_ns) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 Test(executor_bic, can_execute_bic_r15_dest) {
   pt_arm_cpu cpu;
-  pt_arm_cpu* cpuptr = &cpu;
   pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL);
   pt_arm_set_mode(&cpu, MODE_FIQ);
   cpu.r1 = 0x30;
@@ -2973,9 +2890,9 @@ Test(executor_bic, can_execute_bic_r15_dest) {
   
   cr_assert_eq(cpu.r15, 0);
   cr_assert_eq(cpu.cpsr, cpu.spsr_fiq);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 ///////////////////////////////////////////
@@ -3001,11 +2918,10 @@ Test(executor_mvn, can_execute_mvn_nc_nz_nn) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 3);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 Test(executor_mvn, can_execute_mvn_nc_nz_n) {
@@ -3027,11 +2943,10 @@ Test(executor_mvn, can_execute_mvn_nc_nz_n) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, -12);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), true);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 Test(executor_mvn, can_execute_mvn_nc_z_nn) {
@@ -3054,11 +2969,10 @@ Test(executor_mvn, can_execute_mvn_nc_z_nn) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0x0);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), true);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), true);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), false);
 }
 
 Test(executor_mvn, can_execute_mvn_c_nz_nn) {
@@ -3080,11 +2994,10 @@ Test(executor_mvn, can_execute_mvn_c_nz_nn) {
   
   pt_arm_execute_instruction(&cpu, &instr);
 
-  pt_arm_cpu* cpuptr = &cpu;
   cr_assert_eq(cpu.r0, 0x3FFFFFFF);
-  cr_assert_eq(GET_NEGATIVE_FLAG(cpuptr), false);
-  cr_assert_eq(GET_ZERO_FLAG(cpuptr), false);
-  cr_assert_eq(GET_CARRY_FLAG(cpuptr), true);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_CARRY_FLAG(&cpu), true);
 }
 
 ///////////////////////////////////////////
@@ -4827,5 +4740,113 @@ Test(executor_block_data_transfer, stdb_write_back) {
   cr_assert_eq(w3, 0x34);
   cr_assert_eq(w4, 0x45);
   cr_assert_eq(wOther, 0x0);
+}
+
+///////////////////////////////////////////
+// Multiply
+///////////////////////////////////////////
+
+Test(executor_multiply, no_accumulate_no_condition_codes) {  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_MULTIPLY;
+  instr.cond = COND_AL;
+  instr.instr.multiply.rm = REG_R0;
+  instr.instr.multiply.rs = REG_R1;
+  instr.instr.multiply.rd = REG_R2;
+  instr.instr.multiply.rn = REG_R3;
+  instr.instr.multiply.set_condition_codes = false;
+  instr.instr.multiply.accumulate = false;
+  SET_ZERO_FLAG(&cpu, true);
+
+  cpu.r0 = 0x7FFFFFF8;
+  cpu.r1 = 0x2;
+  cpu.r3 = 0x3;
+
+  pt_arm_execute_instruction(&cpu, &instr);
+
+  cr_assert_eq(cpu.r2, 0xFFFFFFF0);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), true);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+}
+
+Test(executor_multiply, no_accumulate_set_condition_codes) {  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_MULTIPLY;
+  instr.cond = COND_AL;
+  instr.instr.multiply.rm = REG_R0;
+  instr.instr.multiply.rs = REG_R1;
+  instr.instr.multiply.rd = REG_R2;
+  instr.instr.multiply.rn = REG_R3;
+  instr.instr.multiply.set_condition_codes = true;
+  instr.instr.multiply.accumulate = false;
+  SET_ZERO_FLAG(&cpu, true);
+
+  cpu.r0 = 0x7FFFFFF8;
+  cpu.r1 = 0x2;
+  cpu.r3 = 0x3;
+
+  pt_arm_execute_instruction(&cpu, &instr);
+
+  cr_assert_eq(cpu.r2, 0xFFFFFFF0);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
+}
+
+Test(executor_multiply, accumulate_no_condition_codes) {  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_MULTIPLY;
+  instr.cond = COND_AL;
+  instr.instr.multiply.rm = REG_R0;
+  instr.instr.multiply.rs = REG_R1;
+  instr.instr.multiply.rd = REG_R2;
+  instr.instr.multiply.rn = REG_R3;
+  instr.instr.multiply.set_condition_codes = false;
+  instr.instr.multiply.accumulate = true;
+  SET_ZERO_FLAG(&cpu, true);
+
+  cpu.r0 = 0x7FFFFFF8;
+  cpu.r1 = 0x2;
+  cpu.r3 = 0x3;
+
+  pt_arm_execute_instruction(&cpu, &instr);
+
+  cr_assert_eq(cpu.r2, 0xFFFFFFF3);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), true);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), false);
+}
+
+Test(executor_multiply, accumulate_set_condition_codes) {  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, ARM920T, NULL, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_MULTIPLY;
+  instr.cond = COND_AL;
+  instr.instr.multiply.rm = REG_R0;
+  instr.instr.multiply.rs = REG_R1;
+  instr.instr.multiply.rd = REG_R2;
+  instr.instr.multiply.rn = REG_R3;
+  instr.instr.multiply.set_condition_codes = true;
+  instr.instr.multiply.accumulate = true;
+  SET_ZERO_FLAG(&cpu, true);
+
+  cpu.r0 = 0x7FFFFFF8;
+  cpu.r1 = 0x2;
+  cpu.r3 = 0x3;
+
+  pt_arm_execute_instruction(&cpu, &instr);
+
+  cr_assert_eq(cpu.r2, 0xFFFFFFF3);
+  cr_assert_eq(GET_ZERO_FLAG(&cpu), false);
+  cr_assert_eq(GET_NEGATIVE_FLAG(&cpu), true);
 }
 

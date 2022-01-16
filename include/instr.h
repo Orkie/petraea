@@ -45,7 +45,7 @@ typedef enum {
 
 typedef enum {
   INSTR_DATA_PROCESSING,
-  INSTR_MULTIPLY, // TODO NOT YET IMPLEMENTED
+  INSTR_MULTIPLY,
   INSTR_MULTIPLY_LONG, // TODO NOT YET IMPLEMENTED
   INSTR_BRANCH_EXCHANGE,
   INSTR_HALFWORD_DATA_TRANSFER,
@@ -188,6 +188,18 @@ typedef struct {
 } pt_arm_instr_coprocessor_register_transfer;
 
 ///////////////////////////////////////////
+// Multiply
+///////////////////////////////////////////
+typedef struct {
+  pt_arm_register rd;
+  pt_arm_register rm;
+  pt_arm_register rs;
+  pt_arm_register rn;
+  bool set_condition_codes;
+  bool accumulate;
+} pt_arm_instr_multiply;
+
+///////////////////////////////////////////
 
 typedef union {
   pt_arm_instr_data_processing data_processing;
@@ -198,6 +210,7 @@ typedef union {
   pt_arm_instr_swap swap;
   pt_arm_instr_block_data_transfer block_data_transfer;
   pt_arm_instr_coprocessor_register_transfer coprocessor_register_transfer;
+  pt_arm_instr_multiply multiply;
 } pt_arm_instructions;
 
 typedef struct {

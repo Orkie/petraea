@@ -639,4 +639,53 @@ Test(decoder, can_decode_mcr) {
   cr_assert_eq(result.instr.coprocessor_register_transfer.opcode_2, 6);
 }
 
+///////////////////////////////////////////
+// Multiply
+///////////////////////////////////////////
+
+Test(decoder, can_decode_mul) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE0000291); // MUL R0, R1, R2
+  cr_assert_eq(result.type, INSTR_MULTIPLY);
+  cr_assert_eq(result.instr.multiply.rd, REG_R0);
+  cr_assert_eq(result.instr.multiply.rm, REG_R1);
+  cr_assert_eq(result.instr.multiply.rs, REG_R2);
+  cr_assert_eq(result.instr.multiply.accumulate, false);
+  cr_assert_eq(result.instr.multiply.set_condition_codes, false);
+}
+
+Test(decoder, can_decode_muls) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE0100291); // MULS R0, R1, R2
+  cr_assert_eq(result.type, INSTR_MULTIPLY);
+  cr_assert_eq(result.instr.multiply.rd, REG_R0);
+  cr_assert_eq(result.instr.multiply.rm, REG_R1);
+  cr_assert_eq(result.instr.multiply.rs, REG_R2);
+  cr_assert_eq(result.instr.multiply.accumulate, false);
+  cr_assert_eq(result.instr.multiply.set_condition_codes, true);
+}
+
+Test(decoder, can_decode_mla) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE0203291); // MLA R0, R1, R2, R3
+  cr_assert_eq(result.type, INSTR_MULTIPLY);
+  cr_assert_eq(result.instr.multiply.rd, REG_R0);
+  cr_assert_eq(result.instr.multiply.rm, REG_R1);
+  cr_assert_eq(result.instr.multiply.rs, REG_R2);
+  cr_assert_eq(result.instr.multiply.rn, REG_R3);
+  cr_assert_eq(result.instr.multiply.accumulate, true);
+  cr_assert_eq(result.instr.multiply.set_condition_codes, false);
+}
+
+Test(decoder, can_decode_mlas) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE0303291); // MLAS R0, R1, R2, R3
+  cr_assert_eq(result.type, INSTR_MULTIPLY);
+  cr_assert_eq(result.instr.multiply.rd, REG_R0);
+  cr_assert_eq(result.instr.multiply.rm, REG_R1);
+  cr_assert_eq(result.instr.multiply.rs, REG_R2);
+  cr_assert_eq(result.instr.multiply.rn, REG_R3);
+  cr_assert_eq(result.instr.multiply.accumulate, true);
+  cr_assert_eq(result.instr.multiply.set_condition_codes, true);
+}
 

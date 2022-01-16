@@ -76,8 +76,8 @@ static int execute_halfword_data_transfer(pt_arm_cpu* cpu, pt_arm_instr_halfword
 
   if(i->load) {
     *sourceDestReg = (i->transfer_byte
-       ? (*cpu->fetch_byte)(cpu, address, isPrivileged)
-       : (*cpu->fetch_halfword)(cpu, address, isPrivileged));
+		      ? (*cpu->fetch_byte)(cpu, address, isPrivileged)
+		      : (*cpu->fetch_halfword)(cpu, address, isPrivileged));
     if(i->is_signed && i->transfer_byte && (*sourceDestReg&0x80)) {
       *sourceDestReg |= 0xFFFFFF00;
     } else if(i->is_signed && !i->transfer_byte && (*sourceDestReg&0x8000)) {
@@ -388,6 +388,28 @@ static int execute_coprocessor_register_transfer(pt_arm_cpu* cpu, pt_arm_instr_c
 }
 
 ///////////////////////////////////////////
+// Multiply
+///////////////////////////////////////////
+static int execute_multiply(pt_arm_cpu* cpu, pt_arm_instr_multiply* i) {
+  pt_arm_registers* regs = pt_arm_get_regs(cpu);
+  uint32_t* rd = regs->regs[i->rd];
+  uint32_t* rm = regs->regs[i->rm];
+  uint32_t* rs = regs->regs[i->rs];
+
+  *rd = (*rm) * (*rs);
+  if(i->accumulate) {
+    uint32_t* rn = regs->regs[i->rn];
+    (*rd) += (*rn);
+  }
+
+  if(i->set_condition_codes) {
+    handle_flags_logical(cpu, *rd, false, false);
+  }
+  
+  return 0;
+}
+
+///////////////////////////////////////////
 // Execution utilities
 ///////////////////////////////////////////
 int pt_arm_execute_instruction(pt_arm_cpu* cpu, pt_arm_instruction* instr) {
@@ -409,6 +431,8 @@ int pt_arm_execute_instruction(pt_arm_cpu* cpu, pt_arm_instruction* instr) {
       return execute_swap(cpu, &instr->instr.swap);
     case INSTR_COPROCESSOR_REGISTER_TRANSFER:
       return execute_coprocessor_register_transfer(cpu, &instr->instr.coprocessor_register_transfer);
+    case INSTR_MULTIPLY:
+      return execute_multiply(cpu, &instr->instr.multiply);
     default: return -1;
     }
   }
