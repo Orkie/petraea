@@ -689,3 +689,112 @@ Test(decoder, can_decode_mlas) {
   cr_assert_eq(result.instr.multiply.set_condition_codes, true);
 }
 
+///////////////////////////////////////////
+// Multiply long
+///////////////////////////////////////////
+
+Test(decoder, can_decode_umull) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE0810392); // umull R0, R1, R2, R3
+  cr_assert_eq(result.type, INSTR_MULTIPLY_LONG);
+  cr_assert_eq(result.instr.multiply_long.rd_lo, REG_R0);
+  cr_assert_eq(result.instr.multiply_long.rd_hi, REG_R1);
+  cr_assert_eq(result.instr.multiply_long.rm, REG_R2);
+  cr_assert_eq(result.instr.multiply_long.rs, REG_R3);
+  cr_assert_eq(result.instr.multiply_long.accumulate, false);
+  cr_assert_eq(result.instr.multiply_long.set_condition_codes, false);
+  cr_assert_eq(result.instr.multiply_long.is_signed, false);
+}
+
+Test(decoder, can_decode_umulls) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE0910392); // umulls R0, R1, R2, R3
+  cr_assert_eq(result.type, INSTR_MULTIPLY_LONG);
+  cr_assert_eq(result.instr.multiply_long.rd_lo, REG_R0);
+  cr_assert_eq(result.instr.multiply_long.rd_hi, REG_R1);
+  cr_assert_eq(result.instr.multiply_long.rm, REG_R2);
+  cr_assert_eq(result.instr.multiply_long.rs, REG_R3);
+  cr_assert_eq(result.instr.multiply_long.accumulate, false);
+  cr_assert_eq(result.instr.multiply_long.set_condition_codes, true);
+  cr_assert_eq(result.instr.multiply_long.is_signed, false);
+}
+
+Test(decoder, can_decode_umlal) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE0A10392); // umlal r0, r1, r2, r3
+  cr_assert_eq(result.type, INSTR_MULTIPLY_LONG);
+  cr_assert_eq(result.instr.multiply_long.rd_lo, REG_R0);
+  cr_assert_eq(result.instr.multiply_long.rd_hi, REG_R1);
+  cr_assert_eq(result.instr.multiply_long.rm, REG_R2);
+  cr_assert_eq(result.instr.multiply_long.rs, REG_R3);
+  cr_assert_eq(result.instr.multiply_long.accumulate, true);
+  cr_assert_eq(result.instr.multiply_long.set_condition_codes, false);
+  cr_assert_eq(result.instr.multiply_long.is_signed, false);
+}
+
+Test(decoder, can_decode_umlals) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE0B10392); // umlals r0, r1, r2, r3
+  cr_assert_eq(result.type, INSTR_MULTIPLY_LONG);
+  cr_assert_eq(result.instr.multiply_long.rd_lo, REG_R0);
+  cr_assert_eq(result.instr.multiply_long.rd_hi, REG_R1);
+  cr_assert_eq(result.instr.multiply_long.rm, REG_R2);
+  cr_assert_eq(result.instr.multiply_long.rs, REG_R3);
+  cr_assert_eq(result.instr.multiply_long.accumulate, true);
+  cr_assert_eq(result.instr.multiply_long.set_condition_codes, true);
+  cr_assert_eq(result.instr.multiply_long.is_signed, false);
+}
+
+Test(decoder, can_decode_smull) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE0C10392); // smull R0, R1, R2, R3
+  cr_assert_eq(result.type, INSTR_MULTIPLY_LONG);
+  cr_assert_eq(result.instr.multiply_long.rd_lo, REG_R0);
+  cr_assert_eq(result.instr.multiply_long.rd_hi, REG_R1);
+  cr_assert_eq(result.instr.multiply_long.rm, REG_R2);
+  cr_assert_eq(result.instr.multiply_long.rs, REG_R3);
+  cr_assert_eq(result.instr.multiply_long.accumulate, false);
+  cr_assert_eq(result.instr.multiply_long.set_condition_codes, false);
+  cr_assert_eq(result.instr.multiply_long.is_signed, true);
+}
+
+Test(decoder, can_decode_smulls) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE0D10392); // smulls R0, R1, R2, R3
+  cr_assert_eq(result.type, INSTR_MULTIPLY_LONG);
+  cr_assert_eq(result.instr.multiply_long.rd_lo, REG_R0);
+  cr_assert_eq(result.instr.multiply_long.rd_hi, REG_R1);
+  cr_assert_eq(result.instr.multiply_long.rm, REG_R2);
+  cr_assert_eq(result.instr.multiply_long.rs, REG_R3);
+  cr_assert_eq(result.instr.multiply_long.accumulate, false);
+  cr_assert_eq(result.instr.multiply_long.set_condition_codes, true);
+  cr_assert_eq(result.instr.multiply_long.is_signed, true);
+}
+
+Test(decoder, can_decode_smlal) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE0E10392); // smlal R0, R1, R2, R3
+  cr_assert_eq(result.type, INSTR_MULTIPLY_LONG);
+  cr_assert_eq(result.instr.multiply_long.rd_lo, REG_R0);
+  cr_assert_eq(result.instr.multiply_long.rd_hi, REG_R1);
+  cr_assert_eq(result.instr.multiply_long.rm, REG_R2);
+  cr_assert_eq(result.instr.multiply_long.rs, REG_R3);
+  cr_assert_eq(result.instr.multiply_long.accumulate, true);
+  cr_assert_eq(result.instr.multiply_long.set_condition_codes, false);
+  cr_assert_eq(result.instr.multiply_long.is_signed, true);
+}
+
+Test(decoder, can_decode_smlals) {
+  pt_arm_instruction result;
+  pt_arm_decode_instruction(&result, 0xE0F10392); // smlals R0, R1, R2, R3
+  cr_assert_eq(result.type, INSTR_MULTIPLY_LONG);
+  cr_assert_eq(result.instr.multiply_long.rd_lo, REG_R0);
+  cr_assert_eq(result.instr.multiply_long.rd_hi, REG_R1);
+  cr_assert_eq(result.instr.multiply_long.rm, REG_R2);
+  cr_assert_eq(result.instr.multiply_long.rs, REG_R3);
+  cr_assert_eq(result.instr.multiply_long.accumulate, true);
+  cr_assert_eq(result.instr.multiply_long.set_condition_codes, true);
+  cr_assert_eq(result.instr.multiply_long.is_signed, true);
+}
+
+

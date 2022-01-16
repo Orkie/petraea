@@ -193,6 +193,20 @@ static void decode_multiply(pt_arm_instr_multiply* dest, uint32_t i) {
   dest->accumulate = (i>>21)&0x1;
 }
 
+static bool instr_is_multiply_long(uint32_t i) {
+  return ((i&0x0F8000F0) == 0x800090);
+}
+
+static void decode_multiply_long(pt_arm_instr_multiply_long* dest, uint32_t i) {
+  dest->rd_hi = (i>>16)&0xF;
+  dest->rd_lo = (i>>12)&0xF;
+  dest->rs = (i>>8)&0xF;
+  dest->rm = i&0xF;
+  dest->set_condition_codes = (i>>20)&0x1;
+  dest->accumulate = (i>>21)&0x1;
+  dest->is_signed = (i>>22)&0x1;
+}
+
 int pt_arm_decode_instruction(pt_arm_instruction* dest, uint32_t i) {
   const unsigned int cond = (i&0xF0000000) >> 28;
 
@@ -214,6 +228,9 @@ int pt_arm_decode_instruction(pt_arm_instruction* dest, uint32_t i) {
   } else if(instr_is_multiply(i)) {
     dest->type = INSTR_MULTIPLY;
     decode_multiply(&dest->instr.multiply, i);
+  } else if(instr_is_multiply_long(i)) {
+    dest->type = INSTR_MULTIPLY_LONG;
+    decode_multiply_long(&dest->instr.multiply_long, i);
   } else if(instr_is_data_processing(i)) {
     dest->type = INSTR_DATA_PROCESSING;
     decode_data_processing(&dest->instr.data_processing, i);
