@@ -168,7 +168,7 @@ typedef struct {
 typedef struct {
   bool add_offset_before_transfer;
   bool add_offset;
-  bool load_psr_or_force_user_mode;
+  bool load_psr_or_force_user_mode; // TODO - we don't seem to use this?
   bool write_back_address;
   bool load;
   pt_arm_register base;

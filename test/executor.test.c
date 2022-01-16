@@ -4264,4 +4264,353 @@ Test(executor_cp_reg_transfer, write) {
   cr_assert_eq(written, 0x98765432);
 }
 
+///////////////////////////////////////////
+// Block data transfer
+///////////////////////////////////////////
+// TODO - flesh these tests out further, they only cover the common, simple cases
+
+Test(executor_block_data_transfer, ldia_write_back) {
+  int bus_fetch(uint32_t address, int bytes, void* ret) {
+    U32_VAL(ret) = address == 0x1000 ? 0x12
+      : address == 0x1004 ? 0x23
+      : address == 0x1008 ? 0x34
+      : address == 0x100C ? 0x45
+      : 0x87654321;
+    return 0;
+  }
+  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, ARM920T, &bus_fetch, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_BLOCK_DATA_TRANSFER;
+  instr.cond = COND_AL;
+  instr.instr.block_data_transfer.add_offset = true;
+  instr.instr.block_data_transfer.add_offset_before_transfer = false;
+  instr.instr.block_data_transfer.load_psr_or_force_user_mode = false;
+  instr.instr.block_data_transfer.write_back_address = true;
+  instr.instr.block_data_transfer.load = true;
+  instr.instr.block_data_transfer.base = REG_R1;
+  instr.instr.block_data_transfer.register_list = 0b110101;
+
+  cpu.r0 = 0x0;
+  cpu.r2 = 0x0;
+  cpu.r3 = 0x35345;
+  cpu.r4 = 0x0;
+  cpu.r5 = 0x0;
+
+  cpu.r1 = 0x1000;
+
+  pt_arm_execute_instruction(&cpu, &instr);
+  
+  cr_assert_eq(cpu.r1, 0x1010);
+
+  cr_assert_eq(cpu.r0, 0x12);
+  cr_assert_eq(cpu.r2, 0x23);
+  cr_assert_eq(cpu.r3, 0x35345);
+  cr_assert_eq(cpu.r4, 0x34);
+  cr_assert_eq(cpu.r5, 0x45);
+}
+
+Test(executor_block_data_transfer, ldia_no_write_back) {
+  int bus_fetch(uint32_t address, int bytes, void* ret) {
+    U32_VAL(ret) = address == 0x1000 ? 0x12
+      : address == 0x1004 ? 0x23
+      : address == 0x1008 ? 0x34
+      : address == 0x100C ? 0x45
+      : 0x87654321;
+    return 0;
+  }
+  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, ARM920T, &bus_fetch, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_BLOCK_DATA_TRANSFER;
+  instr.cond = COND_AL;
+  instr.instr.block_data_transfer.add_offset = true;
+  instr.instr.block_data_transfer.add_offset_before_transfer = false;
+  instr.instr.block_data_transfer.load_psr_or_force_user_mode = false;
+  instr.instr.block_data_transfer.write_back_address = false;
+  instr.instr.block_data_transfer.load = true;
+  instr.instr.block_data_transfer.base = REG_R1;
+  instr.instr.block_data_transfer.register_list = 0b110101;
+
+  cpu.r0 = 0x0;
+  cpu.r2 = 0x0;
+  cpu.r3 = 0x35345;
+  cpu.r4 = 0x0;
+  cpu.r5 = 0x0;
+
+  cpu.r1 = 0x1000;
+
+  pt_arm_execute_instruction(&cpu, &instr);
+  
+  cr_assert_eq(cpu.r1, 0x1000);
+
+  cr_assert_eq(cpu.r0, 0x12);
+  cr_assert_eq(cpu.r2, 0x23);
+  cr_assert_eq(cpu.r3, 0x35345);
+  cr_assert_eq(cpu.r4, 0x34);
+  cr_assert_eq(cpu.r5, 0x45);
+}
+
+Test(executor_block_data_transfer, ldib_write_back) {
+  int bus_fetch(uint32_t address, int bytes, void* ret) {
+    U32_VAL(ret) = address == 0x1004 ? 0x12
+      : address == 0x1008 ? 0x23
+      : address == 0x100C ? 0x34
+      : address == 0x1010 ? 0x45
+      : 0x87654321;
+    return 0;
+  }
+  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, ARM920T, &bus_fetch, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_BLOCK_DATA_TRANSFER;
+  instr.cond = COND_AL;
+  instr.instr.block_data_transfer.add_offset = true;
+  instr.instr.block_data_transfer.add_offset_before_transfer = true;
+  instr.instr.block_data_transfer.load_psr_or_force_user_mode = false;
+  instr.instr.block_data_transfer.write_back_address = true;
+  instr.instr.block_data_transfer.load = true;
+  instr.instr.block_data_transfer.base = REG_R1;
+  instr.instr.block_data_transfer.register_list = 0b110101;
+
+  cpu.r0 = 0x0;
+  cpu.r2 = 0x0;
+  cpu.r3 = 0x35345;
+  cpu.r4 = 0x0;
+  cpu.r5 = 0x0;
+
+  cpu.r1 = 0x1000;
+
+  pt_arm_execute_instruction(&cpu, &instr);
+  
+  cr_assert_eq(cpu.r1, 0x1010);
+
+  cr_assert_eq(cpu.r0, 0x12);
+  cr_assert_eq(cpu.r2, 0x23);
+  cr_assert_eq(cpu.r3, 0x35345);
+  cr_assert_eq(cpu.r4, 0x34);
+  cr_assert_eq(cpu.r5, 0x45);
+}
+
+Test(executor_block_data_transfer, ldib_no_write_back) {
+  int bus_fetch(uint32_t address, int bytes, void* ret) {
+    U32_VAL(ret) = address == 0x1004 ? 0x12
+      : address == 0x1008 ? 0x23
+      : address == 0x100C ? 0x34
+      : address == 0x1010 ? 0x45
+      : 0x87654321;
+    return 0;
+  }
+  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, ARM920T, &bus_fetch, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_BLOCK_DATA_TRANSFER;
+  instr.cond = COND_AL;
+  instr.instr.block_data_transfer.add_offset = true;
+  instr.instr.block_data_transfer.add_offset_before_transfer = true;
+  instr.instr.block_data_transfer.load_psr_or_force_user_mode = false;
+  instr.instr.block_data_transfer.write_back_address = false;
+  instr.instr.block_data_transfer.load = true;
+  instr.instr.block_data_transfer.base = REG_R1;
+  instr.instr.block_data_transfer.register_list = 0b110101;
+
+  cpu.r0 = 0x0;
+  cpu.r2 = 0x0;
+  cpu.r3 = 0x35345;
+  cpu.r4 = 0x0;
+  cpu.r5 = 0x0;
+
+  cpu.r1 = 0x1000;
+
+  pt_arm_execute_instruction(&cpu, &instr);
+  
+  cr_assert_eq(cpu.r1, 0x1000);
+
+  cr_assert_eq(cpu.r0, 0x12);
+  cr_assert_eq(cpu.r2, 0x23);
+  cr_assert_eq(cpu.r3, 0x35345);
+  cr_assert_eq(cpu.r4, 0x34);
+  cr_assert_eq(cpu.r5, 0x45);
+}
+
+Test(executor_block_data_transfer, ldda_write_back) {
+  int bus_fetch(uint32_t address, int bytes, void* ret) {
+    U32_VAL(ret) = address == 0xFF4 ? 0x12
+      : address == 0xFF8 ? 0x23
+      : address == 0xFFC ? 0x34
+      : address == 0x1000 ? 0x45
+      : 0x87654321;
+    return 0;
+  }
+  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, ARM920T, &bus_fetch, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_BLOCK_DATA_TRANSFER;
+  instr.cond = COND_AL;
+  instr.instr.block_data_transfer.add_offset = false;
+  instr.instr.block_data_transfer.add_offset_before_transfer = false;
+  instr.instr.block_data_transfer.load_psr_or_force_user_mode = false;
+  instr.instr.block_data_transfer.write_back_address = true;
+  instr.instr.block_data_transfer.load = true;
+  instr.instr.block_data_transfer.base = REG_R1;
+  instr.instr.block_data_transfer.register_list = 0b110101;
+
+  cpu.r0 = 0x0;
+  cpu.r2 = 0x0;
+  cpu.r3 = 0x35345;
+  cpu.r4 = 0x0;
+  cpu.r5 = 0x0;
+
+  cpu.r1 = 0x1000;
+
+  pt_arm_execute_instruction(&cpu, &instr);
+  
+  cr_assert_eq(cpu.r1, 0xFF0);
+
+  cr_assert_eq(cpu.r0, 0x12);
+  cr_assert_eq(cpu.r2, 0x23);
+  cr_assert_eq(cpu.r3, 0x35345);
+  cr_assert_eq(cpu.r4, 0x34);
+  cr_assert_eq(cpu.r5, 0x45);
+}
+
+Test(executor_block_data_transfer, ldda_no_write_back) {
+  int bus_fetch(uint32_t address, int bytes, void* ret) {
+    U32_VAL(ret) = address == 0xFF4 ? 0x12
+      : address == 0xFF8 ? 0x23
+      : address == 0xFFC ? 0x34
+      : address == 0x1000 ? 0x45
+      : 0x87654321;
+    return 0;
+  }
+  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, ARM920T, &bus_fetch, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_BLOCK_DATA_TRANSFER;
+  instr.cond = COND_AL;
+  instr.instr.block_data_transfer.add_offset = false;
+  instr.instr.block_data_transfer.add_offset_before_transfer = false;
+  instr.instr.block_data_transfer.load_psr_or_force_user_mode = false;
+  instr.instr.block_data_transfer.write_back_address = false;
+  instr.instr.block_data_transfer.load = true;
+  instr.instr.block_data_transfer.base = REG_R1;
+  instr.instr.block_data_transfer.register_list = 0b110101;
+
+  cpu.r0 = 0x0;
+  cpu.r2 = 0x0;
+  cpu.r3 = 0x35345;
+  cpu.r4 = 0x0;
+  cpu.r5 = 0x0;
+
+  cpu.r1 = 0x1000;
+
+  pt_arm_execute_instruction(&cpu, &instr);
+  
+  cr_assert_eq(cpu.r1, 0x1000);
+
+  cr_assert_eq(cpu.r0, 0x12);
+  cr_assert_eq(cpu.r2, 0x23);
+  cr_assert_eq(cpu.r3, 0x35345);
+  cr_assert_eq(cpu.r4, 0x34);
+  cr_assert_eq(cpu.r5, 0x45);
+}
+
+Test(executor_block_data_transfer, lddb_write_back) {
+  int bus_fetch(uint32_t address, int bytes, void* ret) {
+    U32_VAL(ret) = address == 0xFF0 ? 0x12
+      : address == 0xFF4 ? 0x23
+      : address == 0xFF8 ? 0x34
+      : address == 0xFFC ? 0x45
+      : 0x87654321;
+    return 0;
+  }
+  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, ARM920T, &bus_fetch, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_BLOCK_DATA_TRANSFER;
+  instr.cond = COND_AL;
+  instr.instr.block_data_transfer.add_offset = false;
+  instr.instr.block_data_transfer.add_offset_before_transfer = true;
+  instr.instr.block_data_transfer.load_psr_or_force_user_mode = false;
+  instr.instr.block_data_transfer.write_back_address = true;
+  instr.instr.block_data_transfer.load = true;
+  instr.instr.block_data_transfer.base = REG_R1;
+  instr.instr.block_data_transfer.register_list = 0b110101;
+
+  cpu.r0 = 0x0;
+  cpu.r2 = 0x0;
+  cpu.r3 = 0x35345;
+  cpu.r4 = 0x0;
+  cpu.r5 = 0x0;
+
+  cpu.r1 = 0x1000;
+
+  pt_arm_execute_instruction(&cpu, &instr);
+  
+  cr_assert_eq(cpu.r1, 0xFF0);
+
+  cr_assert_eq(cpu.r0, 0x12);
+  cr_assert_eq(cpu.r2, 0x23);
+  cr_assert_eq(cpu.r3, 0x35345);
+  cr_assert_eq(cpu.r4, 0x34);
+  cr_assert_eq(cpu.r5, 0x45);
+}
+
+Test(executor_block_data_transfer, lddb_no_write_back) {
+  int bus_fetch(uint32_t address, int bytes, void* ret) {
+    U32_VAL(ret) = address == 0xFF0 ? 0x12
+      : address == 0xFF4 ? 0x23
+      : address == 0xFF8 ? 0x34
+      : address == 0xFFC ? 0x45
+      : 0x87654321;
+    return 0;
+  }
+  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, ARM920T, &bus_fetch, NULL); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_BLOCK_DATA_TRANSFER;
+  instr.cond = COND_AL;
+  instr.instr.block_data_transfer.add_offset = false;
+  instr.instr.block_data_transfer.add_offset_before_transfer = true;
+  instr.instr.block_data_transfer.load_psr_or_force_user_mode = false;
+  instr.instr.block_data_transfer.write_back_address = false;
+  instr.instr.block_data_transfer.load = true;
+  instr.instr.block_data_transfer.base = REG_R1;
+  instr.instr.block_data_transfer.register_list = 0b110101;
+
+  cpu.r0 = 0x0;
+  cpu.r2 = 0x0;
+  cpu.r3 = 0x35345;
+  cpu.r4 = 0x0;
+  cpu.r5 = 0x0;
+
+  cpu.r1 = 0x1000;
+
+  pt_arm_execute_instruction(&cpu, &instr);
+  
+  cr_assert_eq(cpu.r1, 0x1000);
+
+  cr_assert_eq(cpu.r0, 0x12);
+  cr_assert_eq(cpu.r2, 0x23);
+  cr_assert_eq(cpu.r3, 0x35345);
+  cr_assert_eq(cpu.r4, 0x34);
+  cr_assert_eq(cpu.r5, 0x45);
+}
+
 
