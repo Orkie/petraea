@@ -4613,4 +4613,219 @@ Test(executor_block_data_transfer, lddb_no_write_back) {
   cr_assert_eq(cpu.r5, 0x45);
 }
 
+Test(executor_block_data_transfer, stia_write_back) {
+  uint32_t w1 = 0x0;
+  uint32_t w2 = 0x0;
+  uint32_t w3 = 0x0;
+  uint32_t w4 = 0x0;
+  uint32_t wOther = 0x0;
+  int bus_write(uint32_t address, int bytes, void* value) {
+    if(address == 0x1000) {
+      w1 = U32_VAL(value);
+    } else if(address == 0x1004) {
+      w2 = U32_VAL(value);
+    } else if(address == 0x1008) {
+      w3 = U32_VAL(value);
+    } else if(address == 0x100C) {
+      w4 = U32_VAL(value);
+    } else {
+      wOther = 0x87654321;
+    }
+    return 0;
+  }
+  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, ARM920T, NULL, &bus_write); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_BLOCK_DATA_TRANSFER;
+  instr.cond = COND_AL;
+  instr.instr.block_data_transfer.add_offset = true;
+  instr.instr.block_data_transfer.add_offset_before_transfer = false;
+  instr.instr.block_data_transfer.load_psr_or_force_user_mode = false;
+  instr.instr.block_data_transfer.write_back_address = true;
+  instr.instr.block_data_transfer.load = false;
+  instr.instr.block_data_transfer.base = REG_R1;
+  instr.instr.block_data_transfer.register_list = 0b110101;
+
+  cpu.r0 = 0x12;
+  cpu.r2 = 0x23;
+  cpu.r3 = 0x35345;
+  cpu.r4 = 0x34;
+  cpu.r5 = 0x45;
+
+  cpu.r1 = 0x1000;
+
+  pt_arm_execute_instruction(&cpu, &instr);
+  
+  cr_assert_eq(cpu.r1, 0x1010);
+
+  cr_assert_eq(w1, 0x12);
+  cr_assert_eq(w2, 0x23);
+  cr_assert_eq(w3, 0x34);
+  cr_assert_eq(w4, 0x45);
+  cr_assert_eq(wOther, 0x0);
+}
+
+Test(executor_block_data_transfer, stib_write_back) {
+  uint32_t w1 = 0x0;
+  uint32_t w2 = 0x0;
+  uint32_t w3 = 0x0;
+  uint32_t w4 = 0x0;
+  uint32_t wOther = 0x0;
+  int bus_write(uint32_t address, int bytes, void* value) {
+    if(address == 0x1004) {
+      w1 = U32_VAL(value);
+    } else if(address == 0x1008) {
+      w2 = U32_VAL(value);
+    } else if(address == 0x100C) {
+      w3 = U32_VAL(value);
+    } else if(address == 0x1010) {
+      w4 = U32_VAL(value);
+    } else {
+      wOther = 0x87654321;
+    }
+    return 0;
+  }
+  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, ARM920T, NULL, &bus_write); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_BLOCK_DATA_TRANSFER;
+  instr.cond = COND_AL;
+  instr.instr.block_data_transfer.add_offset = true;
+  instr.instr.block_data_transfer.add_offset_before_transfer = true;
+  instr.instr.block_data_transfer.load_psr_or_force_user_mode = false;
+  instr.instr.block_data_transfer.write_back_address = true;
+  instr.instr.block_data_transfer.load = false;
+  instr.instr.block_data_transfer.base = REG_R1;
+  instr.instr.block_data_transfer.register_list = 0b110101;
+
+  cpu.r0 = 0x12;
+  cpu.r2 = 0x23;
+  cpu.r3 = 0x35345;
+  cpu.r4 = 0x34;
+  cpu.r5 = 0x45;
+
+  cpu.r1 = 0x1000;
+
+  pt_arm_execute_instruction(&cpu, &instr);
+  
+  cr_assert_eq(cpu.r1, 0x1010);
+
+  cr_assert_eq(w1, 0x12);
+  cr_assert_eq(w2, 0x23);
+  cr_assert_eq(w3, 0x34);
+  cr_assert_eq(w4, 0x45);
+  cr_assert_eq(wOther, 0x0);
+}
+
+Test(executor_block_data_transfer, stda_write_back) {
+  uint32_t w1 = 0x0;
+  uint32_t w2 = 0x0;
+  uint32_t w3 = 0x0;
+  uint32_t w4 = 0x0;
+  uint32_t wOther = 0x0;
+  int bus_write(uint32_t address, int bytes, void* value) {
+    if(address == 0xFF4) {
+      w1 = U32_VAL(value);
+    } else if(address == 0xFF8) {
+      w2 = U32_VAL(value);
+    } else if(address == 0xFFC) {
+      w3 = U32_VAL(value);
+    } else if(address == 0x1000) {
+      w4 = U32_VAL(value);
+    } else {
+      wOther = 0x87654321;
+    }
+    return 0;
+  }
+  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, ARM920T, NULL, &bus_write); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_BLOCK_DATA_TRANSFER;
+  instr.cond = COND_AL;
+  instr.instr.block_data_transfer.add_offset = false;
+  instr.instr.block_data_transfer.add_offset_before_transfer = false;
+  instr.instr.block_data_transfer.load_psr_or_force_user_mode = false;
+  instr.instr.block_data_transfer.write_back_address = true;
+  instr.instr.block_data_transfer.load = false;
+  instr.instr.block_data_transfer.base = REG_R1;
+  instr.instr.block_data_transfer.register_list = 0b110101;
+
+  cpu.r0 = 0x12;
+  cpu.r2 = 0x23;
+  cpu.r3 = 0x35345;
+  cpu.r4 = 0x34;
+  cpu.r5 = 0x45;
+
+  cpu.r1 = 0x1000;
+
+  pt_arm_execute_instruction(&cpu, &instr);
+  
+  cr_assert_eq(cpu.r1, 0xFF0);
+
+  cr_assert_eq(w1, 0x12);
+  cr_assert_eq(w2, 0x23);
+  cr_assert_eq(w3, 0x34);
+  cr_assert_eq(w4, 0x45);
+  cr_assert_eq(wOther, 0x0);
+}
+
+Test(executor_block_data_transfer, stdb_write_back) {
+  uint32_t w1 = 0x0;
+  uint32_t w2 = 0x0;
+  uint32_t w3 = 0x0;
+  uint32_t w4 = 0x0;
+  uint32_t wOther = 0x0;
+  int bus_write(uint32_t address, int bytes, void* value) {
+    if(address == 0xFF0) {
+      w1 = U32_VAL(value);
+    } else if(address == 0xFF4) {
+      w2 = U32_VAL(value);
+    } else if(address == 0xFF8) {
+      w3 = U32_VAL(value);
+    } else if(address == 0xFFC) {
+      w4 = U32_VAL(value);
+    } else {
+      wOther = 0x87654321;
+    }
+    return 0;
+  }
+  
+  pt_arm_cpu cpu;
+  pt_arm_init_cpu(&cpu, ARM920T, NULL, &bus_write); 
+
+  pt_arm_instruction instr;
+  instr.type = INSTR_BLOCK_DATA_TRANSFER;
+  instr.cond = COND_AL;
+  instr.instr.block_data_transfer.add_offset = false;
+  instr.instr.block_data_transfer.add_offset_before_transfer = true;
+  instr.instr.block_data_transfer.load_psr_or_force_user_mode = false;
+  instr.instr.block_data_transfer.write_back_address = true;
+  instr.instr.block_data_transfer.load = false;
+  instr.instr.block_data_transfer.base = REG_R1;
+  instr.instr.block_data_transfer.register_list = 0b110101;
+
+  cpu.r0 = 0x12;
+  cpu.r2 = 0x23;
+  cpu.r3 = 0x35345;
+  cpu.r4 = 0x34;
+  cpu.r5 = 0x45;
+
+  cpu.r1 = 0x1000;
+
+  pt_arm_execute_instruction(&cpu, &instr);
+  
+  cr_assert_eq(cpu.r1, 0xFF0);
+
+  cr_assert_eq(w1, 0x12);
+  cr_assert_eq(w2, 0x23);
+  cr_assert_eq(w3, 0x34);
+  cr_assert_eq(w4, 0x45);
+  cr_assert_eq(wOther, 0x0);
+}
 
