@@ -6,7 +6,7 @@
 // Branching
 ///////////////////////////////////////////
 
-static int execute_branch(pt_arm_cpu* cpu, pt_arm_instr_branch* i) {
+static inline __attribute__((always_inline)) int execute_branch(pt_arm_cpu* cpu, pt_arm_instr_branch* i) {
   pt_arm_registers* regs = pt_arm_get_regs(cpu);
   if(i->link) {
     (*regs->regs)[REG_LR] = (*regs->regs)[REG_PC]-4;
@@ -15,7 +15,7 @@ static int execute_branch(pt_arm_cpu* cpu, pt_arm_instr_branch* i) {
   return 0;
 }
 
-static int execute_branch_exchange(pt_arm_cpu* cpu, pt_arm_instr_branch_exchange* i) {
+static inline __attribute__((always_inline)) int execute_branch_exchange(pt_arm_cpu* cpu, pt_arm_instr_branch_exchange* i) {
   pt_arm_registers* regs = pt_arm_get_regs(cpu);
   uint32_t address = (*regs->regs)[i->operand];
 
@@ -28,7 +28,7 @@ static int execute_branch_exchange(pt_arm_cpu* cpu, pt_arm_instr_branch_exchange
 // Data transfer
 ///////////////////////////////////////////
 
-static int execute_single_data_transfer(pt_arm_cpu* cpu, pt_arm_instr_single_data_transfer* i) {
+static inline __attribute__((always_inline)) int execute_single_data_transfer(pt_arm_cpu* cpu, pt_arm_instr_single_data_transfer* i) {
   pt_arm_registers* regs = pt_arm_get_regs(cpu);
   bool shifterCarry, shifterCarryValid;
   uint32_t offset = _petraea_eval_operand2(cpu, &i->offset, &shifterCarryValid, &shifterCarry);
@@ -61,7 +61,7 @@ static int execute_single_data_transfer(pt_arm_cpu* cpu, pt_arm_instr_single_dat
   return 0;
 }
 
-static int execute_halfword_data_transfer(pt_arm_cpu* cpu, pt_arm_instr_halfword_data_transfer* i) {
+static inline __attribute__((always_inline)) int execute_halfword_data_transfer(pt_arm_cpu* cpu, pt_arm_instr_halfword_data_transfer* i) {
   pt_arm_registers* regs = pt_arm_get_regs(cpu);
   uint32_t offset = i->is_immediate_offset ? i->offset_imm : (*regs->regs)[i->offset_reg];
 
@@ -98,7 +98,7 @@ static int execute_halfword_data_transfer(pt_arm_cpu* cpu, pt_arm_instr_halfword
   return 0;
 }
 
-static int execute_block_data_transfer(pt_arm_cpu* cpu, pt_arm_instr_block_data_transfer* i) {
+static inline __attribute__((always_inline)) int execute_block_data_transfer(pt_arm_cpu* cpu, pt_arm_instr_block_data_transfer* i) {
 
   bool isPCTouched = (i->register_list >> (15 - REG_PC))&0x1;
   bool isPrivileged = pt_arm_is_privileged(cpu);
@@ -180,7 +180,7 @@ static inline void handle_flags_logical(pt_arm_cpu* cpu, uint32_t aluOut, bool s
   }
 }
 
-static int execute_data_processing(pt_arm_cpu* cpu, pt_arm_instr_data_processing* i) {
+static inline __attribute__((always_inline)) int execute_data_processing(pt_arm_cpu* cpu, pt_arm_instr_data_processing* i) {
   pt_arm_registers* regs = pt_arm_get_regs(cpu);
   bool shifterCarry = false;
   bool shifterCarryValid = false;
@@ -337,7 +337,7 @@ static int execute_data_processing(pt_arm_cpu* cpu, pt_arm_instr_data_processing
 ///////////////////////////////////////////
 // Swap
 ///////////////////////////////////////////
-static int execute_swap(pt_arm_cpu* cpu, pt_arm_instr_swap* i) {
+static inline __attribute__((always_inline)) int execute_swap(pt_arm_cpu* cpu, pt_arm_instr_swap* i) {
   pt_arm_registers* regs = pt_arm_get_regs(cpu);
   uint32_t addr = (*regs->regs)[i->addr];
   uint32_t value = (*regs->regs)[i->value];
@@ -360,7 +360,7 @@ static int execute_swap(pt_arm_cpu* cpu, pt_arm_instr_swap* i) {
 ///////////////////////////////////////////
 // Coprocessor register transfer
 ///////////////////////////////////////////
-static int execute_coprocessor_register_transfer(pt_arm_cpu* cpu, pt_arm_instr_coprocessor_register_transfer* i) {
+static inline __attribute__((always_inline)) int execute_coprocessor_register_transfer(pt_arm_cpu* cpu, pt_arm_instr_coprocessor_register_transfer* i) {
   pt_arm_registers* regs = pt_arm_get_regs(cpu);
   uint32_t* source_dest = regs->regs[i->source_dest];
   
@@ -390,7 +390,7 @@ static int execute_coprocessor_register_transfer(pt_arm_cpu* cpu, pt_arm_instr_c
 ///////////////////////////////////////////
 // Multiply
 ///////////////////////////////////////////
-static int execute_multiply(pt_arm_cpu* cpu, pt_arm_instr_multiply* i) {
+static inline __attribute__((always_inline)) int execute_multiply(pt_arm_cpu* cpu, pt_arm_instr_multiply* i) {
   pt_arm_registers* regs = pt_arm_get_regs(cpu);
   uint32_t* rd = regs->regs[i->rd];
   uint32_t* rm = regs->regs[i->rm];
@@ -412,7 +412,7 @@ static int execute_multiply(pt_arm_cpu* cpu, pt_arm_instr_multiply* i) {
 ///////////////////////////////////////////
 // Multiply long
 ///////////////////////////////////////////
-static int execute_multiply_long(pt_arm_cpu* cpu, pt_arm_instr_multiply_long* i) {
+static inline __attribute__((always_inline)) int execute_multiply_long(pt_arm_cpu* cpu, pt_arm_instr_multiply_long* i) {
   pt_arm_registers* regs = pt_arm_get_regs(cpu);
   uint32_t* rd_lo = regs->regs[i->rd_lo];
   uint32_t* rd_hi = regs->regs[i->rd_hi];
@@ -472,7 +472,7 @@ int pt_arm_execute_instruction(pt_arm_cpu* cpu, pt_arm_instruction* instr) {
   return 0;
 }
 
-bool _petraea_eval_condition(pt_arm_cpu* cpu, pt_arm_condition cond) {
+bool inline __attribute__((always_inline)) _petraea_eval_condition(pt_arm_cpu* cpu, pt_arm_condition cond) {
   switch(cond) {
   case COND_EQ: return GET_ZERO_FLAG(cpu);
   case COND_NE: return !GET_ZERO_FLAG(cpu);
@@ -494,7 +494,7 @@ bool _petraea_eval_condition(pt_arm_cpu* cpu, pt_arm_condition cond) {
   return false;
 }
 
-uint32_t _petraea_eval_operand2(pt_arm_cpu* cpu, pt_arm_operand2* operand2, bool* carryValid, bool* carry) {
+inline __attribute__((always_inline)) uint32_t _petraea_eval_operand2(pt_arm_cpu* cpu, pt_arm_operand2* operand2, bool* carryValid, bool* carry) {
   if(operand2->is_immediate) {
     *carry = operand2->op.imm.carry;
     *carryValid = operand2->op.imm.carryValid;

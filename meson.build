@@ -1,6 +1,10 @@
 project('petraea', 'c',
   version : '1.0.0',
-  license : 'MIT')
+  license : 'MIT',
+  default_options : 'optimization=2')
+
+sljit_dep = dependency('sljit')
+lightning_dep = dependency('lightning')
 
 inc = include_directories('include')
 
@@ -19,7 +23,8 @@ test_sources = [
   'test/cpu.test.c',
   'test/decoder.test.c',
   'test/executor.test.c',
-  'test/util.test.c'
+  'test/util.test.c',
+  'test/jit.test.c'
 ]
 
 #################################################
@@ -35,12 +40,14 @@ libpetraea = shared_library(
   'petraea',
   petraea_sources,
   include_directories : inc,
+  dependencies : [lightning_dep, sljit_dep],
   install : true)
 
 libpetraea_static = static_library(
   'petraea',
   petraea_sources,
   include_directories : inc,
+  dependencies : [lightning_dep, sljit_dep],
   install : true)
 
 pkg_mod = import('pkgconfig')
@@ -62,7 +69,7 @@ criterion_dep = dependency('criterion')
 
 testexe = executable('petraea.test', test_sources,
                      include_directories : inc,
-		     dependencies : criterion_dep,
+		     dependencies : [criterion_dep, sljit_dep, lightning_dep],
 		     link_with : libpetraea)
 test('petraea test', testexe)
 

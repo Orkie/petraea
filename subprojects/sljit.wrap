@@ -1,0 +1,8 @@
+[wrap-git]
+url = https://github.com/zherczeg/sljit.git
+revision = head
+patch_directory = sljit
+
+[provide]
+dependency_names = sljit_dep
+sljit = sljit_dep

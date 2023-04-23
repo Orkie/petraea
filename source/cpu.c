@@ -65,10 +65,7 @@ static uint16_t _fetch_halfword(pt_arm_cpu* cpu, uint32_t address, bool isPrivil
 // TODO - instruction permissions are different to data I think
 static uint32_t _fetch_word(pt_arm_cpu* cpu, uint32_t address, bool isPrivileged, bool isDataRead) {
   uint32_t d;
-  int ret = (*cpu->bus_fetch)(address, 4, &d);
-  if(cpu->logging && ret != 0) {
-    fprintf(stderr, "Failed to read word from 0x%.8x from instruction at 0x%.8x\n", address, current_pc(cpu));
-  }
+  (*cpu->bus_fetch)(address, 4, &d);
   return d;
 }
 
