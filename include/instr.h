@@ -235,6 +235,22 @@ typedef struct {
 
 extern int pt_arm_decode_instruction(pt_arm_instruction* dest, uint32_t i);
 extern int pt_arm_execute_instruction(pt_arm_cpu* cpu, pt_arm_instruction* instr);
+
+/**
+   SLJIT compiler context type. Abstracted in order that one could pentially compile with different
+   JIT backends in the future.
+ */
+typedef struct sljit_compiler* jit;
+
+/**
+   Emits a JIT instruction.
+   @param context JIT compiler context
+   @param cpu Instance of CPU to emit instruction for
+   @param instr ARM instruction to emit
+   @return 0 for success
+ */
+extern int pt_arm_emit_instruction(jit context, pt_arm_cpu* cpu, pt_arm_instruction* instr);
+
 extern uint32_t _petraea_eval_operand2(pt_arm_cpu* cpu, pt_arm_operand2* operand2, bool* carryValid, bool* carry);
 extern bool _petraea_eval_condition(pt_arm_cpu* cpu, pt_arm_condition cond);
 

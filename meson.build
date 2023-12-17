@@ -1,7 +1,7 @@
 project('petraea', 'c',
   version : '1.0.0',
   license : 'MIT',
-  default_options : 'optimization=2')
+  default_options : 'optimization=0')
 
 sljit_dep = dependency('sljit')
 lightning_dep = dependency('lightning')
@@ -16,7 +16,9 @@ petraea_sources = [
   'source/cpu.c',
   'source/decoder.c',
   'source/executor.c',
-  'source/util.c'
+  'source/util.c',
+  'source/emitter-sljit.c',
+  'source/codecache.c'
 ]
 
 test_sources = [
@@ -24,7 +26,8 @@ test_sources = [
   'test/decoder.test.c',
   'test/executor.test.c',
   'test/util.test.c',
-  'test/jit.test.c'
+  'test/jit.test.c',
+  'test/codecache.test.c'
 ]
 
 #################################################

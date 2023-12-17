@@ -30,6 +30,7 @@ void pt_arm_set_mode(pt_arm_cpu* cpu, pt_arm_mode mode) {
   case MODE_UND: cpu->cpsr = (cpu->cpsr&0xF) | 0b1011; break;
   case MODE_SYSTEM: cpu->cpsr = (cpu->cpsr&0xF) | 0b1111; break;
   }
+  cpu->currentRegs = &cpu->regs[mode];
 }
 
 bool arm_is_little_endian(pt_arm_cpu* cpu) {
@@ -330,6 +331,9 @@ int pt_arm_init_cpu(pt_arm_cpu* cpu,
 		    int (*bus_fetch)(uint32_t, int, void*),
 		    int (*bus_write)(uint32_t, int, void*)) {
   _init_regs(cpu);
+
+  //  pt_arm_set_mode(cpu, MODE_SVC);
+  cpu->currentRegs = cpu->regs[MODE_SVC].regs;
 
   cpu->bus_fetch = bus_fetch;
   cpu->fetch_word = _fetch_word;

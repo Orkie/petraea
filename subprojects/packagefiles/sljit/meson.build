@@ -2,6 +2,8 @@ project('sljit', 'c',
   version : '1.0.0',
   default_options : 'optimization=2')
 
+add_project_arguments('-DSLJIT_VERBOSE', language : 'c')
+
 inc = include_directories('sljit_src')
 
 #################################################

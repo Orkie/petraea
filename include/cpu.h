@@ -108,6 +108,7 @@ struct pt_arm_cpu_struct {
   uint32_t spsr_fiq;
 
   pt_arm_registers regs[7];
+  pt_arm_registers* currentRegs;
   pt_arm_coprocessor coprocessors[16];
   pt_cp15_state cp15;
 
