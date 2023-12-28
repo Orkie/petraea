@@ -233,6 +233,7 @@ typedef struct {
   pt_arm_instructions instr;
 } pt_arm_instruction;
 
+extern pt_arm_instruction_type pt_arm_identify_instruction(uint32_t i);
 extern int pt_arm_decode_instruction(pt_arm_instruction* dest, uint32_t i);
 extern int pt_arm_execute_instruction(pt_arm_cpu* cpu, pt_arm_instruction* instr);
 
