@@ -231,6 +231,7 @@ typedef struct {
   pt_arm_condition cond;
   pt_arm_instruction_type type;
   pt_arm_instructions instr;
+  uint32_t raw;
 } pt_arm_instruction;
 
 extern pt_arm_instruction_type pt_arm_identify_instruction(uint32_t i);

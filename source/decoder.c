@@ -235,6 +235,7 @@ pt_arm_instruction_type pt_arm_identify_instruction(uint32_t i) {
 int pt_arm_decode_instruction(pt_arm_instruction* dest, uint32_t i) {
   const unsigned int cond = (i&0xF0000000) >> 28;
   dest->type = pt_arm_identify_instruction(i);
+  dest->raw = i;
 
   switch(dest->type) {
   case INSTR_SINGLE_DATA_TRANSFER:

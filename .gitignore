@@ -59,4 +59,5 @@ build/
 .\#*
 
 subprojects/sljit
+.vscode/
 

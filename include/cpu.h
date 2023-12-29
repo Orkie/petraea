@@ -122,6 +122,10 @@ struct pt_arm_cpu_struct {
   void (*write_word)(pt_arm_cpu*, uint32_t, uint32_t, bool);
   void (*write_halfword)(pt_arm_cpu*, uint32_t, uint16_t, bool);
   void (*write_byte)(pt_arm_cpu*, uint32_t, uint8_t, bool);
+
+  #ifdef HOST_ARCH_X64
+  uint8_t scratch_flags;
+  #endif
   
 };
 
